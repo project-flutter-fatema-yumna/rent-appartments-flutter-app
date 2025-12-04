@@ -7,6 +7,7 @@ import 'Screens/homeScreen.dart';
 import 'Screens/profileScreen.dart';
 
 class MainlayoutScreen extends StatefulWidget {
+  static String id ='MainlayoutScreen';
   @override
   State<MainlayoutScreen> createState() => _MainlayoutScreenState();
 }
