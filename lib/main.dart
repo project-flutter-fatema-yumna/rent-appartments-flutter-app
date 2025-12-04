@@ -9,6 +9,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'Screens/seeAllScreen.dart';
+import 'authentication_screens/complete_profile_screen.dart';
+import 'authentication_screens/login_screen.dart';
+import 'authentication_screens/register_screen.dart';
+import 'authentication_screens/splash_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -28,9 +32,17 @@ class MyApp extends StatelessWidget {
         FavoriteScreen.id:(context)=>FavoriteScreen(),
         ChatScreen.id:(context)=>ChatScreen(),
         ProfileScreen.id:(context)=>ProfileScreen(),
+        MainlayoutScreen.id:(context)=>MainlayoutScreen(),
+        CompleteProfileScreen.id:(context)=>CompleteProfileScreen(),
+        LoginScreen.id:(context)=>LoginScreen(),
+        RegisterScreen.id:(context)=>RegisterScreen(),
+        SplashScreen.id:(context)=>SplashScreen()
+
     },
       debugShowCheckedModeBanner: false,
-      home :MainlayoutScreen()
+      home :SplashScreen()
+
+      //MainlayoutScreen()
     );
   }
 }

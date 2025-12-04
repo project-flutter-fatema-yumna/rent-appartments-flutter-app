@@ -30,6 +30,8 @@ environment:
 dependencies:
   google_nav_bar: ^5.0.7
   url_launcher: ^6.2.5
+  image_picker: ^1.2.1
+  http: ^1.6.0
   flutter:
     sdk: flutter
 
