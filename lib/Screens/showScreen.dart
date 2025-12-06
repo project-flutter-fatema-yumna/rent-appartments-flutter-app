@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ShowScreen extends StatefulWidget {
-  const ShowScreen({super.key});
   static String id = 'ShowScreen';
-
   @override
   State<ShowScreen> createState() => _ShowScreenState();
 }
@@ -16,12 +14,75 @@ class _ShowScreenState extends State<ShowScreen> {
   bool isFavorite = false;
   bool showMore = false;
   int numberImage = 0;
+  DateTimeRange? _selectedRange;
+
   List<String> ListImages = [
     'assets/img.png',
     'assets/img_1.png',
     'assets/img_2.png',
     'assets/img_3.png',
   ];
+  Future<void> _openDatePicker() async {
+    final now = DateTime.now();
+
+    final result = await showDateRangePicker(
+      context: context,
+      firstDate: now,
+      lastDate: DateTime(now.year + 1, 12, 31),
+      locale: const Locale('en'),
+      helpText: 'chose rend date',
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedRange = result;
+      });
+
+      if (result.start.year == result.end.year) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('information'),
+              content: Text(
+                'Booking was selected from'
+                '${result.start.day}/${result.start.month} '
+                'to ${result.end.day}/${result.end.month}',
+              ),
+              actions: [
+                TextButton(onPressed: () {
+                  Navigator.pop(context);
+                  _openDatePicker();
+                }, child: Text('Edit')),
+                TextButton(onPressed: () {
+                  Navigator.pop(context);
+                }, child: Text('OK')),
+              ],
+            );
+          },
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('information'),
+              content: Text(
+                'Booking was selected from '
+                    '${result.start.day}/${result.start.month}/${result.start.year} '
+                    'to  ${result.end.day}/${result.end.month}${result.end.year} ',
+              ),
+              actions: [
+                TextButton(onPressed: () {}, child: Text('Edit')),
+                TextButton(onPressed: () {}, child: Text('OK')),
+              ],
+            );
+          },
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,9 +96,9 @@ class _ShowScreenState extends State<ShowScreen> {
                   width: double.infinity,
                   height: 350,
                   child: PageView.builder(
-                    onPageChanged: (index){
+                    onPageChanged: (index) {
                       setState(() {
-                        numberImage=index;
+                        numberImage = index;
                       });
                     },
                     itemCount: ListImages.length,
@@ -47,7 +108,7 @@ class _ShowScreenState extends State<ShowScreen> {
                   ),
                 ),
                 Positioned(
-                 bottom:30,
+                  bottom: 30,
                   left: 0,
                   right: 0,
                   child: Row(
@@ -56,10 +117,12 @@ class _ShowScreenState extends State<ShowScreen> {
                       return Padding(
                         padding: const EdgeInsets.all(2),
                         child: Container(
-                          width: numberImage==index? 12:8,
-                          height: numberImage==index?12:8,
+                          width: numberImage == index ? 12 : 8,
+                          height: numberImage == index ? 12 : 8,
                           decoration: BoxDecoration(
-                            color: numberImage==index?Colors.blue: Colors.white,
+                            color: numberImage == index
+                                ? Colors.blue
+                                : Colors.white,
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -461,7 +524,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                         );
 
                                         if (await canLaunchUrl(phoneUri)) {
-                                          await launchUrl(phoneUri,);
+                                          await launchUrl(phoneUri);
                                         } else {
                                           print('Could not launch phone call');
                                         }
@@ -502,6 +565,7 @@ class _ShowScreenState extends State<ShowScreen> {
                             ],
                           ),
                           InkWell(
+                            onTap: _openDatePicker,
                             child: Container(
                               height: 50,
                               width: 200,
