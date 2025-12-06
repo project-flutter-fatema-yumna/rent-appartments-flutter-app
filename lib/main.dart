@@ -40,9 +40,10 @@ class MyApp extends StatelessWidget {
 
     },
       debugShowCheckedModeBanner: false,
-      home :SplashScreen()
+      home : MainlayoutScreen()
 
-      //MainlayoutScreen()
+      //SplashScreen()
+
     );
   }
 }
