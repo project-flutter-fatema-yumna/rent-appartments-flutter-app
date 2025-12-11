@@ -31,7 +31,6 @@ class _ShowScreenState extends State<ShowScreen> {
   Widget build(BuildContext context) {
     Model_Apartment model_apartment =
     ModalRoute.of(context)!.settings.arguments as Model_Apartment;
-
     return Scaffold(
       backgroundColor: myColors.colorWhite,
       body: SingleChildScrollView(
