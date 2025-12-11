@@ -25,20 +25,7 @@ class _ShowScreenState extends State<ShowScreen> {
 
   DateTimeRange? _selectedRange;
 
-  Future<void> _selectDateRange(BuildContext context) async {
-    final DateTimeRange? picked = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(2025),
-      lastDate: DateTime(2030),
-      initialDateRange: _selectedRange,
-    );
 
-    if (picked != null) {
-      setState(() {
-        _selectedRange = picked;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -532,7 +519,6 @@ class _ShowScreenState extends State<ShowScreen> {
                             ],
                           ),
                           InkWell(
-                            onTap:()=> _selectDateRange(context),
                             child: Container(
                               height: 50,
                               width: 200,
