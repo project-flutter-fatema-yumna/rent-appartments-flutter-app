@@ -67,7 +67,7 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
                     GButton(icon: Icons.home, text: 'Home'),
                     GButton(icon: Icons.favorite, text: 'Favorite'),
                     GButton(icon: Icons.chat, text: 'Chat'),
-                    GButton(icon: Icons.search, text: 'Search'),
+                    GButton(icon: Icons.filter_alt_sharp, text: 'Filter'),
                     GButton(icon: Icons.person, text: 'profile'),
                   ],
                 ),

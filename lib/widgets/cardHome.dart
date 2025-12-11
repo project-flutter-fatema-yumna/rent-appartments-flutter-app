@@ -1,7 +1,12 @@
 import 'package:flats_app/Screens/showScreen.dart';
+import 'package:flats_app/models/model_apartment.dart';
 import 'package:flutter/material.dart';
 
 class CardHome extends StatefulWidget {
+  Model_Apartment? model_apartment;
+
+  CardHome({ this.model_apartment});
+
   @override
   State<CardHome> createState() => _CardHomeState();
 }
@@ -9,14 +14,13 @@ class CardHome extends StatefulWidget {
 class _CardHomeState extends State<CardHome> {
   /* int? height , width;
   _CardHomeState(this.height, this.width);*/
-
   bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.pushNamed(context, ShowScreen.id);
+        Navigator.pushNamed(context, ShowScreen.id,arguments:widget.model_apartment );
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
@@ -84,7 +88,7 @@ class _CardHomeState extends State<CardHome> {
                 children: [
                   Icon(Icons.location_on, color: Colors.blueGrey),
                   Text(
-                    ' Syria , Damascus ',
+                    ' ${widget.model_apartment!.governorate} , ${widget.model_apartment!.city} ',
                     style: TextStyle(color: Colors.blueGrey),
                   ),
                 ],
