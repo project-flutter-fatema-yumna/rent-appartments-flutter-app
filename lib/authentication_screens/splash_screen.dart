@@ -1,9 +1,8 @@
+import 'package:flats_app/authentication_screens/onboarding_screens.dart';
 import 'package:flutter/material.dart';
 
-import 'login_screen.dart';
-
 class SplashScreen extends StatefulWidget {
-  static String id='SplashScreen';
+  static String id = 'SplashScreen';
   const SplashScreen({super.key});
 
   @override
@@ -38,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen>
     _controller.forward();
 
     Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pushReplacementNamed(context, LoginScreen.id);
+      Navigator.pushReplacementNamed(context, OnboardingScreen.id);
     });
   }
 

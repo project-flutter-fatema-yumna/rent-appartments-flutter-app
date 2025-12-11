@@ -1,15 +1,14 @@
+import 'package:flats_app/models/register_data.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import '../widgets/text_field_widget.dart';
 import 'complete_profile_screen.dart';
 import 'login_screen.dart';
-//import 'package:rent_appartments_project/widgets/text_field_widget.dart';
 
 String _currentState = 'Tenant';
 
 class RegisterScreen extends StatefulWidget {
-  static String id='RegisterScreen';
+  static String id = 'RegisterScreen';
   const RegisterScreen({super.key});
 
   @override
@@ -20,17 +19,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   late TapGestureRecognizer _loginRecognizer;
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  RegisterData user = RegisterData();
   String? _errorText;
-
-  bool _hidePassword = true;
+  final bool _hidePassword = true;
 
   @override
   void initState() {
     super.initState();
     _loginRecognizer = TapGestureRecognizer()
       ..onTap = () {
-        Navigator.pushReplacementNamed(context,LoginScreen.id);
+        Navigator.pushReplacementNamed(context, LoginScreen.id);
       };
   }
 
@@ -39,16 +39,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _loginRecognizer.dispose();
     _phoneController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _tryRegister() {
+  void _tryVerify() {
     final phone = _phoneController.text.trim();
     final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
     setState(() {
       _errorText = null;
     });
-    if (password.isEmpty || phone.isEmpty) {
+    if (password.isEmpty || phone.isEmpty || confirmPassword.isEmpty) {
       setState(() => _errorText = 'Please fill all fields');
       return;
     }
@@ -65,135 +67,164 @@ class _RegisterScreenState extends State<RegisterScreen> {
       setState(() => _errorText = 'Password must be at least 8 characters');
       return;
     }
-    Navigator.pushReplacementNamed(context, CompleteProfileScreen.id);
+    if (password != confirmPassword) {
+      setState(() => _errorText = 'Password and confirmation do not match');
+      return;
+    }
+    user.phone = phone;
+    user.password = password;
+    user.passwordConfirmation = confirmPassword;
+    Navigator.pushNamed(context, CompleteProfileScreen.id, arguments: user);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue[50],
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 150,
-                width: 150,
-                child: Image.asset(
-                  'assets/yumna.png',
-                  fit: BoxFit.cover,
-                ),
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: AlignmentGeometry.center,
+                end: AlignmentGeometry.bottomCenter,
+                colors: [
+                  Colors.blue.shade50,
+                  Colors.blue.shade50,
+                  Colors.blue.shade100,
+                ],
+                stops: [0.0, 0.5, 1.0],
               ),
-              const SizedBox(height: 20),
-              const Text(
-                'Create account',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 34),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Unlock your personalized experience!',
-                style: TextStyle(fontSize: 16),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(25, 30, 50, 12),
-                child: TextFieldWidget(
-                  controller: _phoneController,
-                  hint: 'Phone number',
-                  icon: Icons.phone,
-                  keyboardType: TextInputType.phone,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(25, 0, 50, 12),
-                child: TextFieldWidget(
-                  controller: _passwordController,
-                  hint: 'Password (min 8 chars)',
-                  icon: Icons.lock,
-                  isPassword: true,
-                  obscureText: _hidePassword,
-                  onToggleVisibility: () {
-                    setState(() => _hidePassword = !_hidePassword);
-                  },
-                ),
-              ),
-              if (_errorText != null) ...[
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Text(
-                    _errorText!,
-                    style: const TextStyle(color: Colors.red),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 65.0,
-                  vertical: 20,
-                ),
-                child: Row(
-                  children: [
-                    RegisterAs(
-                      role: 'Tenant',
-                      onTap: () {
-                        setState(() {
-                          _currentState = 'Tenant';
-                        });
-                      },
-                    ),
-                    SizedBox(width: 10),
-                    RegisterAs(
-                      role: 'Landlord',
-                      onTap: () {
-                        setState(() {
-                          _currentState = 'Landlord';
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: MaterialButton(
-                    onPressed: _tryRegister,
-                    color: Colors.blue,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 70,
-                      vertical: 12,
-                    ),
-                    child: const Text(
-                      'Register',
-                      style: TextStyle(color: Colors.white, fontSize: 17),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              RichText(
-                text: TextSpan(
-                  text: "Already have an account? ",
-                  style: const TextStyle(color: Colors.black),
-                  children: [
-                    TextSpan(
-                      text: "Login",
-                      style: const TextStyle(
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
-                      ),
-                      recognizer: _loginRecognizer,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 150,
+                    width: 150,
+                    child: Image.asset('assets/yumna.png', fit: BoxFit.cover),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Create account',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 34),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Unlock your personalized experience!',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(25, 30, 50, 12),
+                    child: TextFieldWidget(
+                      controller: _phoneController,
+                      hint: 'Phone number',
+                      icon: Icons.phone,
+                      keyboardType: TextInputType.phone,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(25, 0, 50, 12),
+                    child: TextFieldWidget(
+                      controller: _passwordController,
+                      hint: 'Password (min 8 chars)',
+                      icon: Icons.lock_outline,
+                      isPassword: true,
+                      obscureText: _hidePassword,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(25, 0, 50, 12),
+                    child: TextFieldWidget(
+                      controller: _confirmPasswordController,
+                      hint: 'Confirm password',
+                      icon: Icons.lock,
+                      isPassword: true,
+                      obscureText: _hidePassword,
+                    ),
+                  ),
+                  if (_errorText != null) ...[
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Text(
+                        _errorText!,
+                        style: const TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 65.0,
+                      vertical: 20,
+                    ),
+                    child: Row(
+                      children: [
+                        RegisterAs(
+                          role: 'Tenant',
+                          onTap: () {
+                            setState(() {
+                              _currentState = 'Tenant';
+                            });
+                          },
+                        ),
+                        SizedBox(width: 10),
+                        RegisterAs(
+                          role: 'Landlord',
+                          onTap: () {
+                            setState(() {
+                              _currentState = 'Landlord';
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: MaterialButton(
+                        onPressed: _tryVerify,
+                        color: Colors.blue,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 70,
+                          vertical: 12,
+                        ),
+                        child: const Text(
+                          'Verify',
+                          style: TextStyle(color: Colors.white, fontSize: 17),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  RichText(
+                    text: TextSpan(
+                      text: "Already have an account? ",
+                      style: const TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(
+                          text: "Login",
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: _loginRecognizer,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

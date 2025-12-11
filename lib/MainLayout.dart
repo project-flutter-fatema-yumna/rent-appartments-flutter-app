@@ -24,7 +24,6 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //int _selectedIndex=0;
     return Scaffold(
       body: Stack(
         children: [

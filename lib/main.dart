@@ -4,8 +4,7 @@ import 'package:flats_app/Screens/favoriteScreen.dart';
 import 'package:flats_app/Screens/homeScreen.dart';
 import 'package:flats_app/Screens/profileScreen.dart';
 import 'package:flats_app/Screens/showScreen.dart';
-import 'package:flats_app/widgets/cardHome.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flats_app/authentication_screens/onboarding_screens.dart';
 import 'package:flutter/material.dart';
 
 import 'Screens/seeAllScreen.dart';
@@ -36,13 +35,12 @@ class MyApp extends StatelessWidget {
         CompleteProfileScreen.id:(context)=>CompleteProfileScreen(),
         LoginScreen.id:(context)=>LoginScreen(),
         RegisterScreen.id:(context)=>RegisterScreen(),
-        SplashScreen.id:(context)=>SplashScreen()
+        SplashScreen.id:(context)=>SplashScreen(),
+        OnboardingScreen.id:(context)=>OnboardingScreen()
 
     },
       debugShowCheckedModeBanner: false,
-      home : MainlayoutScreen()
-
-      //SplashScreen()
+      home : SplashScreen()
 
     );
   }
