@@ -1,5 +1,6 @@
 import 'package:flats_app/MyColors.dart';
 import 'package:flats_app/Screens/chatScreen.dart';
+import 'package:flats_app/models/model_apartment.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -14,16 +15,36 @@ class ShowScreen extends StatefulWidget {
 
 class _ShowScreenState extends State<ShowScreen> {
   bool isFavorite = false;
-  bool showMore = false;
   int numberImage = 0;
-  List<String> ListImages = [
+ /* List<String> ListImages = [
     'assets/img.png',
     'assets/img_1.png',
     'assets/img_2.png',
     'assets/img_3.png',
-  ];
+  ];*/
+
+  DateTimeRange? _selectedRange;
+
+  Future<void> _selectDateRange(BuildContext context) async {
+    final DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2025),
+      lastDate: DateTime(2030),
+      initialDateRange: _selectedRange,
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedRange = picked;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    Model_Apartment model_apartment =
+    ModalRoute.of(context)!.settings.arguments as Model_Apartment;
+
     return Scaffold(
       backgroundColor: myColors.colorWhite,
       body: SingleChildScrollView(
@@ -40,9 +61,9 @@ class _ShowScreenState extends State<ShowScreen> {
                         numberImage=index;
                       });
                     },
-                    itemCount: ListImages.length,
+                    itemCount: model_apartment.images.length,
                     itemBuilder: (context, index) {
-                      return Image.asset(ListImages[index], fit: BoxFit.cover);
+                      return Image.network('http://10.0.2.2:8000/storage/${model_apartment.images[index].image}', fit: BoxFit.cover);
                     },
                   ),
                 ),
@@ -52,7 +73,7 @@ class _ShowScreenState extends State<ShowScreen> {
                   right: 0,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(ListImages.length, (index) {
+                    children: List.generate(model_apartment.images.length, (index) {
                       return Padding(
                         padding: const EdgeInsets.all(2),
                         child: Container(
@@ -126,7 +147,7 @@ class _ShowScreenState extends State<ShowScreen> {
                             children: [
                               Icon(Icons.location_on, color: Colors.blueGrey),
                               Text(
-                                ' Syria , Damascus ',
+                                ' ${model_apartment.governorate} , ${model_apartment.city} ',
                                 style: TextStyle(
                                   color: Colors.blueGrey,
                                   fontSize: 20,
@@ -138,7 +159,7 @@ class _ShowScreenState extends State<ShowScreen> {
                             children: [
                               Icon(Icons.star, color: Colors.orange, size: 30),
                               Text(
-                                ' 5.0',
+                                '${model_apartment.home_rate}',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 20,
@@ -175,7 +196,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Icon(Icons.square_foot, color: Colors.blue),
-                                  Text('1,100 sq ft'),
+                                  Text('${model_apartment.home_space} sq ft'),
                                 ],
                               ),
                             ),
@@ -202,8 +223,8 @@ class _ShowScreenState extends State<ShowScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Icon(Icons.bed_sharp, color: Colors.blue),
-                                  Text('3 beds'),
+                                  Icon(Icons.car_crash, color: Colors.blue),
+                                  Text('${model_apartment.parking_number} parking'),
                                 ],
                               ),
                             ),
@@ -231,7 +252,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Icon(Icons.bathtub, color: Colors.blue),
-                                  Text('2 bath'),
+                                  Text('${model_apartment.number_of_baths} bath'),
                                 ],
                               ),
                             ),
@@ -261,7 +282,7 @@ class _ShowScreenState extends State<ShowScreen> {
                           ],
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 10),
+                          padding: const EdgeInsets.only(left: 15),
                           child: Column(
                             children: [
                               SizedBox(height: 10),
@@ -270,49 +291,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                 children: [
                                   Icon(Icons.meeting_room, color: Colors.blue),
                                   Text(
-                                    '   Rooms Number    :      5 Rooms',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.roofing, color: Colors.blue),
-                                  Text(
-                                    '   Floor Number       :      2',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.balcony, color: Colors.blue),
-                                  Text(
-                                    '   Balcony Number   :     2 ',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.car_crash, color: Colors.blue),
-                                  Text(
-                                    '   parking Number   :     2 ',
+                                    '   Rooms Number    :      ${model_apartment.rooms_number} Rooms',
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 18,
@@ -326,7 +305,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                 children: [
                                   Icon(Icons.bed_rounded, color: Colors.blue),
                                   Text(
-                                    '   Furnished              :     yes Completely ',
+                                    '   bedRoom Number   :     ${model_apartment.number_of_bedrooms} ',
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 18,
@@ -335,36 +314,87 @@ class _ShowScreenState extends State<ShowScreen> {
                                 ],
                               ),
                               SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.roofing, color: Colors.blue),
+                                  Text(
+                                    '   Floor Number       :      ${model_apartment.floor_number}',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.balcony, color: Colors.blue),
+                                  Text(
+                                    '   Balcony Number   :     ${model_apartment.balcony_number} ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.bed_rounded, color: Colors.blue),
+                                  Text(
+                                    '   Furnished           :   ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  Icon(
+                                    model_apartment.furnished? Icons.check:Icons.close,
+                                    color: model_apartment.furnished?Colors.green:Colors.red,
+                                  )
+
+                                ],
+
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.date_range, color: Colors.blue),
+                                  Text(
+                                    '   Created at   :   ${model_apartment.created_at.split('T')[0]}',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.date_range_outlined, color: Colors.blue),
+                                  Text(
+                                    '   Updated at    :   ${model_apartment.updated_at.split('T')[0]}',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10,)
                             ],
                           ),
                         ),
                       ),
-                      /*Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: RichText(
-                          text: TextSpan(
-                            text: showMore
-                                ? des
-                                : des.substring(0, 90),
-                            style: TextStyle(fontSize: 18, color: Colors.black),
-                            children: [
-                              TextSpan(
-                                text: showMore ? '..See less' : '..See more',
-                                style: TextStyle(
-                                  color: Color(0xff7D0A0A),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    setState(() {
-                                      showMore = !showMore;
-                                    });
-                                  },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),*/
                       SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.only(left: 10),
@@ -502,6 +532,7 @@ class _ShowScreenState extends State<ShowScreen> {
                             ],
                           ),
                           InkWell(
+                            onTap:()=> _selectDateRange(context),
                             child: Container(
                               height: 50,
                               width: 200,

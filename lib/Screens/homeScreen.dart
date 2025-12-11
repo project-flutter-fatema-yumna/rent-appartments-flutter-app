@@ -1,4 +1,6 @@
 import 'package:flats_app/Screens/seeAllScreen.dart';
+import 'package:flats_app/Services/Get_Paginate_Apartment.dart';
+import 'package:flats_app/models/model_apartment.dart';
 import 'package:flats_app/widgets/cardHome.dart';
 import 'package:flutter/material.dart';
 import '../MyColors.dart';
@@ -9,7 +11,15 @@ class Homescreen extends StatefulWidget {
   @override
   State<Homescreen> createState() => _HomescreenState();
 }
+
 class _HomescreenState extends State<Homescreen> {
+  late Future<List<Model_Apartment>> apartmentsFuture;
+  @override
+  void initState() {
+    super.initState();
+    apartmentsFuture = get_apartment().getAllApartment();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,52 +107,66 @@ class _HomescreenState extends State<Homescreen> {
               ),
               SizedBox(
                 height: 300,
-                child: ListView.builder(
-                  itemCount: 6,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    if (index < 5) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: CardHome(),
-                      );
+                child: FutureBuilder<List<Model_Apartment>>(
+                  future: apartmentsFuture,
+                  builder: (context, snapshot) {
+                   if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
                     }
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.navigate_next,
-                                color: Colors.black,
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error'));
+                    }
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('No apartment'));
+                    }
+                    List<Model_Apartment> apartments = snapshot.data!;
+                    //.where((apt)=>(apt.home_rate??0)>4).toList();
+                    return ListView.builder(
+                      itemCount: apartments.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        if (index < 5) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: CardHome(model_apartment: apartments[index]),
+                          );
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: SizedBox(
+                              child: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.navigate_next,
+                                    color: Colors.black,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     );
                   },
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'The Flats',
-                      style: TextStyle(color: Colors.black, fontSize: 20,),
+                      style: TextStyle(color: Colors.black, fontSize: 20),
                     ),
                     InkWell(
                       onTap: () {
@@ -150,21 +174,31 @@ class _HomescreenState extends State<Homescreen> {
                       },
                       child: Text(
                         'See All',
-                        style: TextStyle(
-                          color: Colors.blueGrey,
-                          fontSize: 20,
-                        ),
+                        style: TextStyle(color: Colors.blueGrey, fontSize: 20),
                       ),
                     ),
                   ],
                 ),
               ),
-              ListView(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                children: [for (int i = 0; i < 10; i++) Second_card_home()],
+              FutureBuilder<List<Model_Apartment>>(
+                future: apartmentsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Model_Apartment> flats = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: flats.length,
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return Second_card_home(model_apartment: flats[index]);
+                      },
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                },
               ),
-              SizedBox(height: 20,),
+              SizedBox(height: 20),
             ],
           ),
         ),
