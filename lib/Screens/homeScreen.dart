@@ -17,100 +17,100 @@ class _HomescreenState extends State<Homescreen> {
   @override
   void initState() {
     super.initState();
-    apartmentsFuture = get_apartment().getAllApartment();
+    apartmentsFuture = get_apartment().getAllApartment(token:'8|AGei4tZYe7LlDuWzJWwzzTiYRYn1Zp7RPbEx2BgKd30a0133');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: myColors.colorWhite,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CircleAvatar(
-                    backgroundImage: AssetImage('assets/person2.jfif'),
-                    radius: 25,
-                  ),
-                  // Text('User name',style: TextStyle(color: Colors.blueGrey,fontSize: 20),),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.notifications_none),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 30),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Stack(
+        backgroundColor: myColors.colorWhite,
+        body: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
+            child: SingleChildScrollView(
+                child: Column(
                   children: [
-                    TextField(
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        hintText: 'Find something',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(50),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(50),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(50),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                      ),
+                  Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: AssetImage('assets/person2.jfif'),
+                      radius: 25,
                     ),
-                    Positioned(
-                      top: 3,
-                      right: 3,
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: Icon(Icons.search, color: Colors.white),
+                    // Text('User name',style: TextStyle(color: Colors.blueGrey,fontSize: 20),),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.notifications_none),
                       ),
                     ),
                   ],
                 ),
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
+                SizedBox(height: 30),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Stack(
+                    children: [
+                      TextField(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          hintText: 'Find something',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 3,
+                        right: 3,
+                        child: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Icon(Icons.search, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Recommended Property',
-                      style: TextStyle(color: Colors.black, fontSize: 20),
-                    ),
-                  ],
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Recommended Property',
+                        style: TextStyle(color: Colors.black, fontSize: 20),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 300,
-                child: FutureBuilder<List<Model_Apartment>>(
+                SizedBox(
+                  height: 300,
+                  child: FutureBuilder<List<Model_Apartment>>(
                   future: apartmentsFuture,
                   builder: (context, snapshot) {
-                   if (snapshot.connectionState == ConnectionState.waiting) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     }
                     if (snapshot.hasError) {
@@ -158,51 +158,58 @@ class _HomescreenState extends State<Homescreen> {
                     );
                   },
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'The Flats',
-                      style: TextStyle(color: Colors.black, fontSize: 20),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(context, See_all_screen.id);
-                      },
-                      child: Text(
-                        'See All',
-                        style: TextStyle(color: Colors.blueGrey, fontSize: 20),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'The Flats',
+                        style: TextStyle(color: Colors.black, fontSize: 20),
                       ),
-                    ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, See_all_screen.id);
+                        },
+                        child: Text(
+                          'See All',
+                          style: TextStyle(color: Colors.blueGrey, fontSize: 20),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                FutureBuilder<List<Model_Apartment>>(
+                    future: apartmentsFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+
+                      if (snapshot.hasError) {
+                        return Center(child: Text('ERROR: ${snapshot.error}'));
+                      }
+
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(child: Text('No apartment'));
+                      }
+
+                      final flats = snapshot.data!;
+                      return ListView.builder(
+                        itemCount: flats.length,
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return Second_card_home(model_apartment: flats[index]);
+                        },
+                      );
+                    }),
+                    SizedBox(height: 20),
                   ],
                 ),
-              ),
-              FutureBuilder<List<Model_Apartment>>(
-                future: apartmentsFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    List<Model_Apartment> flats = snapshot.data!;
-                    return ListView.builder(
-                      itemCount: flats.length,
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return Second_card_home(model_apartment: flats[index]);
-                      },
-                    );
-                  } else {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                },
-              ),
-              SizedBox(height: 20),
-            ],
-          ),
+            ),
         ),
-      ),
     );
   }
 }

@@ -8,6 +8,11 @@ import 'package:flats_app/widgets/cardHome.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'Rented/ListApartmentScreen.dart';
+import 'Rented/apartmentDetails.dart';
+import 'Rented/homePage.dart';
+import 'Screens/BankAccountBottomSheet.dart';
+import 'Screens/Reservations.dart';
 import 'Screens/seeAllScreen.dart';
 import 'authentication_screens/complete_profile_screen.dart';
 import 'authentication_screens/login_screen.dart';
@@ -36,14 +41,18 @@ class MyApp extends StatelessWidget {
         CompleteProfileScreen.id:(context)=>CompleteProfileScreen(),
         LoginScreen.id:(context)=>LoginScreen(),
         RegisterScreen.id:(context)=>RegisterScreen(),
-        SplashScreen.id:(context)=>SplashScreen()
-
+        SplashScreen.id:(context)=>SplashScreen(),
+        Homepage.id:(context)=>Homepage(),
+        List_Apatment.id:(context)=>List_Apatment(),
+        ReservationsScreen.id:(context)=>ReservationsScreen(),
+        List_Apatment.id:(context)=>List_Apatment(),
+      //  ApartmentDetailsSheet.id:(context)=>ApartmentDetailsSheet(),
     },
       debugShowCheckedModeBanner: false,
-      home : MainlayoutScreen()
-
+      home :
+      Homepage()
+    // MainlayoutScreen()
       //SplashScreen()
-
     );
   }
 }

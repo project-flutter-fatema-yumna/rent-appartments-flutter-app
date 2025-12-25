@@ -5,6 +5,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'BankAccountBottomSheet.dart';
+
 class ShowScreen extends StatefulWidget {
   static String id = 'ShowScreen';
   @override
@@ -14,15 +16,15 @@ class ShowScreen extends StatefulWidget {
 class _ShowScreenState extends State<ShowScreen> {
   bool isFavorite = false;
   int numberImage = 0;
-
- /* List<String> ListImages = [
->>>>>>> fatema_branch
+  late Model_Apartment model_apartment;
+  /* List<String> ListImages = [
     'assets/img.png',
     'assets/img_1.png',
     'assets/img_2.png',
     'assets/img_3.png',
-<<<<<<< HEAD
-  ];
+  ];*/
+  DateTimeRange? _selectedRange;
+
   Future<void> _openDatePicker() async {
     final now = DateTime.now();
 
@@ -38,8 +40,6 @@ class _ShowScreenState extends State<ShowScreen> {
       setState(() {
         _selectedRange = result;
       });
-
-      if (result.start.year == result.end.year) {
         showDialog(
           context: context,
           builder: (context) {
@@ -47,52 +47,53 @@ class _ShowScreenState extends State<ShowScreen> {
               title: Text('information'),
               content: Text(
                 'Booking was selected from'
-                '${result.start.day}/${result.start.month} '
-                'to ${result.end.day}/${result.end.month}',
+                '${result.start.day}/${result.start.month}/${result.start.year} '
+                'to ${result.end.day}/${result.end.month}/${result.end.year}',
               ),
               actions: [
-                TextButton(onPressed: () {
-                  Navigator.pop(context);
-                  _openDatePicker();
-                }, child: Text('Edit')),
-                TextButton(onPressed: () {
-                  Navigator.pop(context);
-                }, child: Text('OK')),
-              ],
-            );
-          },
-        );
-      } else {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: Text('information'),
-              content: Text(
-                'Booking was selected from '
-                    '${result.start.day}/${result.start.month}/${result.start.year} '
-                    'to  ${result.end.day}/${result.end.month}${result.end.year} ',
-              ),
-              actions: [
-                TextButton(onPressed: () {}, child: Text('Edit')),
-                TextButton(onPressed: () {}, child: Text('OK')),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _openDatePicker();
+                  },
+                  child: Text('Edit'),
+                ),
+                TextButton(
+                  onPressed:(){
+                    Navigator.pop(context);
+                    _openBookingSheet(this.context);
+                  },
+                  child: Text('OK'),
+                ),
               ],
             );
           },
         );
       }
     }
+
+///////////////////////////////////////////////////////////////////////////
+  void _openBookingSheet(BuildContext pageContext) {
+    if (_selectedRange == null) return;
+    final range = _selectedRange!;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) =>  BankAccountBottomSheet(
+        token:"8|AGei4tZYe7LlDuWzJWwzzTiYRYn1Zp7RPbEx2BgKd30a0133" ,
+        apartmentId: model_apartment.id,
+        range:range ,
+      ),
+    );
   }
-=======
-  ];*/
-
-  DateTimeRange? _selectedRange;
-
 
   @override
   Widget build(BuildContext context) {
-    Model_Apartment model_apartment =
-    ModalRoute.of(context)!.settings.arguments as Model_Apartment;
+     model_apartment =
+        ModalRoute.of(context)!.settings.arguments as Model_Apartment;
     return Scaffold(
       backgroundColor: myColors.colorWhite,
       body: SingleChildScrollView(
@@ -111,7 +112,31 @@ class _ShowScreenState extends State<ShowScreen> {
                     },
                     itemCount: model_apartment.images.length,
                     itemBuilder: (context, index) {
-                      return Image.network('http://10.0.2.2:8000/storage/${model_apartment.images[index].image}', fit: BoxFit.cover);
+
+                      final path = model_apartment.images[index].image.trim();
+                      final url = 'http://10.0.2.2:8000/storage/$path';
+                      return Image.network(
+                        url,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, progress) {
+                          if (progress == null) return child;
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                        errorBuilder: (context, error, stack) {
+                          print("IMG ERROR: $error\nURL: $url");
+                          return const Center(
+                            child: Icon(Icons.broken_image, size: 40),
+                          );
+                        },
+                      );
+                      /*CachedNetworkImage(
+                        imageUrl: url,
+                        fit: BoxFit.cover,
+                        placeholder: (c, _) => const Center(child: CircularProgressIndicator()),
+                        errorWidget: (c, _, __) => const Icon(Icons.broken_image),
+                      );*/
                     },
                   ),
                 ),
@@ -121,7 +146,9 @@ class _ShowScreenState extends State<ShowScreen> {
                   right: 0,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(model_apartment.images.length, (index) {
+                    children: List.generate(model_apartment.images.length, (
+                      index,
+                    ) {
                       return Padding(
                         padding: const EdgeInsets.all(2),
                         child: Container(
@@ -274,7 +301,9 @@ class _ShowScreenState extends State<ShowScreen> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Icon(Icons.car_crash, color: Colors.blue),
-                                  Text('${model_apartment.parking_number} parking'),
+                                  Text(
+                                    '${model_apartment.parking_number} parking',
+                                  ),
                                 ],
                               ),
                             ),
@@ -302,7 +331,9 @@ class _ShowScreenState extends State<ShowScreen> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Icon(Icons.bathtub, color: Colors.blue),
-                                  Text('${model_apartment.number_of_baths} bath'),
+                                  Text(
+                                    '${model_apartment.number_of_baths} bath',
+                                  ),
                                 ],
                               ),
                             ),
@@ -405,42 +436,16 @@ class _ShowScreenState extends State<ShowScreen> {
                                     ),
                                   ),
                                   Icon(
-                                    model_apartment.furnished? Icons.check:Icons.close,
-                                    color: model_apartment.furnished?Colors.green:Colors.red,
-                                  )
-
-                                ],
-
-                              ),
-                              SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.date_range, color: Colors.blue),
-                                  Text(
-                                    '   Created at   :   ${model_apartment.created_at.split('T')[0]}',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                    ),
+                                    model_apartment.furnished
+                                        ? Icons.check
+                                        : Icons.close,
+                                    color: model_apartment.furnished
+                                        ? Colors.green
+                                        : Colors.red,
                                   ),
                                 ],
                               ),
                               SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.date_range_outlined, color: Colors.blue),
-                                  Text(
-                                    '   Updated at    :   ${model_apartment.updated_at.split('T')[0]}',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10,)
                             ],
                           ),
                         ),
@@ -537,7 +542,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                       onPressed: () async {
                                         final Uri phoneUri = Uri(
                                           scheme: 'tel',
-                                          path: '0988892049',
+                                          path: model_apartment.phone,
                                         );
 
                                         if (await canLaunchUrl(phoneUri)) {
@@ -565,7 +570,8 @@ class _ShowScreenState extends State<ShowScreen> {
                           Column(
                             children: [
                               Text(
-                                r'$1,345',
+                                r'$ '
+                                '${model_apartment.rent.toStringAsFixed(0)}',
                                 style: TextStyle(
                                   color: Colors.blue,
                                   fontSize: 25,
@@ -582,6 +588,7 @@ class _ShowScreenState extends State<ShowScreen> {
                             ],
                           ),
                           InkWell(
+                            onTap: _openDatePicker,
                             child: Container(
                               height: 50,
                               width: 200,
@@ -591,7 +598,7 @@ class _ShowScreenState extends State<ShowScreen> {
                               ),
                               child: Center(
                                 child: Text(
-                                  'Rent now',
+                                  'Next',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,

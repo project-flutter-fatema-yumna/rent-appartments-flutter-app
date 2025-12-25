@@ -11,9 +11,11 @@ class Model_Apartment {
   final bool furnished;
   final double home_space;
   final double home_rate;
+  final double rent;
   final String created_at, updated_at;
+  final String phone;
+  final String? rent_type;
   final List<ApartmentImage> images;
-  //final double rent;
 
   Model_Apartment({
     required this.id,
@@ -28,31 +30,61 @@ class Model_Apartment {
     required this.furnished,
     required this.home_space,
     required this.home_rate,
+    required this.rent,
     required this.created_at,
     required this.updated_at,
+    required this.phone,
+    required this.rent_type,
     required this.images,
-    //required this.rent
   });
+
+  static int _toInt(dynamic v) {
+    if (v == null) return 0;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    return int.tryParse(v.toString()) ?? 0;
+  }
+
+  static double _toDouble(dynamic v) {
+    if (v == null) return 0.0;
+    if (v is double) return v;
+    if (v is num) return v.toDouble();
+    return double.tryParse(v.toString()) ?? 0.0;
+  }
+
+  static bool _toBool01(dynamic v) {
+    if (v is bool) return v;
+    final s = v?.toString().toLowerCase();
+    return s == '1' || s == 'true';
+  }
+
   factory Model_Apartment.fromJson(Map<String, dynamic> json) {
     return Model_Apartment(
-      id: json['id'],
-      governorate: json['governorate'],
-      city: json['city'],
-      floor_number: json['floor_number'],
-      balcony_number: json['balcony_number'],
-      parking_number: json['parking_number'],
-      rooms_number: json['rooms_number'],
-      number_of_bedrooms: json['number_of_bedrooms'],
-      number_of_baths: json['number_of_baths'],
-      furnished: json['furnished'].toString()=='1',
-      home_space: json['home_space'].toDouble(),
-      home_rate: json['home_rate'].toDouble(),
-      created_at: json['created_at'],
-      updated_at: json['updated_at'],
-      images: (json['images'] as List)
-          .map((item) => ApartmentImage.fromJson(item))
+      id: _toInt(json['id']),
+      governorate: json['governorate']?.toString() ?? '',
+      city: json['city']?.toString() ?? '',
+
+      floor_number: _toInt(json['floor_number']),
+      balcony_number: _toInt(json['balcony_number']),
+      parking_number: _toInt(json['parking_number']),
+      rooms_number: _toInt(json['rooms_number']),
+      number_of_bedrooms: _toInt(json['number_of_bedrooms']),
+      number_of_baths: _toInt(json['number_of_baths']),
+
+      furnished: _toBool01(json['furnished']),
+      home_space: _toDouble(json['home_space']),
+      home_rate: _toDouble(json['home_rate']),
+      rent: _toDouble(json['rent']),
+
+      created_at: json['created_at']?.toString() ?? '',
+      updated_at: json['updated_at']?.toString() ?? '',
+      phone: (json['user']?['phone'])?.toString() ?? '',
+      rent_type: json['rent_type']?.toString(),
+
+      //rent_type: json['rent_type'] ?? '',
+      images: (json['images'] as List? ?? [])
+          .map((item) => ApartmentImage.fromJson(item as Map<String, dynamic>))
           .toList(),
-      //rent: json['rent']
     );
   }
 }
@@ -71,15 +103,21 @@ class ApartmentImage {
     required this.createdAt,
     required this.updatedAt,
   });
-  factory ApartmentImage.fromJson(Map<String, dynamic> JsonData) {
-    return ApartmentImage(
-      id: JsonData['id'],
-      apartmentId: JsonData['apartment_id'],
-      image: JsonData['image'],
-      createdAt: JsonData['created_at'],
-      updatedAt: JsonData['updated_at'],
 
-    );
+  static int _toInt(dynamic v) {
+    if (v == null) return 0;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    return int.tryParse(v.toString()) ?? 0;
   }
 
+  factory ApartmentImage.fromJson(Map<String, dynamic> json) {
+    return ApartmentImage(
+      id: _toInt(json['id']),
+      apartmentId: _toInt(json['apartment_id']),
+      image: json['image']?.toString() ?? '',
+      createdAt: json['created_at']?.toString() ?? '',
+      updatedAt: json['updated_at']?.toString() ?? '',
+    );
+  }
 }
