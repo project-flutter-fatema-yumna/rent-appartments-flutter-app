@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class TextFieldWidget extends StatelessWidget {
   final TextEditingController controller;
@@ -12,6 +13,8 @@ class TextFieldWidget extends StatelessWidget {
   final VoidCallback? onToggleVisibility;
   final bool readOnly;
   final VoidCallback? onTap;
+  final int? maxLength;
+  final List<TextInputFormatter>? inputFormatters;
 
   const TextFieldWidget({
     super.key,
@@ -26,6 +29,8 @@ class TextFieldWidget extends StatelessWidget {
     this.onToggleVisibility,
     this.readOnly = false,
     this.onTap,
+    this.maxLength,
+    this.inputFormatters
   });
 
   @override
@@ -55,8 +60,9 @@ class TextFieldWidget extends StatelessWidget {
               )
             : suffixIcon,
         suffixIconColor: Colors.grey,
-        hintStyle: TextStyle(color: Colors.grey)
+        hintStyle: TextStyle(color: Colors.grey),
       ),
+      inputFormatters: inputFormatters,
     );
   }
 }

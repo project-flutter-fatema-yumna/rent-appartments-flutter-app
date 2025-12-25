@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flats_app/MainLayout.dart';
 import 'package:flats_app/authentication_screens/waiting_for_acception.dart';
-import 'package:flats_app/models/register_data.dart';
+import 'package:flats_app/models/user_data.dart';
 import 'package:flats_app/models/snack_bar.dart';
+import 'package:flats_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/text_field_widget.dart';
 
 class CompleteProfileScreen extends StatefulWidget {
@@ -25,16 +28,35 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   String? _errorText;
   XFile? _profileImage;
   XFile? _idImage;
-  late RegisterData user;
-  bool _isLoaded = false;
+  late UserData user;
   bool _isLoading = false;
+
   @override
-  void didChangeDependencies() {
-    if (!_isLoaded) {
-      user = ModalRoute.of(context)!.settings.arguments as RegisterData;
-      _isLoaded = true;
-    }
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null) {
+        user = args as UserData;
+        _firstNameController.text = user.firstName;
+        _lastNameController.text = user.lastName;
+        _dateOfBirthController.text = user.dateOfBirth ?? '';
+        _profileImage = user.personalPhoto;
+        _idImage = user.identityPhoto;
+
+        setState(() {});
+      }
+    });
+
+    _firstNameController.addListener(() {
+      user.firstName = _firstNameController.text;
+    });
+    _lastNameController.addListener(() {
+      user.lastName = _lastNameController.text;
+    });
+    _dateOfBirthController.addListener(() {
+      user.dateOfBirth = _dateOfBirthController.text;
+    });
   }
 
   @override
@@ -53,8 +75,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       setState(() {
         if (isProfile) {
           _profileImage = image;
+          user.personalPhoto = image;
         } else {
           _idImage = image;
+          user.identityPhoto = image;
         }
       });
     }
@@ -105,12 +129,11 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   }
 
   Future<void> _pickDate() async {
-    print("DOB TEXT = '${_dateOfBirthController.text}'");
     DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: DateTime.now().subtract(const Duration(days: 1)),
       firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      lastDate: DateTime.now().subtract(const Duration(days: 1)),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
           colorScheme: ColorScheme.light(primary: Colors.blue),
@@ -121,22 +144,25 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     );
 
     if (pickedDate != null) {
+      final formatted =
+          "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
       setState(() {
-        _dateOfBirthController.text =
-            "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+        _dateOfBirthController.text = formatted;
       });
+      user.dateOfBirth = formatted;
     }
   }
 
   void _tryRegister() {
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
+    final dob = _dateOfBirthController.text;
     setState(() => _errorText = null);
     if (firstName.isEmpty || lastName.isEmpty) {
       setState(() => _errorText = 'Please enter your full name');
       return;
     }
-    if (_dateOfBirthController.text.isEmpty) {
+    if (dob.isEmpty) {
       setState(() => _errorText = 'Please select your date of birth');
       return;
     }
@@ -150,16 +176,13 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     }
     user.firstName = firstName;
     user.lastName = lastName;
-    // DateTime parsedDate = DateFormat(
-    //   'dd/MM/yyyy',
-    // ).parse(_dateOfBirthController.text);
-    // user.dateOfBirth = DateFormat('yyyy-MM-dd').format(parsedDate);
+    user.dateOfBirth = dob;
     user.personalPhoto = _profileImage;
     user.identityPhoto = _idImage;
     register(user);
   }
 
-  Future register(RegisterData user) async {
+  Future register(UserData user) async {
     try {
       setState(() {
         _isLoading = true;
@@ -174,11 +197,11 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       request.fields['password'] = user.password;
       request.fields['password_confirmation'] = user.passwordConfirmation;
       request.fields['role'] = user.role;
-      //request.fields['date_of_birth'] = user.dateOfBirth;
-
+      request.fields['date_of_birth'] = user.dateOfBirth!;
+      request.headers['Accept'] = 'application/json';
       request.files.add(
         await http.MultipartFile.fromPath(
-          'identityPhoto',
+          'idenitityPhoto',
           user.identityPhoto!.path,
         ),
       );
@@ -190,19 +213,37 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       );
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
+
       print(response.statusCode);
+      print(response.body);
+
       if (response.statusCode == 201) {
         var json = jsonDecode(response.body);
-        
+        user.id = json['user']['id'];
+        user.userName = json['user']['username'];
+        user.password = '';
+        user.passwordConfirmation = '';
+        user.status = 'pending';
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('phone', user.phone);
+        prefs.setBool('isRegistered', true);
+
+        if (!mounted) return;
+        context.read<UserProvider>().setUserData(user);
         Navigator.pushReplacementNamed(context, WaitingForAcception.id);
       } else if (response.statusCode == 422) {
+        if (!mounted) return;
+        Navigator.of(context).pop();
         mySnackBar(context, 'The phone has already been taken');
       } else {
+        if (!mounted) return;
         mySnackBar(context, 'Something went wrong');
       }
+      if (!mounted) return;
     } catch (e) {
-      print(e);
+      if (!mounted) return;
       mySnackBar(context, 'Something went wrong');
+      print('$e');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -211,6 +252,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(backgroundColor: Colors.blue[50], toolbarHeight: 30),
       backgroundColor: Colors.blue[50],
       body: Stack(
         children: [
@@ -303,7 +345,6 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       onTap: () => _pickDate(),
                     ),
                   ),
-
                   if (_errorText != null) ...[
                     const SizedBox(height: 12),
                     Padding(

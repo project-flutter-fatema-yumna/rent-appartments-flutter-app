@@ -1,11 +1,12 @@
-import 'package:flats_app/models/register_data.dart';
+import 'package:flats_app/models/user_data.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../widgets/text_field_widget.dart';
 import 'complete_profile_screen.dart';
 import 'login_screen.dart';
 
-String _currentState = 'Tenant';
+String _currentState = 'tenant';
 
 class RegisterScreen extends StatefulWidget {
   static String id = 'RegisterScreen';
@@ -21,7 +22,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  RegisterData user = RegisterData();
+  UserData user = UserData();
   String? _errorText;
   final bool _hidePassword = true;
 
@@ -56,7 +57,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
     final phoneDigits = phone.replaceAll(RegExp(r'[^0-9]'), '');
     if (phoneDigits.length < 10) {
-      setState(() => _errorText = 'Please enter a valid phone number');
+      setState(() => _errorText = 'Phone number must be exactly 10 digits');
       return;
     }
     if (!phoneDigits.startsWith('09')) {
@@ -74,6 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     user.phone = phone;
     user.password = password;
     user.passwordConfirmation = confirmPassword;
+    user.role = _currentState;
     Navigator.pushNamed(context, CompleteProfileScreen.id, arguments: user);
   }
 
@@ -125,6 +127,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hint: 'Phone number',
                       icon: Icons.phone,
                       keyboardType: TextInputType.phone,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(10),
+                      ],
                     ),
                   ),
                   Padding(
@@ -166,19 +172,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Row(
                       children: [
                         RegisterAs(
-                          role: 'Tenant',
+                          role: 'tenant',
                           onTap: () {
                             setState(() {
-                              _currentState = 'Tenant';
+                              _currentState = 'tenant';
                             });
                           },
                         ),
                         SizedBox(width: 10),
                         RegisterAs(
-                          role: 'Landlord',
+                          role: 'lessor',
                           onTap: () {
                             setState(() {
-                              _currentState = 'Landlord';
+                              _currentState = 'lessor';
                             });
                           },
                         ),
@@ -232,7 +238,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
 // ignore: must_be_immutable
 class RegisterAs extends StatelessWidget {
-  String role = 'Tenant';
+  String role = 'tenant';
   VoidCallback onTap;
   RegisterAs({required this.role, required this.onTap, super.key});
 
@@ -256,7 +262,7 @@ class RegisterAs extends StatelessWidget {
             child: Column(
               children: [
                 Icon(
-                  role == 'Tenant' ? Icons.person : Icons.house,
+                  role == 'tenant' ? Icons.person : Icons.house,
                   color: _currentState == role ? Colors.blue : Colors.grey,
                 ),
                 SizedBox(height: 6),

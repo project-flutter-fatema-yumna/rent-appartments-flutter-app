@@ -4,6 +4,7 @@ import 'package:flats_app/authentication_screens/register_screen.dart';
 import 'package:flats_app/models/snack_bar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../widgets/text_field_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -54,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     final phoneDigits = phone.replaceAll(RegExp(r'[^0-9]'), '');
     if (phoneDigits.length < 10) {
-      setState(() => _errorText = 'Please enter a valid phone number');
+      setState(() => _errorText = 'Phone number must be exactly 10 digits');
       return;
     }
     if (!phoneDigits.startsWith('09')) {
@@ -78,7 +79,6 @@ class _LoginScreenState extends State<LoginScreen> {
         headers: {"Content-Type": 'application/json'},
         body: jsonEncode({'phone': phone, 'password': password}),
       );
-      print(response.statusCode);
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         var token = json['token'];
@@ -147,6 +147,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       hint: 'Phone number',
                       icon: Icons.phone,
                       keyboardType: TextInputType.phone,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(10),
+                      ],
                     ),
                   ),
                   Padding(

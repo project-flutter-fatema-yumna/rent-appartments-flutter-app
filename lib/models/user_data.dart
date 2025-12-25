@@ -1,6 +1,6 @@
 import 'package:image_picker/image_picker.dart';
 
-class RegisterData {
+class UserData {
   String phone = '';
   String password = '';
   String passwordConfirmation = '';
@@ -10,4 +10,8 @@ class RegisterData {
   String role = '';
   XFile? identityPhoto;
   XFile? personalPhoto;
+  //البيانات الإضافية
+  int? id;
+  String userName = '';
+  String? status;
 }

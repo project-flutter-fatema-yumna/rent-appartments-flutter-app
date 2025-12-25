@@ -1,4 +1,3 @@
-import 'package:flats_app/Screens/searchScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'Screens/chatScreen.dart';
@@ -14,11 +13,10 @@ class MainlayoutScreen extends StatefulWidget {
 
 class _MainlayoutScreenState extends State<MainlayoutScreen> {
   int numberScreen = 0;
-  final List<Widget> Screens = [
+  final List<Widget> screens = [
     Homescreen(),
     FavoriteScreen(),
     ChatScreen(),
-    SearchScreen(),
     ProfileScreen(),
   ];
 
@@ -27,7 +25,7 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Screens[numberScreen],
+          screens[numberScreen],
           Positioned(
             bottom: 20,
             left: 15,
@@ -66,7 +64,7 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
                     GButton(icon: Icons.home, text: 'Home'),
                     GButton(icon: Icons.favorite, text: 'Favorite'),
                     GButton(icon: Icons.chat, text: 'Chat'),
-                    GButton(icon: Icons.search, text: 'Search'),
+                    GButton(icon: Icons.filter_alt_sharp, text: 'Filter'),
                     GButton(icon: Icons.person, text: 'profile'),
                   ],
                 ),

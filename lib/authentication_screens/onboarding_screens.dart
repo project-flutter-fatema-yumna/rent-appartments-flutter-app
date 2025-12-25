@@ -1,5 +1,6 @@
 import 'package:flats_app/authentication_screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 final PageController _controller = PageController();
@@ -136,7 +137,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             vertical: 14,
                           ),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
+                          SharedPreferences pref =
+                              await SharedPreferences.getInstance();
+                          pref.setBool('seen', true);
                           Navigator.pushReplacementNamed(
                             context,
                             LoginScreen.id,
@@ -160,7 +164,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  SharedPreferences pref =
+                      await SharedPreferences.getInstance();
+                  pref.setBool('seen', true);
                   Navigator.pushReplacementNamed(context, LoginScreen.id);
                 },
                 child: Text("Skip"),
