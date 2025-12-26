@@ -37,37 +37,37 @@ class _ShowScreenState extends State<ShowScreen> {
       setState(() {
         _selectedRange = result;
       });
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: Text('information'),
-              content: Text(
-                'Booking was selected from'
-                '${result.start.day}/${result.start.month}/${result.start.year} '
-                'to ${result.end.day}/${result.end.month}/${result.end.year}',
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('information'),
+            content: Text(
+              'Booking was selected from'
+              '${result.start.day}/${result.start.month}/${result.start.year} '
+              'to ${result.end.day}/${result.end.month}/${result.end.year}',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _openDatePicker();
+                },
+                child: Text('Edit'),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _openDatePicker();
-                  },
-                  child: Text('Edit'),
-                ),
-                TextButton(
-                  onPressed:(){
-                    Navigator.pop(context);
-                    _openBookingSheet(this.context);
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      }
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _openBookingSheet(this.context);
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
+  }
 
 ///////////////////////////////////////////////////////////////////////////
   void _openBookingSheet(BuildContext pageContext)async {
@@ -79,10 +79,10 @@ class _ShowScreenState extends State<ShowScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (_) =>  BankAccountBottomSheet(
-        token:"8|AGei4tZYe7LlDuWzJWwzzTiYRYn1Zp7RPbEx2BgKd30a0133" ,
+      builder: (_) => BankAccountBottomSheet(
+        token: "8|AGei4tZYe7LlDuWzJWwzzTiYRYn1Zp7RPbEx2BgKd30a0133",
         apartmentId: model_apartment.id,
-        range:range ,
+        range: range,
       ),
     );
     if (result == true && mounted) {
@@ -92,7 +92,7 @@ class _ShowScreenState extends State<ShowScreen> {
 
   @override
   Widget build(BuildContext context) {
-     model_apartment =
+    model_apartment =
         ModalRoute.of(context)!.settings.arguments as Model_Apartment;
     return Scaffold(
       backgroundColor: myColors.colorWhite,
@@ -112,7 +112,6 @@ class _ShowScreenState extends State<ShowScreen> {
                     },
                     itemCount: model_apartment.images.length,
                     itemBuilder: (context, index) {
-
                       final path = model_apartment.images[index].image.trim();
                       final url = 'http://10.0.2.2:8000/storage/$path';
                       return Image.network(
@@ -301,6 +300,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Icon(Icons.car_crash, color: Colors.blue),
+
                                   Text(
                                     '${model_apartment.parking_number} parking',
                                   ),
@@ -598,7 +598,7 @@ class _ShowScreenState extends State<ShowScreen> {
                               ),
                               child: Center(
                                 child: Text(
-                                  'Next',
+                                  'Reserve',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,

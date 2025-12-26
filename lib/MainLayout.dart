@@ -1,3 +1,4 @@
+
 import 'package:flats_app/Screens/Reservations.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -14,7 +15,7 @@ class MainlayoutScreen extends StatefulWidget {
 
 class _MainlayoutScreenState extends State<MainlayoutScreen> {
   int numberScreen = 0;
-  final List<Widget> Screens = [
+  final List<Widget> screens = [
     Homescreen(),
     ReservationsScreen(),
     FavoriteScreen(),
@@ -24,11 +25,10 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //int _selectedIndex=0;
     return Scaffold(
       body: Stack(
         children: [
-          Screens[numberScreen],
+          screens[numberScreen],
           Positioned(
             bottom: 20,
             left: 15,

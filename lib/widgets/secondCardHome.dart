@@ -18,6 +18,12 @@ class _Second_card_homeState extends State<Second_card_home> {
 
   @override
   Widget build(BuildContext context) {
+    final images = widget.model_apartment!.images;
+
+    final ImageProvider imageProvider = images.isNotEmpty
+        ? NetworkImage('http://10.0.2.2:8000/storage/${images.first.image}')
+        : const AssetImage('assets/no_image.jpg');
+
     return InkWell(
       onTap: (){
         Navigator.pushNamed(context, ShowScreen.id,arguments: widget.model_apartment);
@@ -41,9 +47,7 @@ class _Second_card_homeState extends State<Second_card_home> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     image: DecorationImage(
-                      image: NetworkImage(
-                        'http://10.0.2.2:8000/storage/${widget.model_apartment!.images[0].image}',
-                      ),
+                      image: imageProvider,
                       fit: BoxFit.cover,
                     ),
                   ),
