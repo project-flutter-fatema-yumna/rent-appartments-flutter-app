@@ -121,17 +121,30 @@ class _HomescreenState extends State<Homescreen> {
                     }
                     List<Model_Apartment> apartments = snapshot.data!;
                     //.where((apt)=>(apt.home_rate??0)>4).toList();
+
+                    final rated = apartments.where((apt) => (apt.home_rate ?? 0) >= 4.0).toList();
+
+                    if (rated.isEmpty) {
+                      return Center(
+                          child:Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.roofing_outlined,color: Colors.blue,size: 100,),
+                              Text('There are no apartments rated 5.0',style: TextStyle(color: Colors.blue),),
+
+                    ],
+                          ));
+                    }
                     return ListView.builder(
-                      itemCount: apartments.length,
+                      itemCount: rated.length,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
-                        if (index < 5) {
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: CardHome(model_apartment: apartments[index]),
                           );
                         }
-                        return Padding(
+                      /*  return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: Align(
                             alignment: Alignment.center,
@@ -153,8 +166,7 @@ class _HomescreenState extends State<Homescreen> {
                               ),
                             ),
                           ),
-                        );
-                      },
+                        );*/
                     );
                   },
                 ),

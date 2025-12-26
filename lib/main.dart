@@ -48,8 +48,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home :
       //Homepage()
-      MainlayoutScreen()
-      //SplashScreen()
+      //MainlayoutScreen()
+      SplashScreen()
     );
   }
 }
