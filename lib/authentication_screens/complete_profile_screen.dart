@@ -219,17 +219,31 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
 
       if (response.statusCode == 201) {
         var json = jsonDecode(response.body);
+
         user.id = json['user']['id'];
         user.userName = json['user']['username'];
         user.password = '';
         user.passwordConfirmation = '';
         user.status = 'pending';
+        
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('phone', user.phone);
         prefs.setBool('isRegistered', true);
 
+        prefs.setString('firstName', user.firstName);
+        prefs.setString('lastName', user.lastName);
+        prefs.setString('userName', user.userName);
+        prefs.setString('dob', user.dateOfBirth!);
+        prefs.setString('role', user.role);
+        
+        if (user.personalPhoto?.path != null) {
+          await prefs.setString('personalPhotoPath', user.personalPhoto!.path);
+        }
+        if (user.identityPhoto?.path != null) {
+          await prefs.setString('identityPhotoPath', user.identityPhoto!.path);
+        }
+
         if (!mounted) return;
-        context.read<UserProvider>().setUserData(user);
         Navigator.pushReplacementNamed(context, WaitingForAcception.id);
       } else if (response.statusCode == 422) {
         if (!mounted) return;

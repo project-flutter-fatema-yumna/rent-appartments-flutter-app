@@ -8,6 +8,7 @@ import 'package:flats_app/providers/user_provider.dart';
 import 'package:flats_app/widgets/cardHome.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../MyColors.dart';
 import '../widgets/secondCardHome.dart';
 
@@ -18,11 +19,28 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
-  late Future<List<Model_Apartment>> apartmentsFuture;
+  Future<List<Model_Apartment>>? apartmentsFuture;
+  
+  Future<String?> getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+
+  void fetchApartments() async {
+    String? token = await getToken();
+    if (token == null) {
+      return;
+    }
+    setState(() {
+      apartmentsFuture = get_apartment().getAllApartment(token: token);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    apartmentsFuture = get_apartment().getAllApartment();
+    context.read<UserProvider>().setUserFromPrefs();
+    fetchApartments();
   }
 
   Future<FilterCriteria?> openFilter(BuildContext context) {
@@ -35,7 +53,10 @@ class _HomescreenState extends State<Homescreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<UserProvider>().getUserData;
+    final user = context.watch<UserProvider>().user;
+    if (user == null) {
+      return CircularProgressIndicator();
+    }
     return Scaffold(
       backgroundColor: myColors.colorWhite,
       body: Padding(
@@ -46,17 +67,18 @@ class _HomescreenState extends State<Homescreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  //User info row
                   Row(
                     children: [
                       CircleAvatar(
-                        backgroundImage: FileImage(
-                          File(user.personalPhoto!.path),
-                        ),
                         radius: 25,
+                        backgroundImage: user.personalPhoto != null
+                            ? FileImage(File(user.personalPhoto!.path))
+                            : const AssetImage('assets/person2.jfif'),
                       ),
                       SizedBox(width: 15),
                       Text(
-                        user.userName,
+                        user?.userName ?? 'Guest',
                         style: TextStyle(color: Colors.black, fontSize: 20),
                       ),
                     ],
@@ -142,57 +164,64 @@ class _HomescreenState extends State<Homescreen> {
               ),
               SizedBox(
                 height: 300,
-                child: FutureBuilder<List<Model_Apartment>>(
-                  future: apartmentsFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    if (snapshot.hasError) {
-                      return Center(child: Text('Error'));
-                    }
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('No apartment'));
-                    }
-                    List<Model_Apartment> apartments = snapshot.data!;
-                    //.where((apt)=>(apt.home_rate??0)>4).toList();
-                    return ListView.builder(
-                      itemCount: apartments.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        if (index < 5) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: CardHome(model_apartment: apartments[index]),
-                          );
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: SizedBox(
-                              child: Container(
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(50),
+                child: apartmentsFuture == null
+                    ? const Center(child: CircularProgressIndicator())
+                    : FutureBuilder<List<Model_Apartment>>(
+                        future: apartmentsFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                          if (snapshot.hasError) {
+                            return Center(child: Text('Error'));
+                          }
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Center(child: Text('No apartment'));
+                          }
+                          List<Model_Apartment> apartments = snapshot.data!;
+                          //.where((apt)=>(apt.home_rate??0)>4).toList();
+                          return ListView.builder(
+                            itemCount: apartments.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              if (index < 5) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: CardHome(
+                                    model_apartment: apartments[index],
+                                  ),
+                                );
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
                                 ),
-                                child: IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.navigate_next,
-                                    color: Colors.black,
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: SizedBox(
+                                    child: Container(
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          Icons.navigate_next,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -200,7 +229,7 @@ class _HomescreenState extends State<Homescreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'The Flats',
+                      'Flats',
                       style: TextStyle(color: Colors.black, fontSize: 20),
                     ),
                     InkWell(
@@ -218,19 +247,27 @@ class _HomescreenState extends State<Homescreen> {
               FutureBuilder<List<Model_Apartment>>(
                 future: apartmentsFuture,
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    List<Model_Apartment> flats = snapshot.data!;
-                    return ListView.builder(
-                      itemCount: flats.length,
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return Second_card_home(model_apartment: flats[index]);
-                      },
-                    );
-                  } else {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
                   }
+
+                  if (snapshot.hasError) {
+                    return Center(child: Text('ERROR: ${snapshot.error}'));
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No apartment'));
+                  }
+
+                  final flats = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: flats.length,
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return Second_card_home(model_apartment: flats[index]);
+                    },
+                  );
                 },
               ),
               SizedBox(height: 20),

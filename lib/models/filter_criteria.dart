@@ -22,10 +22,10 @@ class FilterCriteria {
       'rooms_number': rooms,
       'number_of_bedrooms': bedrooms,
       'number_of_baths': baths,
-      'furnished': furnished,
+      'furnished': furnished == null ? null : (furnished! ? 1 : 0),
       'home_space': space,
       'rent': rent,
-      'rate': rate,
+      'home_rate': rate,
     };
 
     data.removeWhere((key, value) => value == null || value == -1);

@@ -72,6 +72,7 @@ class _WaitingForAcceptionState extends State<WaitingForAcception> {
       String token = await createToken(phone);
       await prefs.setString('token', token);
       prefs.setBool('isLoggedIn', true);
+      prefs.setBool('isRegistered', false);
       _loggingIn = false;
       Navigator.pushReplacementNamed(context, MainlayoutScreen.id);
     } catch (e) {
@@ -79,6 +80,12 @@ class _WaitingForAcceptionState extends State<WaitingForAcception> {
         _loggingIn = false;
       });
     }
+  }
+
+  void _rejected() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isRegistered', false);
+    Navigator.pushReplacementNamed(context, LoginScreen.id);
   }
 
   @override
@@ -155,10 +162,7 @@ class _WaitingForAcceptionState extends State<WaitingForAcception> {
                         : _status != 'pending'
                         ? MaterialButton(
                             onPressed: () {
-                              Navigator.pushReplacementNamed(
-                                context,
-                                LoginScreen.id,
-                              );
+                              _rejected();
                             },
                             color: Colors.red,
                             padding: EdgeInsets.symmetric(

@@ -85,7 +85,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
-        
+        prefs.setBool('isLoggedIn', true);
+
         Navigator.pushReplacementNamed(context, MainlayoutScreen.id);
       } else if (response.statusCode == 401) {
         mySnackBar(context, 'Wrong password or phone number');

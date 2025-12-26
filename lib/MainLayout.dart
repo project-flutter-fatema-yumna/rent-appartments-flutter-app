@@ -1,3 +1,5 @@
+
+import 'package:flats_app/Screens/Reservations.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'Screens/chatScreen.dart';
@@ -15,6 +17,7 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
   int numberScreen = 0;
   final List<Widget> screens = [
     Homescreen(),
+    ReservationsScreen(),
     FavoriteScreen(),
     ChatScreen(),
     ProfileScreen(),
@@ -53,6 +56,7 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
                   gap: 8,
                   selectedIndex: numberScreen,
                   onTabChange: (index) {
+                    print('the index is :$index');
                     if (index == numberScreen) {
                       return;
                     }
@@ -62,9 +66,9 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
                   },
                   tabs: [
                     GButton(icon: Icons.home, text: 'Home'),
+                    GButton(icon: Icons.list_alt, text: 'Reservations'),
                     GButton(icon: Icons.favorite, text: 'Favorite'),
                     GButton(icon: Icons.chat, text: 'Chat'),
-                    GButton(icon: Icons.filter_alt_sharp, text: 'Filter'),
                     GButton(icon: Icons.person, text: 'profile'),
                   ],
                 ),

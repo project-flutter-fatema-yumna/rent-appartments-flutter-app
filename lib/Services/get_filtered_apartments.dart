@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:flats_app/models/filter_criteria.dart';
 import 'package:flats_app/models/model_apartment.dart';
-import 'package:flats_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<List<Model_Apartment>> getFilteredApartments(
   FilterCriteria filters,
@@ -16,12 +15,14 @@ Future<List<Model_Apartment>> getFilteredApartments(
         (key, value) => MapEntry(key, value.toString()),
       ),
     );
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
     final response = await http.get(
       uri,
       headers: {
         'Accept': 'application/json',
-        'Authorization': 'Bearer ${context.read<UserProvider>().token?? 'test_token'}',
+        'Authorization':
+            'Bearer $token',
       },
     );
 
@@ -31,6 +32,7 @@ Future<List<Model_Apartment>> getFilteredApartments(
       return apartmentsJson.map((e) => Model_Apartment.fromJson(e)).toList();
     } else {
       print(response.statusCode);
+      print(response.body);
       throw Exception('Failed to load apartments');
     }
   } catch (e) {

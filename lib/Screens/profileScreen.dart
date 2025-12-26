@@ -19,7 +19,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<UserProvider>().getUserData;
+    final user = context.watch<UserProvider>().user;
     return Scaffold(
       backgroundColor: Colors.blue[50],
       appBar: AppBar(
@@ -42,7 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   child: CircleAvatar(
                     radius: 85,
-                    backgroundImage: user.personalPhoto != null
+                    backgroundImage: user!.personalPhoto != null
                         ? FileImage(File(user.personalPhoto!.path))
                         : AssetImage('assets/img_2.png'),
                   ),

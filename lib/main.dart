@@ -7,10 +7,13 @@ import 'package:flats_app/Screens/profileScreen.dart';
 import 'package:flats_app/Screens/showScreen.dart';
 import 'package:flats_app/authentication_screens/onboarding_screens.dart';
 import 'package:flats_app/authentication_screens/waiting_for_acception.dart';
+import 'package:flats_app/lessor/ListApartmentScreen.dart';
+import 'package:flats_app/lessor/homePage.dart';
 import 'package:flats_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Screens/Reservations.dart';
 import 'Screens/seeAllScreen.dart';
 import 'authentication_screens/complete_profile_screen.dart';
 import 'authentication_screens/login_screen.dart';
@@ -56,6 +59,7 @@ class MyApp extends StatelessWidget {
 
       routes: {
         ShowScreen.id: (context) => ShowScreen(),
+
         Homescreen.id: (context) => Homescreen(),
         See_all_screen.id: (context) => See_all_screen(),
         FavoriteScreen.id: (context) => FavoriteScreen(),
@@ -69,6 +73,11 @@ class MyApp extends StatelessWidget {
         OnboardingScreen.id: (context) => OnboardingScreen(),
         WaitingForAcception.id: (context) => WaitingForAcception(),
         FilteredApartmentsScreen.id: (context) => FilteredApartmentsScreen(),
+        Homepage.id: (context) => Homepage(),
+        List_Apatment.id: (context) => List_Apatment(),
+        ReservationsScreen.id: (context) => ReservationsScreen(),
+        List_Apatment.id: (context) => List_Apatment(),
+        //  ApartmentDetailsSheet.id:(context)=>ApartmentDetailsSheet(),
       },
 
       home: FutureBuilder<Widget>(
@@ -86,7 +95,7 @@ class MyApp extends StatelessWidget {
           }
           return snapshot.data!;
         },
-      ),
+      )
     );
   }
 }
