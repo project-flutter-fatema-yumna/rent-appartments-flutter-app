@@ -1,5 +1,5 @@
-import '../API/api.dart';
-import '../models/model_apartment.dart';
+import '../../API/api.dart';
+import '../../models/model_apartment.dart';
 
 class get_all_apartment_for_lessor {
   Future<List<Model_Apartment>> getApatment_Lessor({required String token}) async {

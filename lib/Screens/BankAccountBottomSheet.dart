@@ -21,6 +21,16 @@ class _BankAccountBottomSheetState extends State<BankAccountBottomSheet> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController _bankController = TextEditingController();
   bool _loading = false;
+  String? _serverError;
+
+
+  //statusCode
+  int? extractStatusCode(Object e) {
+    final text = e.toString();
+    final match = RegExp(r'Error\s+(\d{3})').firstMatch(text);
+    if (match == null) return null;
+    return int.tryParse(match.group(1)!);
+  }
 
   bool get _isValidBank {
     final text = _bankController.text.trim();
@@ -39,7 +49,7 @@ class _BankAccountBottomSheetState extends State<BankAccountBottomSheet> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
+  /*Future<void> _submit() async {
     if (!formKey.currentState!.validate()) return;
 
     setState(() => _loading = true);
@@ -51,7 +61,7 @@ class _BankAccountBottomSheetState extends State<BankAccountBottomSheet> {
         "account_number": _bankController.text.trim(),
       };
 
-      final Reserve = reserveService().reserveApatment(
+      final Reserve = await reserveService().reserveApatment(
         token: widget.token,
         data: data,
       );
@@ -69,13 +79,81 @@ class _BankAccountBottomSheetState extends State<BankAccountBottomSheet> {
       );
     } catch (e) {
       if (!mounted) return;
+
+      final code = extractStatusCode(e);
+
+      String message;
+      if (code == 422) {
+        message = 'رقم الحساب غير صحيح، تأكدي من الرقم';
+      } else if (code == 401) {
+        message = 'انتهت صلاحية الجلسة، سجّلي دخول من جديد';
+      } else {
+        message = 'حدث خطأ غير متوقع، حاولي مرة ثانية';
+      }
+
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ).showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }*/
+  Future<void> _submit() async {
+    if (!formKey.currentState!.validate()) return;
+
+    setState(() {
+      _loading = true;
+      _serverError = null;
+    });
+
+    try {
+      final data = {
+        "apartment_id": widget.apartmentId,
+        "start_date": formatDate(widget.range.start),
+        "end_date": formatDate(widget.range.end),
+        "account_number": _bankController.text.trim(),
+      };
+
+      final reserve = await reserveService().reserveApatment(
+        token: widget.token,
+        data: data,
+      );
+
+      print("RESERVE RESPONSE: $reserve");
+
+      if (!mounted) return;
+      Navigator.pop(context,true);
+
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        builder: (_) => const FinallyPage(),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      final code = extractStatusCode(e);
+
+      setState(() {
+        _loading = false;
+        if (code == 422) {
+          _serverError = 'رقم الحساب غير صحيح، تأكدي من الرقم';
+        } else if (code == 401) {
+          _serverError = 'انتهت صلاحية الجلسة، سجّلي دخول من جديد';
+        } else {
+          _serverError = 'حدث خطأ غير متوقع، حاولي مرة ثانية';
+        }
+      });
+
+      return;
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -147,13 +225,28 @@ class _BankAccountBottomSheetState extends State<BankAccountBottomSheet> {
                   onFieldSubmitted: (_) => _submit(),
                 ),
               ),
+              if (_serverError != null) ...[
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    _serverError!,
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+
 
               const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: _loading ? null : _submit,
+                  onPressed: (_loading || !_isValidBank) ? null : _submit,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: (_loading || !_isValidBank)
                         ? Colors.grey

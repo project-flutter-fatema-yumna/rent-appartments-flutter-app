@@ -55,24 +55,31 @@ class _Second_card_homeState extends State<Second_card_home> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Pelican Hill',
-                      style: TextStyle(color: Colors.black, fontSize: 20),
-                    ),
-                    Text(
-                      r'$ 842.00',
-                      style: TextStyle(color: Colors.blue, fontSize: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        widget.model_apartment!.governorate,
+                        style: TextStyle(color: Colors.black, fontSize: 18),
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Icon(Icons.location_on, color: Colors.blueGrey),
                         Text(
-                         '${widget.model_apartment!.governorate} ',
+                          '${widget.model_apartment!.city} ',
                           style: TextStyle(color: Colors.blueGrey, fontSize: 15),
                         ),
                       ],
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        r'$ ' '${widget.model_apartment!.rent}  -  ${widget.model_apartment!.rent_type}',
+                        style: TextStyle(color: Colors.blue, fontSize: 18),
+                      ),
+                    ),
+
                   ],
                 ),
               ),

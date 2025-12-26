@@ -31,8 +31,8 @@ class ApartmentCardUI extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(14),
                 child: Container(
-                  width: 92,
-                  height: 92,
+                  width: 100,
+                  height: 100,
                   color: Colors.blue.shade50,
                   child: Icon(Icons.home_rounded, color: Colors.blue.shade700, size: 34),
                 ),

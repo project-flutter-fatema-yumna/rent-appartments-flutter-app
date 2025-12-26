@@ -4,7 +4,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../Services/add_Apartment.dart';
+import '../Services/Lessor_Services/add_Apartment.dart';
 import 'ListApartmentScreen.dart';
 
 class addApartmentScreen extends StatefulWidget {
@@ -19,7 +19,6 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
  final city=TextEditingController();
  final homeSpace=TextEditingController();
  final rent=TextEditingController();
- final cardNumber=TextEditingController();
  int? numberFloor,
       numberBaths,
       numberRoom,
@@ -102,7 +101,6 @@ List<XFile> photos=[];
      "home_space": homeSpace.text.trim(),
      "rent": rent.text.trim(),
      ///
-     "card_number":cardNumber.text.trim(),
 
      "floor_number": numberFloor.toString(),
      "balcony_number": numberBalcony.toString(),
@@ -149,7 +147,6 @@ List<XFile> photos=[];
    city.clear();
    homeSpace.clear();
    rent.clear();
-   cardNumber.clear();
 
    numberFloor=null;
    numberBaths=null;
@@ -176,7 +173,6 @@ List<XFile> photos=[];
   city.dispose();
   rent.dispose();
   homeSpace.dispose();
-  cardNumber.dispose();
   super.dispose();
  }
 
@@ -714,43 +710,6 @@ List<XFile> photos=[];
                   ),
                 ],
               ),
-              SizedBox(height: 15),
-              ////////////////////////////////bank card
-              TextFormField(
-                controller: cardNumber,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.add_card_outlined),
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelText:'Bank Number',
-                  hint:Text('0000-0000-0000'),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                  // labelText: 'City',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bank number is required';
-                  }
-                  final space = double.tryParse(value);
-                  if (space == null || space <= 0) {
-                    return 'Enter a valid number';
-                  }
-                  return null;
-                },
-
-              ),
               SizedBox(height: 30),
               Align(
                 alignment: Alignment.centerLeft,
@@ -859,8 +818,6 @@ List<XFile> photos=[];
                 ),
               ),
               SizedBox(height: 30,)
-
-
             ],
           ),
         ),

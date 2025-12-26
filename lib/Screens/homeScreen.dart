@@ -170,7 +170,7 @@ class _HomescreenState extends State<Homescreen> {
                       ),
                       InkWell(
                         onTap: () {
-                          Navigator.pushNamed(context, See_all_screen.id);
+                          Navigator.pushNamed(context, See_all_screen.id,);
                         },
                         child: Text(
                           'See All',

@@ -9,6 +9,7 @@ import 'BankAccountBottomSheet.dart';
 
 class ShowScreen extends StatefulWidget {
   static String id = 'ShowScreen';
+
   @override
   State<ShowScreen> createState() => _ShowScreenState();
 }
@@ -16,13 +17,9 @@ class ShowScreen extends StatefulWidget {
 class _ShowScreenState extends State<ShowScreen> {
   bool isFavorite = false;
   int numberImage = 0;
+  bool _reserved = false;
+
   late Model_Apartment model_apartment;
-  /* List<String> ListImages = [
-    'assets/img.png',
-    'assets/img_1.png',
-    'assets/img_2.png',
-    'assets/img_3.png',
-  ];*/
   DateTimeRange? _selectedRange;
 
   Future<void> _openDatePicker() async {
@@ -73,10 +70,10 @@ class _ShowScreenState extends State<ShowScreen> {
     }
 
 ///////////////////////////////////////////////////////////////////////////
-  void _openBookingSheet(BuildContext pageContext) {
+  void _openBookingSheet(BuildContext pageContext)async {
     if (_selectedRange == null) return;
     final range = _selectedRange!;
-    showModalBottomSheet(
+    final result =await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -88,6 +85,9 @@ class _ShowScreenState extends State<ShowScreen> {
         range:range ,
       ),
     );
+    if (result == true && mounted) {
+      setState(() => _reserved = true);
+    }
   }
 
   @override
@@ -588,12 +588,12 @@ class _ShowScreenState extends State<ShowScreen> {
                             ],
                           ),
                           InkWell(
-                            onTap: _openDatePicker,
+                            onTap: _reserved ? null : _openDatePicker,
                             child: Container(
                               height: 50,
                               width: 200,
                               decoration: BoxDecoration(
-                                color: Colors.blue,
+                                color: _reserved ? Colors.grey : Colors.blue,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Center(

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+
 class api{
   Future<dynamic> get({required String url,String? token}) async{
     http.Response response =await http.get(Uri.parse(url),headers: {
@@ -39,9 +40,9 @@ class api{
       body: jsonEncode(body),
     );
 
-  //  print("URL: $url");
-   // print("STATUS: ${response.statusCode}");
-    //print("BODY: ${response.body}");
+    print("URL: $url");
+      print("STATUS: ${response.statusCode}");
+    print("BODY: ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
@@ -100,9 +101,52 @@ class api{
     print("BODY: ${response.body}");
 
     if(response.statusCode==200 || response.statusCode==201){
-      response.body.isEmpty?{}: jsonDecode(response.body);
+     return  response.body.isEmpty?{}: jsonDecode(response.body);
     }else{
       throw Exception("Error ${response.statusCode}");
     }
   }
+
+
+  ///Del
+  Future<dynamic> delete({required String url,String? token})async{
+    final headers={
+      "Accept":'application/json',
+      if(token!=null) 'Authorization': 'Bearer $token',
+    };
+    final response =await http.delete(Uri.parse(url),headers: headers);
+
+    print("DELETE status: ${response.statusCode}");
+    print("DELETE body: ${response.body}");
+    if(response.statusCode==200 || response.statusCode==201){
+      if(response.body.isEmpty)
+        return null;
+      try{
+        return jsonDecode(response.body);
+      }catch(_){
+        return response.body;
+      }
+    }else{
+      throw Exception("Error ${response.statusCode}");
+    }
+  }
+  ////put
+  Future<dynamic> put({required String url ,String? token})async
+  {
+    final headers={
+      "Accept":'application/json',
+      if(token!=null) 'Authorization': 'Bearer $token',
+    };
+    final response =await http.put(Uri.parse(url),headers: headers);
+    print("PUT status: ${response.statusCode}");
+    print("PUT body: ${response.body}");
+    if(response.statusCode==200 || response.statusCode==201){
+      return jsonDecode(response.body);
+    }
+    else{
+      throw Exception("Error ${response.statusCode}");
+    }
+  }
+
+  
 }

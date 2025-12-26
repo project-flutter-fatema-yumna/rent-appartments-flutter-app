@@ -1,9 +1,8 @@
-import 'package:flats_app/Services/accept_reservation_service.dart';
-import 'package:flats_app/Services/reject_reservation_service.dart';
+import 'package:flats_app/Services/Lessor_Services/accept_reservation_service.dart';
+import 'package:flats_app/Services/Lessor_Services/reject_reservation_service.dart';
 import 'package:flats_app/models/model_order.dart';
 import 'package:flutter/material.dart';
-
-import '../Services/GetAllOrderServices.dart';
+import '../Services/Lessor_Services/GetAllOrderServices.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -101,7 +100,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   }
 
                   return ListView.separated(
-                    itemCount: allOrders.length,
+                    itemCount: filteredOrders.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 18),
                     itemBuilder: (context, index) {
                       return OrderCard(

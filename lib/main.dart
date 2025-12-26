@@ -4,20 +4,17 @@ import 'package:flats_app/Screens/favoriteScreen.dart';
 import 'package:flats_app/Screens/homeScreen.dart';
 import 'package:flats_app/Screens/profileScreen.dart';
 import 'package:flats_app/Screens/showScreen.dart';
-import 'package:flats_app/widgets/cardHome.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'Rented/ListApartmentScreen.dart';
-import 'Rented/apartmentDetails.dart';
-import 'Rented/homePage.dart';
-import 'Screens/BankAccountBottomSheet.dart';
 import 'Screens/Reservations.dart';
 import 'Screens/seeAllScreen.dart';
 import 'authentication_screens/complete_profile_screen.dart';
 import 'authentication_screens/login_screen.dart';
 import 'authentication_screens/register_screen.dart';
 import 'authentication_screens/splash_screen.dart';
+import 'lessor/EditeApartment_lessor.dart';
+import 'lessor/ListApartmentScreen.dart';
+import 'lessor/homePage.dart';
 
 void main() {
   runApp(MyApp());
@@ -46,12 +43,12 @@ class MyApp extends StatelessWidget {
         List_Apatment.id:(context)=>List_Apatment(),
         ReservationsScreen.id:(context)=>ReservationsScreen(),
         List_Apatment.id:(context)=>List_Apatment(),
-      //  ApartmentDetailsSheet.id:(context)=>ApartmentDetailsSheet(),
+        EditeapartmentLessor.id:(context)=>EditeapartmentLessor(),
     },
       debugShowCheckedModeBanner: false,
       home :
-      Homepage()
-    // MainlayoutScreen()
+      //Homepage()
+      MainlayoutScreen()
       //SplashScreen()
     );
   }
