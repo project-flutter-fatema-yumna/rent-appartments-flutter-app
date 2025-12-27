@@ -18,19 +18,49 @@ import 'authentication_screens/complete_profile_screen.dart';
 import 'authentication_screens/login_screen.dart';
 import 'authentication_screens/register_screen.dart';
 import 'authentication_screens/splash_screen.dart';
-import 'lessor/EditeApartment_lessor.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isDarkMode = prefs.getBool('isDarkMode') ?? false;
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => UserProvider())],
-      child: MyApp(),
+      child: MyApp(isDarkMode: isDarkMode),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  final bool isDarkMode;
+
+  const MyApp({super.key, required this.isDarkMode});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late ThemeMode _themeMode;
+
+  @override
+  void initState() {
+    super.initState();
+    _themeMode = widget.isDarkMode ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  void toggleTheme() async {
+    setState(() {
+      _themeMode = _themeMode == ThemeMode.light
+          ? ThemeMode.dark
+          : ThemeMode.light;
+    });
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isDarkMode', _themeMode == ThemeMode.dark);
+  }
+
   Future<Widget> decisionScreen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool? isRegistered = prefs.getBool('isRegistered');
@@ -40,6 +70,7 @@ class MyApp extends StatelessWidget {
       return SplashScreen();
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -52,16 +83,18 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         primarySwatch: Colors.blue,
       ),
-      themeMode: ThemeMode.system,
+      themeMode: _themeMode,
 
       routes: {
         ShowScreen.id: (context) => ShowScreen(),
+
         Homescreen.id: (context) => Homescreen(),
         See_all_screen.id: (context) => See_all_screen(),
         FavoriteScreen.id: (context) => FavoriteScreen(),
         ChatScreen.id: (context) => ChatScreen(),
-        ProfileScreen.id: (context) => ProfileScreen(),
-        MainlayoutScreen.id: (context) => MainlayoutScreen(),
+        ProfileScreen.id: (context) => ProfileScreen(toggleTheme: null),
+        MainlayoutScreen.id: (context) =>
+            MainlayoutScreen(toggleTheme: toggleTheme),
         CompleteProfileScreen.id: (context) => CompleteProfileScreen(),
         LoginScreen.id: (context) => LoginScreen(),
         RegisterScreen.id: (context) => RegisterScreen(),
@@ -72,9 +105,9 @@ class MyApp extends StatelessWidget {
         Homepage.id: (context) => Homepage(),
         List_Apatment.id: (context) => List_Apatment(),
         ReservationsScreen.id: (context) => ReservationsScreen(),
-        EditeapartmentLessor.id:(context)=>EditeapartmentLessor(),
-
-  },
+        List_Apatment.id: (context) => List_Apatment(),
+        //  ApartmentDetailsSheet.id:(context)=>ApartmentDetailsSheet(),
+      },
 
       home: FutureBuilder<Widget>(
         future: decisionScreen(),

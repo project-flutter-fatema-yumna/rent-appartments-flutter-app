@@ -226,7 +226,7 @@ class OrderCard extends StatelessWidget {
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
-                                modal_order.user.username,
+                                modal_order.user?.username??'Guest',
                                 style: TextStyle(color: Colors.grey.shade700),
                               ),
                             ),

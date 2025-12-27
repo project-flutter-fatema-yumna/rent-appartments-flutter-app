@@ -225,7 +225,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
         user.password = '';
         user.passwordConfirmation = '';
         user.status = 'pending';
-        
+
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('phone', user.phone);
         prefs.setBool('isRegistered', true);
@@ -235,7 +235,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
         prefs.setString('userName', user.userName);
         prefs.setString('dob', user.dateOfBirth!);
         prefs.setString('role', user.role);
-        
+
         if (user.personalPhoto?.path != null) {
           await prefs.setString('personalPhotoPath', user.personalPhoto!.path);
         }
@@ -252,12 +252,13 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       } else {
         if (!mounted) return;
         mySnackBar(context, 'Something went wrong');
+        print(response.statusCode);
       }
       if (!mounted) return;
     } catch (e) {
       if (!mounted) return;
       mySnackBar(context, 'Something went wrong');
-      print('$e');
+      print(e);
     } finally {
       setState(() => _isLoading = false);
     }
