@@ -9,21 +9,31 @@ import 'Screens/profileScreen.dart';
 
 class MainlayoutScreen extends StatefulWidget {
   static String id ='MainlayoutScreen';
+  final VoidCallback toggleTheme;
+
+  const MainlayoutScreen({super.key, required this.toggleTheme});
+
   @override
   State<MainlayoutScreen> createState() => _MainlayoutScreenState();
 }
 
 class _MainlayoutScreenState extends State<MainlayoutScreen> {
   int numberScreen = 0;
-  final List<Widget> screens = [
-    Homescreen(),
-    ReservationsScreen(),
-    FavoriteScreen(),
-    ChatScreen(),
-    ProfileScreen(),
-  ];
+  late final List<Widget> screens;
 
   @override
+  void initState() {
+    super.initState();
+    screens = [
+      Homescreen(),
+      ReservationsScreen(),
+      FavoriteScreen(),
+      ChatScreen(),
+      ProfileScreen(toggleTheme: widget.toggleTheme),
+    ];
+  }
+
+  @override 
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(

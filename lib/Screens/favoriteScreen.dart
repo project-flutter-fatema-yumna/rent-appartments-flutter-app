@@ -19,12 +19,6 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         elevation: 5,
         centerTitle: true,
         backgroundColor: Colors.blue,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.search, color: Colors.white),
-          ),
-        ],
         iconTheme: IconThemeData(color: Colors.white),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),

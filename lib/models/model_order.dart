@@ -14,7 +14,7 @@ class Modal_Order {
   final DateTime updatedAt;
 
   final Model_Apartment apartment;
-  final ReservationUser user;
+  final ReservationUser? user;
   Modal_Order({
     required this.id,
     required this.userId,
@@ -44,9 +44,11 @@ class Modal_Order {
       acceptedAt: _parseNullableDate(json['accepted_at']),
       createdAt: DateTime.parse(json['created_at'].toString()),
       updatedAt: DateTime.parse(json['updated_at'].toString()),
-
+      
       apartment: Model_Apartment.fromJson(json['apartment']),
-      user: ReservationUser.fromJson(json['user']),
+      user: json.containsKey('user') && json['user'] != null
+          ? ReservationUser.fromJson(json['user'])
+          : null,
     );
   }
 
