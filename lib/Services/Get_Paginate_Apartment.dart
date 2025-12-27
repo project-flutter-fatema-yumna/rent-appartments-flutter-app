@@ -14,6 +14,4 @@ class get_apartment {
     List<Model_Apartment> apartmentList=data.map((item)=>Model_Apartment.fromJson(item)).toList();
     return apartmentList;
   }
-
-
 }

@@ -16,7 +16,7 @@ class Model_Apartment {
   final String phone;
   final String? rent_type;
   final List<ApartmentImage> images;
-
+  
   Model_Apartment({
     required this.id,
     required this.governorate,
