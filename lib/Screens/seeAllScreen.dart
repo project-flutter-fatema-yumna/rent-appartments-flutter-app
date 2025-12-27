@@ -1,5 +1,6 @@
 import 'package:flats_app/MyColors.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Services/Get_Paginate_Apartment.dart';
 import '../models/model_apartment.dart';
@@ -17,11 +18,21 @@ class See_all_screen extends StatefulWidget {
 class _See_all_screenState extends State<See_all_screen> {
   late Future<List<Model_Apartment>> apartmentsFuture;
 
+  Future<String?> getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+
   @override
   void initState() {
     super.initState();
-    apartmentsFuture = get_apartment().getAllApartment(token:'8|AGei4tZYe7LlDuWzJWwzzTiYRYn1Zp7RPbEx2BgKd30a0133');
 
+    apartmentsFuture = getToken().then((token) {
+      if (token == null || token.isEmpty) {
+        throw Exception('Token not found. Please login again.');
+      }
+      return get_apartment().getAllApartment(token: token);
+    });
   }
 
   @override
@@ -74,7 +85,7 @@ class _See_all_screenState extends State<See_all_screen> {
                         return CardSeeAll(model_apartment: flats[index],);
                       },
                     ),
-                    Center(
+                   /* Center(
                       child: Container(
                         width: 50,
                         height: 50,
@@ -98,7 +109,7 @@ class _See_all_screenState extends State<See_all_screen> {
                           ),
                         ),
                       ),
-                    ),
+                    ),*/
                     const SizedBox(height: 40),
                   ],
                 ),

@@ -72,7 +72,6 @@ class MyApp extends StatelessWidget {
         Homepage.id: (context) => Homepage(),
         List_Apatment.id: (context) => List_Apatment(),
         ReservationsScreen.id: (context) => ReservationsScreen(),
-        List_Apatment.id: (context) => List_Apatment(),
         EditeapartmentLessor.id:(context)=>EditeapartmentLessor(),
 
   },

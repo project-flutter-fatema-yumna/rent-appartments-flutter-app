@@ -33,6 +33,7 @@ class _HomescreenState extends State<Homescreen> {
     }
     setState(() {
       apartmentsFuture = get_apartment().getAllApartment(token: token);
+      print("token: $token");
     });
   }
 
@@ -84,72 +85,7 @@ class _HomescreenState extends State<Homescreen> {
                     ],
                   ),],
                 ),
-                SizedBox(
-                  height: 300,
-                  child: FutureBuilder<List<Model_Apartment>>(
-                  future: apartmentsFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    if (snapshot.hasError) {
-                      return Center(child: Text('Error'));
-                    }
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('No apartment'));
-                    }
-                    List<Model_Apartment> apartments = snapshot.data!;
-                    //.where((apt)=>(apt.home_rate??0)>4).toList();
 
-                    final rated = apartments.where((apt) => (apt.home_rate ?? 0) >= 4.0).toList();
-
-                    if (rated.isEmpty) {
-                      return Center(
-                          child:Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.roofing_outlined,color: Colors.blue,size: 100,),
-                              Text('There are no apartments rated 5.0',style: TextStyle(color: Colors.blue),),
-
-                    ],
-                          ));
-                    }
-                    return ListView.builder(
-                      itemCount: rated.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: CardHome(model_apartment: apartments[index]),
-                          );
-                        }
-                      /*  return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: SizedBox(
-                              child: Container(
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.navigate_next,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        );*/
-                    );
-                  },
-                ),
-                ),
               SizedBox(height: 30),
               Align(
                 alignment: Alignment.centerLeft,
@@ -219,64 +155,69 @@ class _HomescreenState extends State<Homescreen> {
               ),
               SizedBox(
                 height: 300,
-                child: apartmentsFuture == null
-                    ? const Center(child: CircularProgressIndicator())
-                    : FutureBuilder<List<Model_Apartment>>(
-                        future: apartmentsFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
-                          }
-                          if (snapshot.hasError) {
-                            return Center(child: Text('Error'));
-                          }
-                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Center(child: Text('No apartment'));
-                          }
-                          List<Model_Apartment> apartments = snapshot.data!;
-                          //.where((apt)=>(apt.home_rate??0)>4).toList();
-                          return ListView.builder(
-                            itemCount: apartments.length,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              if (index < 5) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 10),
-                                  child: CardHome(
-                                    model_apartment: apartments[index],
-                                  ),
-                                );
-                              }
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                ),
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: SizedBox(
-                                    child: Container(
-                                      width: 50,
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(50),
-                                      ),
-                                      child: IconButton(
-                                        onPressed: () {},
-                                        icon: Icon(
-                                          Icons.navigate_next,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
+                child: FutureBuilder<List<Model_Apartment>>(
+                  future: apartmentsFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error'));
+                    }
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('No apartment'));
+                    }
+                    List<Model_Apartment> apartments = snapshot.data!;
+                    //.where((apt)=>(apt.home_rate??0)>4).toList();
+
+                    final rated = apartments.where((apt) => (apt.home_rate ?? 0) >= 4.0).toList();
+
+                    if (rated.isEmpty) {
+                      return Center(
+                          child:Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.roofing_outlined,color: Colors.blue,size: 100,),
+                              Text('There are no apartments rated 5.0',style: TextStyle(color: Colors.blue),),
+
+                            ],
+                          ));
+                    }
+                    return ListView.builder(
+                        itemCount: rated.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: CardHome(model_apartment: apartments[index]),
                           );
-                        },
-                      ),
+                        }
+                      /*  return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: SizedBox(
+                              child: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.navigate_next,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );*/
+                    );
+                  },
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),

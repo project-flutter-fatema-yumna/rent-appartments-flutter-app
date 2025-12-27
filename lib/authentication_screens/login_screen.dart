@@ -86,6 +86,8 @@ class _LoginScreenState extends State<LoginScreen> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
         prefs.setBool('isLoggedIn', true);
+        print("TOKEN => $token");
+
 
         Navigator.pushReplacementNamed(context, MainlayoutScreen.id);
       } else if (response.statusCode == 401) {

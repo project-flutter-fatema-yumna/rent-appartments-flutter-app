@@ -54,6 +54,65 @@ class api{
       );
     }
   }
+///post for reserve apartment
+  Future<dynamic> postFormData({
+    required String url,
+    required Map<String, String> body,
+    String? token,
+  }) async {
+    final request = http.MultipartRequest('POST', Uri.parse(url));
+
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+    print("TOKEN => $token");
+
+
+    request.headers['Accept'] = 'application/json';
+
+    request.fields.addAll(body);
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    print("URL: $url");
+    print("STATUS: ${response.statusCode}");
+    print("BODY: ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      dynamic decoded;
+      try {
+        decoded = jsonDecode(response.body);
+      } catch (_) {
+        decoded = null;
+      }
+
+      String msg = 'Request failed';
+
+      if (decoded is Map) {
+        if (decoded['message'] != null) msg = decoded['message'].toString();
+
+        if (decoded['errors'] is Map) {
+          final errors = decoded['errors'] as Map;
+          if (errors.isNotEmpty) {
+            final firstKey = errors.keys.first;
+            final firstVal = errors[firstKey];
+            if (firstVal is List && firstVal.isNotEmpty) {
+              msg = firstVal.first.toString();
+            }
+          }
+        }
+      } else if (response.body.isNotEmpty) {
+        msg = response.body;
+      }
+
+      throw Exception('${response.statusCode}|${response.body}');
+    }
+
+  }
+
 
 
 //for store apartment
