@@ -18,11 +18,11 @@ class _Second_card_homeState extends State<Second_card_home> {
 
   @override
   Widget build(BuildContext context) {
-    final images = widget.model_apartment!.images;
 
-    final ImageProvider imageProvider = images.isNotEmpty
-        ? NetworkImage('http://10.0.2.2:8000/storage/${images.first.image}')
-        : const AssetImage('assets/no_image.jpg');
+    if(widget.model_apartment==null || widget.model_apartment!.images.isEmpty) return Center(child: Icon(Icons.image_not_supported));
+
+    final path = widget.model_apartment!.images[0].image.trim();
+    final url='http://10.0.2.2:8000/storage/$path';
 
     return InkWell(
       onTap: (){
@@ -35,56 +35,70 @@ class _Second_card_homeState extends State<Second_card_home> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 15,
+                spreadRadius: 1,
+                offset: Offset(0, 8),
+              ),
+            ],
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5),
-                child: Container(
-                  height: 100,
-                  width: 105,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
-                    ),
+                child:ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    url,
+                    width: 105,
+                    height: 100,
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        widget.model_apartment!.governorate,
-                        style: TextStyle(color: Colors.black, fontSize: 18),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Icon(Icons.location_on, color: Colors.blueGrey),
-                        Text(
-                          '${widget.model_apartment!.city} ',
-                          style: TextStyle(color: Colors.blueGrey, fontSize: 15),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(
+                          widget.model_apartment!.governorate,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Colors.black, fontSize: 18),
                         ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        r'$ ' '${widget.model_apartment!.rent}  -  ${widget.model_apartment!.rent_type}',
-                        style: TextStyle(color: Colors.blue, fontSize: 18),
                       ),
-                    ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Icon(Icons.location_on, color: Colors.blueGrey),
+                          Text(
+                            '${widget.model_apartment!.city} ',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: Colors.blueGrey, fontSize: 15),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(
+                          r'$ ' '${widget.model_apartment!.rent} - ${widget.model_apartment!.rent_type}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Colors.blue, fontSize: 18),
+                        ),
+                      ),
 
-                  ],
+                    ],
+                  ),
                 ),
               ),
               Padding(

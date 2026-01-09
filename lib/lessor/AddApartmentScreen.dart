@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../Services/Lessor_Services/add_Apartment.dart';
+import '../Services/getAllCityes_services.dart';
 import 'ListApartmentScreen.dart';
 
 class addApartmentScreen extends StatefulWidget {
@@ -15,10 +16,13 @@ class addApartmentScreen extends StatefulWidget {
 }
 
 class _addApartmentScreenState extends State<addApartmentScreen> {
- final governorate=TextEditingController();
- final city=TextEditingController();
+ //final governorate=TextEditingController();
+ //final city=TextEditingController();
+  final String token='1|EZIEoy5aLnCdi5XP2jxeaGtnNT60yqCeYyfoaP0W9a2b30e6';
  final homeSpace=TextEditingController();
  final rent=TextEditingController();
+ String? governorate,city;
+
  int? numberFloor,
       numberBaths,
       numberRoom,
@@ -96,12 +100,11 @@ List<XFile> photos=[];
 
  Map<String,String> buildApartmentFields(){
    return {
-     "governorate": governorate.text.trim(),
-     "city": city.text.trim(),
+     "governorate": governorate.toString(),
+     "city": city.toString(),
      "home_space": homeSpace.text.trim(),
      "rent": rent.text.trim(),
      ///
-
      "floor_number": numberFloor.toString(),
      "balcony_number": numberBalcony.toString(),
      "parking_number": numberParking.toString(),
@@ -118,36 +121,49 @@ List<XFile> photos=[];
    return photos.map((x) => File(x.path)).toList();
  }
 
- Future<void> publishApartment() async {
-   try {
-     final fields = buildApartmentFields();
-     final images = getImageFiles();
+  Future<void> publishApartment() async {
+    if (isPublishing) return;
 
-     final response =await addApartment().storeApartment(
-       token: '9|c3hNZQ6edWTejdujij2NCDd5cxuva6seMemvBknc79b62022',
-       data: fields,
-       images: images,
-     );
-     print('ADD APARTMENT RESPONSE: $response');
-///screen not found
-     if (!mounted) return;
-     clearForm();
-     showSuccessSheet();
-   } catch (e) {
-     if (!mounted) return;
-     ScaffoldMessenger.of(context).showSnackBar(
-       SnackBar(content: Text('Error: $e')),
-     );
-   }
- }
+    setState(() {
+      isPublishing = true;
+    });
+
+    try {
+      final fields = buildApartmentFields();
+      final images = getImageFiles();
+
+      final response = await addApartment().storeApartment(
+        token: token,
+        data: fields,
+        images: images,
+      );
+      print('ADD APARTMENT RESPONSE: $response');
+
+      if (!mounted) return;
+      clearForm();
+      showSuccessSheet();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          isPublishing = false;
+        });
+      }
+    }
+  }
+
 
  void clearForm(){
    _formKey.currentState?.reset();
-   governorate.clear();
-   city.clear();
    homeSpace.clear();
    rent.clear();
 
+   governorate=null;
+   city=null;
    numberFloor=null;
    numberBaths=null;
    numberRoom=null;
@@ -165,12 +181,14 @@ List<XFile> photos=[];
 
  List<int> numbers = List.generate(11, (index) => index);
  List<String> typs=['daily','monthly','yearly'];
+ List<String> governorates=['Damascus','Rif Dimashq (Rural Damascus)','Aleppo','Homs','Hama','Latakia','Tartus','Idlib','Deir ez-Zor','Raqqa','Hasakah','Daraa','As-Suwayda','Quneitra'];
  bool isPublishing = false;
 
+ List<String> cities = [];
+
+ bool loadingCities = false;
  @override
  void dispose() {
-  governorate.dispose();
-  city.dispose();
   rent.dispose();
   homeSpace.dispose();
   super.dispose();
@@ -179,7 +197,7 @@ List<XFile> photos=[];
   @override
   Widget build(BuildContext context) {
     return Form(
-      autovalidateMode: AutovalidateMode.onUserInteraction,
+      //autovalidateMode: AutovalidateMode.onUserInteraction,
       key: _formKey,
       child: SingleChildScrollView(
         child: Padding(
@@ -198,13 +216,13 @@ List<XFile> photos=[];
                 style: TextStyle(color: Colors.black54,fontSize: 16),
               ),
               SizedBox(height: 20),
-              TextFormField(
-                controller: governorate,
+              DropdownButtonFormField2<String>(
+                value: governorate,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.account_balance),
                   filled: true,
                   fillColor: Colors.white,
-                  labelText: 'governorate Name',
+                  labelText: 'governorate name',
+                  prefixIcon: Icon(Icons.account_balance),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: Colors.white),
@@ -217,23 +235,47 @@ List<XFile> photos=[];
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: Colors.blue),
                   ),
-                  // labelText: 'City',
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Governorate is required';
-                  }
-                  return null;
+                dropdownStyleData: DropdownStyleData(
+                  maxHeight: 200,
+                  width: double.infinity,
+                  offset: Offset(105, 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                items: governorates.map((gover) {
+                  return DropdownMenuItem<String>(
+                    value: gover,
+                    child: Text(gover),
+                  );
+                }).toList(),
+                onChanged: (value)async {
+                  setState(() {
+                     governorate = value;
+                     cities = [];
+                    city = null;
+                    cities.clear();
+                    loadingCities = true;
+                  });
+                  final result = await get_all_cityes().getCityes(
+                    governorate: value!,
+                    token: token,
+                  );
+                  setState(() {
+                    cities = result;
+                    loadingCities = false;
+                  });
                 },
               ),
               SizedBox(height: 15),
-              TextFormField(
-                controller: city,
+              DropdownButtonFormField2<String>(
+                value: city,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.location_on),
                   filled: true,
                   fillColor: Colors.white,
-                  labelText: 'city Name',
+                  labelText: 'city name',
+                  prefixIcon: Icon(Icons.location_on),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: Colors.white),
@@ -246,15 +288,26 @@ List<XFile> photos=[];
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: Colors.blue),
                   ),
-                  // labelText: 'City',
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'City is required';
-                  }
-                  return null;
-                },
-
+                dropdownStyleData: DropdownStyleData(
+                  maxHeight: 200,
+                  width: double.infinity,
+                  offset: Offset(105, 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                items: cities.map((cit) {
+                  return DropdownMenuItem<String>(
+                    value: cit,
+                    child: Text(cit),
+                  );
+                }).toList(),
+                onChanged: cities.isEmpty?null:(value){
+                  setState(() {
+                    city=value;
+                  });
+                }
               ),
               SizedBox(height: 15),
               TextFormField(
@@ -706,7 +759,7 @@ List<XFile> photos=[];
                         DropdownMenuItem(value: false, child: Text('No')),
                       ],
                     ),
-        
+
                   ),
                 ],
               ),
@@ -797,26 +850,46 @@ List<XFile> photos=[];
               SizedBox(height: 20),
               SafeArea(
                 child: InkWell(
-                  onTap:(){
-                  return showSubmitSheet();},
+                  onTap: isPublishing
+                      ? null
+                      : () {
+                    showSubmitSheet();
+                  },
+                  borderRadius: BorderRadius.circular(10),
                   child: Container(
                     height: 50,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: isPublishing ? Colors.blue.shade200 : Colors.blue,
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
-                        BoxShadow(
-                          color: Colors.blue.withOpacity(0.4),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                        ),
+                        if (!isPublishing)
+                          BoxShadow(
+                            color: Colors.blue.withOpacity(0.4),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
                       ],
                     ),
-                    child: Center(child: Text('Publish',style: TextStyle(color: Colors.white,fontSize: 20),)),
+                    child: Center(
+                      child: isPublishing
+                          ? const SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                          : const Text(
+                        'Publish',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ),
                   ),
                 ),
               ),
+
               SizedBox(height: 30,)
             ],
           ),

@@ -82,11 +82,15 @@ class _LoginScreenState extends State<LoginScreen> {
       if (response.statusCode == 200) {
         var json = jsonDecode(response.body);
         var token = json['token'];
+        var userId = json['user']['id'];
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
         prefs.setBool('isLoggedIn', true);
+
+        await prefs.setInt('userId', userId);
         print("TOKEN => $token");
+        print("USER ID => $userId");
 
 
         Navigator.pushReplacementNamed(context, MainlayoutScreen.id);

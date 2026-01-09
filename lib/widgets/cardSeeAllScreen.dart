@@ -18,6 +18,11 @@ class _CardSeeAllState extends State<CardSeeAll> {
 
   @override
   Widget build(BuildContext context) {
+    if( widget.model_apartment.images.isEmpty) return Center(child: Icon(Icons.image_not_supported));
+
+    final path = widget.model_apartment.images[0].image.trim();
+    final url='http://10.0.2.2:8000/storage/$path';
+
     return Material(
       child: InkWell(
         onTap: () => Navigator.pushNamed(
@@ -31,6 +36,14 @@ class _CardSeeAllState extends State<CardSeeAll> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 15,
+                  spreadRadius: 1,
+                  offset: Offset(0, 8),
+                ),
+              ],
             ),
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             child: Column(
@@ -41,21 +54,13 @@ class _CardSeeAllState extends State<CardSeeAll> {
                   width: double.infinity,
                   child: Stack(
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(18),
-                          image: const DecorationImage(
-                            image: AssetImage('assets/image.jfif'),
-                            fit: BoxFit.cover,
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 15,
-                              spreadRadius: 1,
-                              offset: Offset(0, 8),
-                            ),
-                          ],
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                          url,
+                          width: 200,
+                          height: 200,
+                          fit: BoxFit.cover,
                         ),
                       ),
                       Positioned(

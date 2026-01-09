@@ -6,6 +6,7 @@ import '../Services/Lessor_Services/Delete_Apartment_Lessor/deleteApartmentServi
 import 'EditeApartment_lessor.dart';
 import 'apartmentDetails.dart';
 import 'catogary/CardApartment.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class List_Apatment extends StatefulWidget {
   static String id = 'List_Apatment';
@@ -17,12 +18,12 @@ class List_Apatment extends StatefulWidget {
 class _List_ApatmentState extends State<List_Apatment> {
   late Future<List<Model_Apartment>> apartments;
   List<Model_Apartment> flats = [];
-
+  final String token='1|EZIEoy5aLnCdi5XP2jxeaGtnNT60yqCeYyfoaP0W9a2b30e6';
   @override
   void initState() {
     super.initState();
     apartments = get_all_apartment_for_lessor().getApatment_Lessor(
-      token: '9|c3hNZQ6edWTejdujij2NCDd5cxuva6seMemvBknc79b62022',
+      token:token ,
     );
   }
 
@@ -51,7 +52,7 @@ class _List_ApatmentState extends State<List_Apatment> {
                   future: apartments,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return Center(child: SpinKitThreeBounce(color: Colors.blue,size: 20,));
                     }
                     if (snapshot.hasError) {
                       return Center(child: Text("Error: ${snapshot.error}"));
@@ -83,6 +84,7 @@ class _List_ApatmentState extends State<List_Apatment> {
                               ),
                             );
                           },
+                          //Edit////////////////////////////////////////////////////////////////////////
                           onEdit: () {
                             Navigator.pushNamed(
                               context,
@@ -90,6 +92,7 @@ class _List_ApatmentState extends State<List_Apatment> {
                               arguments: flats[index]
                             );
                           },
+                          //Delete///////////////////////////////////////////////////
                           onDelete: () async {
                             final apt = flats[index];
                             final ok = await showDialog<bool>(
@@ -113,7 +116,7 @@ class _List_ApatmentState extends State<List_Apatment> {
                             try {
                               await deleteApatment().deleteApartmentSevic(
                                 apartmentId: apt.id,
-                                token: '9|c3hNZQ6edWTejdujij2NCDd5cxuva6seMemvBknc79b62022',
+                                token: token,
                               );
 
                               if (!mounted) return;
@@ -139,6 +142,7 @@ class _List_ApatmentState extends State<List_Apatment> {
                 ),
               ),
               SizedBox(height: 20),
+
             ],
           ),
         ),

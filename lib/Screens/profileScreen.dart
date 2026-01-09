@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../authentication_screens/login_screen.dart';
+
 class ProfileScreen extends StatefulWidget {
   static String id = 'ProfileScreen';
   final VoidCallback? toggleTheme;

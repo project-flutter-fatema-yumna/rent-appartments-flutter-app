@@ -7,7 +7,7 @@ class get_all_apartment_for_lessor {
       url: 'http://10.0.2.2:8000/api/apartment/ownedApartments',
       token: token,
     );
-      print("the response is : $response");
+    //  print("the response is : $response");
     if (response is List) {
       return response.map((e) => Model_Apartment.fromJson(e)).toList();
     }

@@ -16,7 +16,9 @@ class Model_Apartment {
   final String phone;
   final String? rent_type;
   final List<ApartmentImage> images;
-  
+  final ApartmentOwner? owner;
+
+
   Model_Apartment({
     required this.id,
     required this.governorate,
@@ -36,6 +38,7 @@ class Model_Apartment {
     required this.phone,
     required this.rent_type,
     required this.images,
+    required this.owner
   });
 
   static int _toInt(dynamic v) {
@@ -85,9 +88,28 @@ class Model_Apartment {
       images: (json['images'] as List? ?? [])
           .map((item) => ApartmentImage.fromJson(item as Map<String, dynamic>))
           .toList(),
+      owner: json['user'] != null ? ApartmentOwner.fromJson(json['user']) : null,
+
     );
   }
 }
+
+class ApartmentOwner {
+  final int id;
+  final String username;
+  final String phone;
+
+  ApartmentOwner({required this.id, required this.username,required this.phone});
+
+  factory ApartmentOwner.fromJson(Map<String, dynamic> json) {
+    return ApartmentOwner(
+      id: int.tryParse(json['id'].toString()) ?? 0,
+      username: json['username']?.toString() ?? '',
+        phone:json['phone']?.toString()?? '',
+    );
+  }
+}
+
 
 class ApartmentImage {
   final int id;

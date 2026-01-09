@@ -27,7 +27,7 @@ class api{
   ///post
   Future<dynamic> post({
     required String url,
-    required Map<String, dynamic> body,
+     Map<String, dynamic>? body,
     String? token,
   }) async {
     final headers = {
@@ -107,7 +107,6 @@ class api{
       } else if (response.body.isNotEmpty) {
         msg = response.body;
       }
-
       throw Exception('${response.statusCode}|${response.body}');
     }
 
@@ -192,20 +191,31 @@ class api{
     }
   }
   ////put
-  Future<dynamic> put({required String url ,String? token})async
-  {
-    final headers={
-      "Accept":'application/json',
-      if(token!=null) 'Authorization': 'Bearer $token',
+  Future<dynamic> put({
+    required String url,
+    required Map<String, dynamic> body,
+    String? token,
+  }) async {
+    final headers = <String, String>{
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      if (token != null) "Authorization": "Bearer $token",
     };
-    final response =await http.put(Uri.parse(url),headers: headers);
+
+    final response = await http.put(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    print("PUT url: $url");
     print("PUT status: ${response.statusCode}");
     print("PUT body: ${response.body}");
-    if(response.statusCode==200 || response.statusCode==201){
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
       return jsonDecode(response.body);
-    }
-    else{
-      throw Exception("Error ${response.statusCode}");
+    } else {
+      throw Exception("Error ${response.statusCode}: ${response.body}");
     }
   }
 

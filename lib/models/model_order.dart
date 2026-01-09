@@ -1,4 +1,4 @@
-import 'package:flats_app/models/model_apartment.dart'; // عدلي المسار حسب مشروعك
+import 'package:flats_app/models/model_apartment.dart';
 
 class Modal_Order {
   final int id;
@@ -15,6 +15,7 @@ class Modal_Order {
 
   final Model_Apartment apartment;
   final ReservationUser? user;
+
   Modal_Order({
     required this.id,
     required this.userId,
