@@ -1,6 +1,6 @@
 import 'package:flats_app/API/api.dart';
 
-import '../models/model_order.dart';
+import '../../models/model_order.dart';
 
 class getAllOrders{
   Future<List<Modal_Order>> getAllReservation({required String token})async{

@@ -1,11 +1,12 @@
-import 'package:flats_app/Services/accept_reservation_service.dart';
-import 'package:flats_app/Services/reject_reservation_service.dart';
+import 'package:flats_app/Services/Lessor_Services/accept_reservation_service.dart';
+import 'package:flats_app/Services/Lessor_Services/reject_reservation_service.dart';
 import 'package:flats_app/models/model_order.dart';
 import 'package:flutter/material.dart';
-
-import '../Services/GetAllOrderServices.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../Services/Lessor_Services/GetAllOrderServices.dart';
 
 class OrdersScreen extends StatefulWidget {
+  static String id='OrdersScreen';
   const OrdersScreen({super.key});
 
   @override
@@ -21,12 +22,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
     if (selectedFilter == "all") return allOrders;
     return allOrders.where((o) => o.status == selectedFilter).toList();
   }
-
+  final String token='1|EZIEoy5aLnCdi5XP2jxeaGtnNT60yqCeYyfoaP0W9a2b30e6';
 
   @override
   void initState() {
     super.initState();
-    OrdersFutur = getAllOrders().getAllReservation(token: '9|c3hNZQ6edWTejdujij2NCDd5cxuva6seMemvBknc79b62022');
+    OrdersFutur = getAllOrders().getAllReservation(token: token);
   }
 
   @override
@@ -84,7 +85,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 future: OrdersFutur,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child:SpinKitThreeBounce(color: Colors.blue,size: 20,));
                   }
                   if (snapshot.hasError) {
                     return Center(child: Text("Error: ${snapshot.error}"));
@@ -101,7 +102,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   }
 
                   return ListView.separated(
-                    itemCount: allOrders.length,
+                    itemCount: showOrders.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 18),
                     itemBuilder: (context, index) {
                       return OrderCard(
@@ -110,8 +111,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           try {
                             await AcceptReservationService().accept(
                               reservationId: showOrders[index].id,
-                              token:
-                                  '9|c3hNZQ6edWTejdujij2NCDd5cxuva6seMemvBknc79b62022',
+                              token:token
                             );
                             if (!mounted) return;
                             setState(() {
@@ -130,8 +130,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           try {
                             await RejectReservationService().reject(
                               reservationId: showOrders[index].id,
-                              token:
-                                  '9|c3hNZQ6edWTejdujij2NCDd5cxuva6seMemvBknc79b62022',
+                              token:token
                             );
                             if (!mounted) return;
                             setState(() {
@@ -177,6 +176,9 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final isPending = status == "pending";
+    final path=modal_order.apartment.images.isNotEmpty;
+    final url=path?
+        'http://10.0.2.2:8000/storage/${modal_order.apartment.images[0].image.trim()}':null;
 
     return Material(
       color: Colors.white,
@@ -196,15 +198,21 @@ class OrderCard extends StatelessWidget {
                     height: 44,
                     decoration: BoxDecoration(
                       color: Colors.blue.shade50,
-                      borderRadius: BorderRadius.circular(12),
+                     // borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(
-                      Icons.home_rounded,
-                      color: Colors.blue.shade700,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: path?
+                      Image.network(
+                        url!,
+                        width: 44,
+                        height: 44,
+                        fit: BoxFit.cover,
+                      ):
+                          Icon(Icons.home,color: Colors.blue,),
                     ),
                   ),
                   const SizedBox(width: 12),
-
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:flats_app/Services/log_out.dart';
-import 'package:flats_app/main.dart';
 import 'package:flats_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../authentication_screens/login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String id = 'ProfileScreen';

@@ -16,6 +16,8 @@ class ApartmentCardUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final path = model_apartment.images[0].image.trim();
+    final url='http://10.0.2.2:8000/storage/$path';
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(18),
@@ -31,10 +33,11 @@ class ApartmentCardUI extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(14),
                 child: Container(
-                  width: 92,
-                  height: 92,
+                  width: 100,
+                  height: 100,
                   color: Colors.blue.shade50,
-                  child: Icon(Icons.home_rounded, color: Colors.blue.shade700, size: 34),
+                  child: Image.network(url,  fit:BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
