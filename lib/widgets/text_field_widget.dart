@@ -30,27 +30,27 @@ class TextFieldWidget extends StatelessWidget {
     this.readOnly = false,
     this.onTap,
     this.maxLength,
-    this.inputFormatters
+    this.inputFormatters,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
-      cursorColor: Colors.blue,
+      cursorColor: Theme.of(context).primaryColor,
       textInputAction: textInputAction,
       keyboardType: keyboardType,
       obscureText: obscureText,
       readOnly: readOnly,
       onTap: onTap,
       decoration: InputDecoration(
-        focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Theme.of(context).primaryColor),
         ),
-        fillColor: Colors.white,
+        fillColor: Theme.of(context).cardColor,
         filled: true,
         hintText: hint,
-        icon: Icon(icon, color: Colors.grey),
+        icon: Icon(icon, color: Theme.of(context).textTheme.bodyLarge!.color),
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(
@@ -59,8 +59,10 @@ class TextFieldWidget extends StatelessWidget {
                 onPressed: onToggleVisibility,
               )
             : suffixIcon,
-        suffixIconColor: Colors.grey,
-        hintStyle: TextStyle(color: Colors.grey),
+        suffixIconColor: Theme.of(context).textTheme.bodyLarge!.color,
+        hintStyle: TextStyle(
+          color: Theme.of(context).textTheme.bodyLarge!.color,
+        ),
       ),
       inputFormatters: inputFormatters,
     );

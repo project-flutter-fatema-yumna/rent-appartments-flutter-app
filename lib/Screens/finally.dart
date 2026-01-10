@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'Reservations.dart';
-
 class FinallyPage extends StatelessWidget {
   const FinallyPage({super.key});
 
@@ -48,9 +46,9 @@ class FinallyPage extends StatelessWidget {
                           child: Container(
                             width: 40,
                             height: 40,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.blue,
+                              color: Theme.of(context).primaryColor,
                             ),
                             child: const Icon(
                               Icons.check,
@@ -91,17 +89,17 @@ class FinallyPage extends StatelessWidget {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: Colors.black12),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.info_outline,
                       size: 20,
-                      color: Colors.black54,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -110,31 +108,30 @@ class FinallyPage extends StatelessWidget {
                         children: [
                           Text(
                             'Your order is waiting',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black87,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge!.color,
                               height: 1.3,
                             ),
                           ),
                           Text(
                             'To track the status of your order, go to',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black87,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge!.color,
                               height: 1.3,
                             ),
                           ),
-                          InkWell(
-                            onTap: (){
-                              Navigator.pushNamed(context,ReservationsScreen.id);
-                            },
-                            child: Text(
-                              'Your reservations',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.blue,
-                                height: 1.3,
-                              ),
+                          Text(
+                            'Your reservations',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Theme.of(context).primaryColor,
+                              height: 1.3,
                             ),
                           ),
                         ],
@@ -161,7 +158,7 @@ class FinallyPage extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   shape: BoxShape.circle,
                   boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
                 ),

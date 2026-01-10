@@ -1,4 +1,4 @@
-import 'package:flats_app/MyColors.dart';
+import 'package:flats_app/app_colors.dart';
 import 'package:flutter/material.dart';
 
 import 'AddApartmentScreen.dart';
@@ -14,7 +14,7 @@ class Homepage extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: myColors.colorWhite,
+        backgroundColor:  Theme.of(context).cardColor,
         appBar: AppBar(
           centerTitle: true,
           title: Text(

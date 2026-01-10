@@ -1,4 +1,4 @@
-import 'package:flats_app/MyColors.dart';
+import 'package:flats_app/app_colors.dart';
 import 'package:flats_app/Screens/chatScreen.dart';
 import 'package:flats_app/models/model_apartment.dart';
 import 'package:flutter/gestures.dart';
@@ -34,6 +34,30 @@ class _ShowScreenState extends State<ShowScreen> {
       lastDate: DateTime(now.year + 1, 12, 31),
       locale: const Locale('en'),
       helpText: 'chose rend date',
+      builder: (context, child) {
+        final theme = Theme.of(context);
+        return Theme(
+          data: theme.copyWith(
+            datePickerTheme: DatePickerThemeData(
+              backgroundColor: theme.cardColor,
+              surfaceTintColor: Colors.transparent,
+              rangeSelectionBackgroundColor: theme.primaryColor.withOpacity(
+                0.2,
+              ),
+              rangeSelectionOverlayColor: WidgetStateProperty.all(
+                theme.primaryColor,
+              ),
+            ),
+            colorScheme: theme.colorScheme.copyWith(
+              primary: theme.primaryColor,
+              onPrimary: theme.cardColor,
+              surface: theme.cardColor,
+              onSurface: theme.textTheme.bodyLarge!.color!,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (result != null) {
@@ -44,11 +68,20 @@ class _ShowScreenState extends State<ShowScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('information'),
+            backgroundColor: Theme.of(context).cardColor,
+            title: Text(
+              'information',
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge!.color,
+              ),
+            ),
             content: Text(
               'Booking was selected from'
               '${result.start.day}/${result.start.month}/${result.start.year} '
               'to ${result.end.day}/${result.end.month}/${result.end.year}',
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge!.color,
+              ),
             ),
             actions: [
               TextButton(
@@ -56,14 +89,21 @@ class _ShowScreenState extends State<ShowScreen> {
                   Navigator.pop(context);
                   _openDatePicker();
                 },
-                child: Text('Edit'),
+                child: Text(
+                  'Edit',
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                   _openBookingSheet(this.context);
                 },
-                child: Text('OK'),
+                child: Text('OK',
+                  style: TextStyle(color: Theme.of(context).primaryColor),
+                ),
               ),
             ],
           );
@@ -77,6 +117,7 @@ class _ShowScreenState extends State<ShowScreen> {
     if (_selectedRange == null) return;
     final range = _selectedRange!;
     showModalBottomSheet(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -95,7 +136,7 @@ class _ShowScreenState extends State<ShowScreen> {
     model_apartment =
         ModalRoute.of(context)!.settings.arguments as Model_Apartment;
     return Scaffold(
-      backgroundColor: myColors.colorWhite,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -119,8 +160,10 @@ class _ShowScreenState extends State<ShowScreen> {
                         fit: BoxFit.cover,
                         loadingBuilder: (context, child, progress) {
                           if (progress == null) return child;
-                          return const Center(
-                            child: CircularProgressIndicator(),
+                          return Center(
+                            child: CircularProgressIndicator(
+                              color: Theme.of(context).primaryColor,
+                            ),
                           );
                         },
                         errorBuilder: (context, error, stack) {
@@ -155,31 +198,13 @@ class _ShowScreenState extends State<ShowScreen> {
                           height: numberImage == index ? 12 : 8,
                           decoration: BoxDecoration(
                             color: numberImage == index
-                                ? Colors.blue
-                                : Colors.white,
+                                ? Theme.of(context).primaryColor
+                                : Theme.of(context).cardColor,
                             shape: BoxShape.circle,
                           ),
                         ),
                       );
                     }),
-                  ),
-                ),
-                Positioned(
-                  right: 20,
-                  top: 30,
-                  child: IconButton(
-                    color: Colors.grey,
-                    onPressed: () {
-                      setState(() {
-                        isFavorite = !isFavorite;
-                      });
-                    },
-                    icon: Icon(
-                      isFavorite
-                          ? Icons.favorite
-                          : Icons.favorite_border_outlined,
-                      color: isFavorite ? Colors.red : Colors.white,
-                    ),
                   ),
                 ),
                 Positioned(
@@ -189,7 +214,10 @@ class _ShowScreenState extends State<ShowScreen> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                    icon: Icon(
+                      Icons.arrow_back_ios,
+                      color: Theme.of(context).cardColor,
+                    ),
                   ),
                 ),
               ],
@@ -199,8 +227,10 @@ class _ShowScreenState extends State<ShowScreen> {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  color: myColors.colorWhite,
+                  border: Border.all(
+                    color: Theme.of(context).textTheme.bodyLarge!.color!,
+                  ),
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(20),
                     topLeft: Radius.circular(20),
@@ -221,11 +251,18 @@ class _ShowScreenState extends State<ShowScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Icon(Icons.location_on, color: Colors.blueGrey),
+                              Icon(
+                                Icons.location_on,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodyLarge!.color,
+                              ),
                               Text(
                                 ' ${model_apartment.governorate} , ${model_apartment.city} ',
                                 style: TextStyle(
-                                  color: Colors.blueGrey,
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.bodyLarge!.color,
                                   fontSize: 20,
                                 ),
                               ),
@@ -235,9 +272,11 @@ class _ShowScreenState extends State<ShowScreen> {
                             children: [
                               Icon(Icons.star, color: Colors.orange, size: 30),
                               Text(
-                                '${model_apartment.home_rate}',
+                                '${model_apartment.home_rate.toInt()}',
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.bodyLarge!.color,
                                   fontSize: 20,
                                 ),
                               ),
@@ -253,12 +292,14 @@ class _ShowScreenState extends State<ShowScreen> {
                             height: 80,
                             width: 110,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.grey,
-                                  blurRadius: 2,
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.bodyLarge!.color!,
+                                  blurRadius: 1,
                                   spreadRadius: 1,
                                   offset: Offset(1, 1),
                                 ),
@@ -271,38 +312,17 @@ class _ShowScreenState extends State<ShowScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Icon(Icons.square_foot, color: Colors.blue),
-                                  Text('${model_apartment.home_space} sq ft'),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            height: 80,
-                            width: 110,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey,
-                                  blurRadius: 2,
-                                  spreadRadius: 1,
-                                  offset: Offset(1, 1),
-                                ),
-                              ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Icon(Icons.car_crash, color: Colors.blue),
-
+                                  Icon(
+                                    Icons.square_foot,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
                                   Text(
-                                    '${model_apartment.parking_number} parking',
+                                    '${model_apartment.home_space} sq ft',
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge!.color,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -312,12 +332,14 @@ class _ShowScreenState extends State<ShowScreen> {
                             height: 80,
                             width: 110,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.grey,
-                                  blurRadius: 2,
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.bodyLarge!.color!,
+                                  blurRadius: 1,
                                   spreadRadius: 1,
                                   offset: Offset(1, 1),
                                 ),
@@ -330,9 +352,58 @@ class _ShowScreenState extends State<ShowScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Icon(Icons.bathtub, color: Colors.blue),
+                                  Icon(
+                                    Icons.car_crash,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+
+                                  Text(
+                                    '${model_apartment.parking_number} parking',
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge!.color,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: 80,
+                            width: 110,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.bodyLarge!.color!,
+                                  blurRadius: 1,
+                                  spreadRadius: 1,
+                                  offset: Offset(1, 1),
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Icon(
+                                    Icons.bathtub,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
                                   Text(
                                     '${model_apartment.number_of_baths} bath',
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge!.color,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -345,17 +416,22 @@ class _ShowScreenState extends State<ShowScreen> {
                         padding: const EdgeInsets.only(left: 10),
                         child: Text(
                           'Description',
-                          style: TextStyle(color: Colors.black, fontSize: 20),
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                            fontSize: 20,
+                          ),
                         ),
                       ),
                       SizedBox(height: 10),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge!.color!,
                               blurRadius: 1,
                               spreadRadius: 1,
                               offset: Offset(1, 1),
@@ -370,11 +446,16 @@ class _ShowScreenState extends State<ShowScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.meeting_room, color: Colors.blue),
+                                  Icon(
+                                    Icons.meeting_room,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
                                   Text(
                                     '   Rooms Number    :      ${model_apartment.rooms_number} Rooms',
                                     style: TextStyle(
-                                      color: Colors.black,
+                                      color: Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge!.color,
                                       fontSize: 18,
                                     ),
                                   ),
@@ -384,11 +465,16 @@ class _ShowScreenState extends State<ShowScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.bed_rounded, color: Colors.blue),
+                                  Icon(
+                                    Icons.bed_rounded,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
                                   Text(
                                     '   bedRoom Number   :     ${model_apartment.number_of_bedrooms} ',
                                     style: TextStyle(
-                                      color: Colors.black,
+                                      color: Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge!.color,
                                       fontSize: 18,
                                     ),
                                   ),
@@ -398,11 +484,16 @@ class _ShowScreenState extends State<ShowScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.roofing, color: Colors.blue),
+                                  Icon(
+                                    Icons.roofing,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
                                   Text(
                                     '   Floor Number       :      ${model_apartment.floor_number}',
                                     style: TextStyle(
-                                      color: Colors.black,
+                                      color: Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge!.color,
                                       fontSize: 18,
                                     ),
                                   ),
@@ -412,11 +503,16 @@ class _ShowScreenState extends State<ShowScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.balcony, color: Colors.blue),
+                                  Icon(
+                                    Icons.balcony,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
                                   Text(
                                     '   Balcony Number   :     ${model_apartment.balcony_number} ',
                                     style: TextStyle(
-                                      color: Colors.black,
+                                      color: Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge!.color,
                                       fontSize: 18,
                                     ),
                                   ),
@@ -427,11 +523,16 @@ class _ShowScreenState extends State<ShowScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.bed_rounded, color: Colors.blue),
+                                  Icon(
+                                    Icons.bed_rounded,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
                                   Text(
                                     '   Furnished           :   ',
                                     style: TextStyle(
-                                      color: Colors.black,
+                                      color: Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge!.color,
                                       fontSize: 18,
                                     ),
                                   ),
@@ -455,17 +556,22 @@ class _ShowScreenState extends State<ShowScreen> {
                         padding: const EdgeInsets.only(left: 10),
                         child: Text(
                           'Agent',
-                          style: TextStyle(color: Colors.black, fontSize: 20),
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                            fontSize: 20,
+                          ),
                         ),
                       ),
                       SizedBox(height: 10),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge!.color!,
                               blurRadius: 1,
                               spreadRadius: 1,
                               offset: Offset(1, 1),
@@ -483,15 +589,22 @@ class _ShowScreenState extends State<ShowScreen> {
                               Row(
                                 children: [
                                   CircleAvatar(
-                                    backgroundImage: AssetImage(
-                                      'assets/person2.jfif',
-                                    ),
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).cardColor,
                                     radius: 25,
+                                    child: Icon(
+                                      Icons.person,
+                                      color: Theme.of(context).primaryColor,
+                                      size: 30,
+                                    ),
                                   ),
                                   Text(
                                     'User Name',
                                     style: TextStyle(
-                                      color: Colors.black,
+                                      color: Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge!.color,
                                       fontSize: 20,
                                     ),
                                   ),
@@ -501,12 +614,12 @@ class _ShowScreenState extends State<ShowScreen> {
                                 children: [
                                   Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.blue.shade50,
+                                      color: Theme.of(context).primaryColor,
                                       borderRadius: BorderRadius.circular(25),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.grey.shade300,
-                                          blurRadius: 1,
+                                          color: Colors.grey.shade100,
+                                          blurRadius: 2,
                                           spreadRadius: 1,
                                           offset: Offset(1, 1),
                                         ),
@@ -521,18 +634,18 @@ class _ShowScreenState extends State<ShowScreen> {
                                       },
                                       icon: Icon(
                                         Icons.chat,
-                                        color: Colors.blue,
+                                        color: Theme.of(context).cardColor,
                                       ),
                                     ),
                                   ),
                                   Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.blue.shade50,
+                                      color: Theme.of(context).primaryColor,
                                       borderRadius: BorderRadius.circular(25),
                                       boxShadow: [
                                         BoxShadow(
                                           color: Colors.green.shade100,
-                                          blurRadius: 1,
+                                          blurRadius: 2,
                                           spreadRadius: 1,
                                           offset: Offset(1, 1),
                                         ),
@@ -553,7 +666,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                       },
                                       icon: Icon(
                                         Icons.phone,
-                                        color: Colors.green,
+                                        color: Colors.green[300],
                                       ),
                                     ),
                                   ),
@@ -573,7 +686,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                 r'$ '
                                 '${model_apartment.rent.toStringAsFixed(0)}',
                                 style: TextStyle(
-                                  color: Colors.blue,
+                                  color: Theme.of(context).primaryColor,
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -581,7 +694,9 @@ class _ShowScreenState extends State<ShowScreen> {
                               Text(
                                 'Monthly Rend',
                                 style: TextStyle(
-                                  color: Colors.blueGrey,
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.bodyLarge!.color,
                                   fontSize: 18,
                                 ),
                               ),
@@ -595,14 +710,14 @@ class _ShowScreenState extends State<ShowScreen> {
                               height: 50,
                               width: 200,
                               decoration: BoxDecoration(
-                                color: Colors.blue,
+                                color: Theme.of(context).primaryColor,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Center(
                                 child: Text(
                                   'Reserve',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: Theme.of(context).cardColor,
                                     fontSize: 20,
                                   ),
                                 ),

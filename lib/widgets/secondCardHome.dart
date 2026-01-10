@@ -1,20 +1,29 @@
+import 'package:flats_app/Services/add_and_remove_from_favourites.dart';
 import 'package:flats_app/models/model_apartment.dart';
+import 'package:flats_app/providers/favorite_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../Screens/showScreen.dart';
 
 class Second_card_home extends StatefulWidget {
   Model_Apartment? model_apartment;
+  final VoidCallback? onToggleSuccess;
 
-  Second_card_home({required this.model_apartment});
+  Second_card_home({required this.model_apartment, this.onToggleSuccess});
 
   @override
   State<Second_card_home> createState() => _Second_card_homeState();
 }
 
 class _Second_card_homeState extends State<Second_card_home> {
-  bool isFavorite = false;
+  late bool isFavorite;
 
+  @override
+  void initState() {
+    isFavorite = widget.onToggleSuccess != null;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +34,19 @@ class _Second_card_homeState extends State<Second_card_home> {
         : const AssetImage('assets/no_image.jpg');
 
     return InkWell(
-      onTap: (){
-        Navigator.pushNamed(context, ShowScreen.id,arguments: widget.model_apartment);
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          ShowScreen.id,
+          arguments: widget.model_apartment,
+        );
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Container(
           height: 110,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Row(
@@ -54,26 +67,33 @@ class _Second_card_homeState extends State<Second_card_home> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 10,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'Pelican Hill',
-                      style: TextStyle(color: Colors.black, fontSize: 20),
+                      style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: 20),
                     ),
                     Text(
                       r'$ 842.00',
-                      style: TextStyle(color: Colors.blue, fontSize: 20),
+                      style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 20),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Icon(Icons.location_on, color: Colors.blueGrey),
+                        Icon(Icons.location_on, color: Theme.of(context).textTheme.bodyLarge!.color,
+                        ),
                         Text(
-                         '${widget.model_apartment!.governorate} ',
-                          style: TextStyle(color: Colors.blueGrey, fontSize: 15),
+                          '${widget.model_apartment!.governorate} ',
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                            fontSize: 15,
+                          ),
                         ),
                       ],
                     ),
@@ -81,27 +101,52 @@ class _Second_card_homeState extends State<Second_card_home> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 10,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          isFavorite = !isFavorite;
-                        });
+                    Consumer<FavoriteProvider>(
+                      builder: (context, favProvider, child) {
+                        final bool isFav = favProvider.isFavorite(
+                          widget.model_apartment!.id,
+                        );
+
+                        return IconButton(
+                          onPressed: () async {
+                            favProvider.toggleFavorite(
+                              widget.model_apartment!.id,
+                            );
+                            final result = await toggleFavoriteStatus(
+                              widget.model_apartment!.id,
+                            );
+                            if (result == null) {
+                              favProvider.toggleFavorite(
+                                widget.model_apartment!.id,
+                              );
+                            } else {
+                              if (widget.onToggleSuccess != null) {
+                                widget.onToggleSuccess!();
+                              }
+                            }
+                          },
+                          icon: Icon(
+                            isFav
+                                ? Icons.favorite
+                                : Icons.favorite_border_outlined,
+                          ),
+                          color: isFav ? Colors.red : Theme.of(context).textTheme.bodyLarge!.color,
+                        );
                       },
-                      icon: isFavorite
-                          ? Icon(Icons.favorite)
-                          : Icon(Icons.favorite_border_outlined),
-                      color: isFavorite ? Colors.red : Colors.grey,
                     ),
                     Row(
                       children: [
                         Icon(Icons.star, color: Colors.orange),
                         Text(
-                          widget.model_apartment!.home_rate.toString(),
-                          style: TextStyle(color: Colors.black, fontSize: 15),
+                          widget.model_apartment!.home_rate.toInt().toString(),
+                          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: 15),
                         ),
                       ],
                     ),

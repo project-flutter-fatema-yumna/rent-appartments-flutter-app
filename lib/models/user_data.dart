@@ -8,12 +8,15 @@ class UserData {
   String lastName;
   String? dateOfBirth;
   String role;
-  XFile? identityPhoto;
+
   XFile? personalPhoto;
+  XFile? identityPhoto;
   //البيانات الإضافية
   int? id;
   String userName;
   String? status;
+  String? personalPhotoUrl;
+  String? identityPhotoUrl;
 
   UserData({
     this.phone = '',
@@ -29,4 +32,26 @@ class UserData {
     this.userName = '',
     this.status,
   });
+
+  static Future<UserData> fromJson(Map<String, dynamic> json) async {
+    UserData user = UserData(
+      id: json['id'],
+      firstName: json['first_name'] ?? '',
+      lastName: json['last_name'] ?? '',
+      userName: json['username'] ?? '',
+      phone: json['phone'] ?? '',
+      dateOfBirth: json['date_of_birth'],
+      role: json['role'] ?? '',
+      status: json['state'],
+    );
+
+    user.personalPhotoUrl = json['personalPhoto'] != null
+        ? 'http://10.0.2.2:8000/storage/${json['personalPhoto']}'
+        : null;
+
+    user.identityPhotoUrl = json['idenitityPhoto'] != null
+        ? 'http://10.0.2.2:8000/storage/${json['idenitityPhoto']}'
+        : null;
+    return user;
+  }
 }

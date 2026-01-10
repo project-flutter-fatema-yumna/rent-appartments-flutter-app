@@ -9,10 +9,10 @@ Future<String> createToken(String phone) async {
     body: jsonEncode({'phone': phone}),
   );
   final jsonData = jsonDecode(response.body);
-  if (response.statusCode == 200) {
+  print(response.statusCode);
+  if (response.statusCode == 200||response.statusCode==201) {
     return jsonData['token'];
   } else {
     throw Exception(jsonData['message'] ?? 'Failed to create token');
   }
 }
-

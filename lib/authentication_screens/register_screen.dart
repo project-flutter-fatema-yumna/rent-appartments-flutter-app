@@ -82,155 +82,153 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[50],
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: AlignmentGeometry.center,
-                end: AlignmentGeometry.bottomCenter,
-                colors: [
-                  Colors.blue.shade50,
-                  Colors.blue.shade50,
-                  Colors.blue.shade100,
-                ],
-                stops: [0.0, 0.5, 1.0],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                backgroundColor: Theme.of(context).cardColor,
+                radius: 70,
+                child: Icon(
+                  Icons.person,
+                  color: Theme.of(context).primaryColor,
+                  size: 100,
+                ),
               ),
-            ),
-          ),
-          Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 150,
-                    width: 150,
-                    child: Image.asset('assets/yumna.png', fit: BoxFit.cover),
+              const SizedBox(height: 20),
+              Text(
+                'Create account',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 34,
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Unlock your personalized experience!',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(25, 30, 50, 12),
+                child: TextFieldWidget(
+                  controller: _phoneController,
+                  hint: 'Phone number',
+                  icon: Icons.phone,
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(25, 0, 50, 12),
+                child: TextFieldWidget(
+                  controller: _passwordController,
+                  hint: 'Password (min 8 chars)',
+                  icon: Icons.lock_outline,
+                  isPassword: true,
+                  obscureText: _hidePassword,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(25, 0, 50, 12),
+                child: TextFieldWidget(
+                  controller: _confirmPasswordController,
+                  hint: 'Confirm password',
+                  icon: Icons.lock,
+                  isPassword: true,
+                  obscureText: _hidePassword,
+                ),
+              ),
+              if (_errorText != null) ...[
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Text(
+                    _errorText!,
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Create account',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 34),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Unlock your personalized experience!',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(25, 30, 50, 12),
-                    child: TextFieldWidget(
-                      controller: _phoneController,
-                      hint: 'Phone number',
-                      icon: Icons.phone,
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(10),
-                      ],
+                ),
+              ],
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 65.0,
+                  vertical: 20,
+                ),
+                child: Row(
+                  children: [
+                    RegisterAs(
+                      role: 'tenant',
+                      onTap: () {
+                        setState(() {
+                          _currentState = 'tenant';
+                        });
+                      },
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(25, 0, 50, 12),
-                    child: TextFieldWidget(
-                      controller: _passwordController,
-                      hint: 'Password (min 8 chars)',
-                      icon: Icons.lock_outline,
-                      isPassword: true,
-                      obscureText: _hidePassword,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(25, 0, 50, 12),
-                    child: TextFieldWidget(
-                      controller: _confirmPasswordController,
-                      hint: 'Confirm password',
-                      icon: Icons.lock,
-                      isPassword: true,
-                      obscureText: _hidePassword,
-                    ),
-                  ),
-                  if (_errorText != null) ...[
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: Text(
-                        _errorText!,
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
+                    SizedBox(width: 10),
+                    RegisterAs(
+                      role: 'lessor',
+                      onTap: () {
+                        setState(() {
+                          _currentState = 'lessor';
+                        });
+                      },
                     ),
                   ],
-                  Padding(
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: MaterialButton(
+                    onPressed: _tryVerify,
+                    color: Theme.of(context).primaryColor,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 65.0,
-                      vertical: 20,
+                      horizontal: 70,
+                      vertical: 12,
                     ),
-                    child: Row(
-                      children: [
-                        RegisterAs(
-                          role: 'tenant',
-                          onTap: () {
-                            setState(() {
-                              _currentState = 'tenant';
-                            });
-                          },
-                        ),
-                        SizedBox(width: 10),
-                        RegisterAs(
-                          role: 'lessor',
-                          onTap: () {
-                            setState(() {
-                              _currentState = 'lessor';
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: MaterialButton(
-                        onPressed: _tryVerify,
-                        color: Colors.blue,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 70,
-                          vertical: 12,
-                        ),
-                        child: const Text(
-                          'Verify',
-                          style: TextStyle(color: Colors.white, fontSize: 17),
-                        ),
+                    child: Text(
+                      'Verify',
+                      style: TextStyle(
+                        color: Theme.of(context).cardColor,
+                        fontSize: 17,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  RichText(
-                    text: TextSpan(
-                      text: "Already have an account? ",
-                      style: const TextStyle(color: Colors.black),
-                      children: [
-                        TextSpan(
-                          text: "Login",
-                          style: const TextStyle(
-                            color: Colors.blue,
-                            decoration: TextDecoration.underline,
-                          ),
-                          recognizer: _loginRecognizer,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+              const SizedBox(height: 12),
+              RichText(
+                text: TextSpan(
+                  text: "Already have an account? ",
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: "Login",
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        decoration: TextDecoration.underline,
+                      ),
+                      recognizer: _loginRecognizer,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -249,11 +247,15 @@ class RegisterAs extends StatelessWidget {
         onTap: onTap,
         child: Card(
           elevation: 3,
-          color: _currentState == role ? Colors.blue[50] : Colors.white,
+          color: _currentState == role
+              ? Theme.of(context).scaffoldBackgroundColor
+              : Theme.of(context).cardColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: BorderSide(
-              color: _currentState == role ? Colors.blue : Colors.grey.shade300,
+              color: _currentState == role
+                  ? Theme.of(context).primaryColor
+                  : Theme.of(context).textTheme.bodyLarge!.color!,
               width: _currentState == role ? 2 : 1,
             ),
           ),
@@ -263,14 +265,18 @@ class RegisterAs extends StatelessWidget {
               children: [
                 Icon(
                   role == 'tenant' ? Icons.person : Icons.house,
-                  color: _currentState == role ? Colors.blue : Colors.grey,
+                  color: _currentState == role
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).textTheme.bodyLarge!.color,
                 ),
                 SizedBox(height: 6),
                 Text(
                   role,
                   style: TextStyle(
                     fontSize: 16,
-                    color: _currentState == role ? Colors.blue : Colors.grey,
+                    color: _currentState == role
+                        ? Theme.of(context).primaryColor
+                        : Theme.of(context).textTheme.bodyLarge!.color,
                   ),
                 ),
               ],

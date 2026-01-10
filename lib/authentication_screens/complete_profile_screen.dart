@@ -1,14 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flats_app/MainLayout.dart';
 import 'package:flats_app/authentication_screens/waiting_for_acception.dart';
 import 'package:flats_app/models/user_data.dart';
-import 'package:flats_app/models/snack_bar.dart';
-import 'package:flats_app/providers/user_provider.dart';
+import 'package:flats_app/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/text_field_widget.dart';
 
@@ -89,6 +86,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     bool isProfile,
   ) async {
     showModalBottomSheet(
+      backgroundColor: Theme.of(context).cardColor,
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -99,14 +97,21 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 'Select Image Source',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,color: Theme.of(context).textTheme.bodyLarge!.color),
               ),
               const SizedBox(height: 15),
+              Divider(color: Theme.of(context).textTheme.bodyLarge!.color),
+              const SizedBox(height: 15),
               ListTile(
-                leading: const Icon(Icons.camera_alt, color: Colors.blue),
-                title: const Text('Camera'),
+                leading: Icon(Icons.camera_alt, color: Theme.of(context).primaryColor,
+                ),
+                title: Text('Camera',
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                  ),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage(ImageSource.camera, isProfile);
@@ -114,8 +119,11 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               ),
 
               ListTile(
-                leading: const Icon(Icons.image, color: Colors.blue),
-                title: const Text('Gallery'),
+                leading: Icon(Icons.image, color: Theme.of(context).primaryColor,
+                ),
+                title: Text('Gallery', style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                  ),),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage(ImageSource.gallery, isProfile);
@@ -134,13 +142,30 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       initialDate: DateTime.now().subtract(const Duration(days: 1)),
       firstDate: DateTime(1900),
       lastDate: DateTime.now().subtract(const Duration(days: 1)),
-      builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: ColorScheme.light(primary: Colors.blue),
-          textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.blue),
-        ),
-        child: child!,
-      ),
+      builder: (context, child) {
+        final theme = Theme.of(context);
+        return Theme(
+          data: theme.copyWith(
+            useMaterial3: true,
+            datePickerTheme: DatePickerThemeData(
+              backgroundColor: theme.cardColor,
+              surfaceTintColor:
+                  Colors.transparent,
+              headerBackgroundColor:
+                  theme.primaryColor,
+              headerForegroundColor:
+                  theme.cardColor,
+            ),
+            colorScheme: theme.colorScheme.copyWith(
+              surface: theme.cardColor,
+              onSurface: theme.textTheme.bodyLarge!.color!,
+              primary: theme.primaryColor,
+              onPrimary: theme.cardColor,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedDate != null) {
@@ -267,176 +292,163 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.blue[50], toolbarHeight: 30),
-      backgroundColor: Colors.blue[50],
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: AlignmentGeometry.center,
-                end: AlignmentGeometry.bottomCenter,
-                colors: [
-                  Colors.blue.shade50,
-                  Colors.blue.shade50,
-                  Colors.blue.shade100,
-                ],
-                stops: [0.0, 0.5, 1.0],
-              ),
-            ),
-          ),
-          Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () async {
-                      await _showImageSourceSheet(context, true);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(0.05),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.grey.shade400,
-                          width: 3,
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        radius: 60,
-                        backgroundColor: Colors.grey[300],
-                        backgroundImage: _profileImage != null
-                            ? FileImage(File(_profileImage!.path))
-                            : null,
-                        child: _profileImage == null
-                            ? const Icon(
-                                Icons.add_a_photo,
-                                size: 40,
-                                color: Colors.white,
-                              )
-                            : null,
-                      ),
+      appBar: AppBar(backgroundColor: Theme.of(context).scaffoldBackgroundColor, toolbarHeight: 30),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  await _showImageSourceSheet(context, true);
+                },
+                child: Container(
+                  padding: EdgeInsets.all(0.05),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Theme.of(context).textTheme.bodyLarge!.color!,
+                      width: 1,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Profile',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: _profileImage != null
+                        ? FileImage(File(_profileImage!.path))
+                        : null,
+                    child: _profileImage == null
+                        ? Icon(
+                            Icons.add_a_photo,
+                            size: 40,
+                            color: Theme.of(context).primaryColor,
+                          )
+                        : null,
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Let\'s complete your profile!',
-                    style: TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Profile',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28,color: Theme.of(context).textTheme.bodyLarge!.color,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Let\'s complete your profile!',
+                style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyLarge!.color,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 30),
+              Padding(
+                padding: const EdgeInsets.only(right: 30),
+                child: TextFieldWidget(
+                  controller: _firstNameController,
+                  hint: 'Enter your first name',
+                  keyboardType: TextInputType.name,
+                ),
+              ),
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(right: 30),
+                child: TextFieldWidget(
+                  controller: _lastNameController,
+                  hint: 'Enter your last name',
+                  keyboardType: TextInputType.name,
+                ),
+              ),
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(right: 30),
+                child: TextFieldWidget(
+                  controller: _dateOfBirthController,
+                  hint: 'Select your date of birth',
+                  readOnly: true,
+                  suffixIcon: Icon(Icons.cake),
+                  onTap: () => _pickDate(),
+                ),
+              ),
+              if (_errorText != null) ...[
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Text(
+                    _errorText!,
+                    style: const TextStyle(color: Colors.red),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 30),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 30),
-                    child: TextFieldWidget(
-                      controller: _firstNameController,
-                      hint: 'Enter your first name',
-                      keyboardType: TextInputType.name,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 30),
-                    child: TextFieldWidget(
-                      controller: _lastNameController,
-                      hint: 'Enter your last name',
-                      keyboardType: TextInputType.name,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 30),
-                    child: TextFieldWidget(
-                      controller: _dateOfBirthController,
-                      hint: 'Select your date of birth',
-                      readOnly: true,
-                      suffixIcon: Icon(Icons.cake),
-                      onTap: () => _pickDate(),
-                    ),
-                  ),
-                  if (_errorText != null) ...[
-                    const SizedBox(height: 12),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: Text(
-                        _errorText!,
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
+                ),
+              ],
+              Padding(
+                padding: const EdgeInsets.only(top: 30),
+                child: GestureDetector(
+                  onTap: () => _showImageSourceSheet(context, false),
+                  child: Container(
+                    width: 170,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: Theme.of(context).textTheme.bodyLarge!.color!,
                       ),
+                      image: _idImage != null
+                          ? DecorationImage(
+                              image: FileImage(File(_idImage!.path)),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
                     ),
-                  ],
-                  Padding(
-                    padding: const EdgeInsets.only(top: 30),
-                    child: GestureDetector(
-                      onTap: () => _showImageSourceSheet(context, false),
-                      child: Container(
-                        width: 170,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: Colors.grey.shade500),
-                          image: _idImage != null
-                              ? DecorationImage(
-                                  image: FileImage(File(_idImage!.path)),
-                                  fit: BoxFit.cover,
-                                )
-                              : null,
-                        ),
-                        child: _idImage == null
-                            ? Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.credit_card,
-                                    size: 50,
-                                    color: Colors.grey,
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    "Upload ID Card",
-                                    style: TextStyle(color: Colors.grey),
-                                  ),
-                                ],
-                              )
-                            : null,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: _isLoading
-                          ? CircularProgressIndicator(color: Colors.blue)
-                          : MaterialButton(
-                              onPressed: _tryRegister,
-                              color: Colors.blue,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 70,
-                                vertical: 12,
+                    child: _idImage == null
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.credit_card,
+                                size: 50,
+                                color: Theme.of(context).primaryColor,
                               ),
-                              child: const Text(
-                                'Register',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
+                              SizedBox(height: 10),
+                              Text(
+                                "Upload ID Card",
+                                style: TextStyle(color: Theme.of(context).primaryColor,
                                 ),
                               ),
-                            ),
-                    ),
+                            ],
+                          )
+                        : null,
                   ),
-                ],
+                ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: _isLoading
+                      ? CircularProgressIndicator(color: Theme.of(context).primaryColor,
+                        )
+                      : MaterialButton(
+                          onPressed: _tryRegister,
+                          color: Theme.of(context).primaryColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 70,
+                            vertical: 12,
+                          ),
+                          child: const Text(
+                            'Register',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 17,
+                            ),
+                          ),
+                        ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

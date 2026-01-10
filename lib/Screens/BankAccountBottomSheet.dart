@@ -60,6 +60,7 @@ class _BankAccountBottomSheetState extends State<BankAccountBottomSheet> {
       Navigator.pop(context);
 
       showModalBottomSheet(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         context: context,
         isScrollControlled: true,
         shape: const RoundedRectangleBorder(
@@ -106,16 +107,20 @@ class _BankAccountBottomSheetState extends State<BankAccountBottomSheet> {
               const SizedBox(height: 20),
 
               Center(
-                child: const Text(
+                child: Text(
                   '   Please ensure you have sufficient\nfunds in your account before booking.',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600,
+                    color: Theme.of(context).textTheme.bodyLarge!.color),
+                  ),
+                
               ),
               const SizedBox(height: 25),
 
               Padding(
                 padding: const EdgeInsets.only(left: 10),
-                child: const Text('Bank Account'),
+                child: Text('Bank Account',style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                  ),),
               ),
               const SizedBox(height: 6),
 
@@ -127,6 +132,7 @@ class _BankAccountBottomSheetState extends State<BankAccountBottomSheet> {
                   decoration: InputDecoration(
                     hintText: '1111-2222-3333',
                     filled: true,
+                    fillColor: Theme.of(context).cardColor,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
                       borderSide: BorderSide.none,
@@ -157,17 +163,18 @@ class _BankAccountBottomSheetState extends State<BankAccountBottomSheet> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: (_loading || !_isValidBank)
                         ? Colors.grey
-                        : Colors.blue,
+                        : Theme.of(context).primaryColor,
                     disabledBackgroundColor: Colors.grey,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
                   child: _loading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
+                      ? CircularProgressIndicator(color: Theme.of(context).cardColor,
+                        )
+                      : Text(
                           'Invest Property',
-                          style: TextStyle(color: Colors.white, fontSize: 20),
+                          style: TextStyle(color: Theme.of(context).cardColor, fontSize: 20),
                         ),
                 ),
               ),
@@ -187,7 +194,7 @@ class _BankAccountBottomSheetState extends State<BankAccountBottomSheet> {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   shape: BoxShape.circle,
                   boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
                 ),

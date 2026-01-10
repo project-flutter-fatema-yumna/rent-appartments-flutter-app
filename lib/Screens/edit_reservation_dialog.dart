@@ -1,5 +1,5 @@
 import 'package:flats_app/Services/edit_reservation_service.dart';
-import 'package:flats_app/models/snack_bar.dart';
+import 'package:flats_app/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 
 class EditReservationDialog extends StatefulWidget {
@@ -52,15 +52,21 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
           ? widget.oldStartDate
           : DateTime.now(),
       builder: (context, child) {
+        final theme = Theme.of(context);
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Colors.blue,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
+          data: theme.copyWith(
+            useMaterial3: true,
+            datePickerTheme: DatePickerThemeData(
+              backgroundColor: theme.cardColor,
+              surfaceTintColor: Colors.transparent,
+              headerBackgroundColor: theme.primaryColor,
+              headerForegroundColor: theme.cardColor,
             ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: Colors.blue),
+            colorScheme: theme.colorScheme.copyWith(
+              surface: theme.cardColor,
+              onSurface: theme.textTheme.bodyLarge!.color!,
+              primary: theme.primaryColor,
+              onPrimary: theme.cardColor,
             ),
           ),
           child: child!,
@@ -92,15 +98,21 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
       lastDate: DateTime(2100),
       initialDate: start.add(const Duration(days: 1)),
       builder: (context, child) {
+        final theme = Theme.of(context);
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Colors.blue,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
+          data: theme.copyWith(
+            useMaterial3: true,
+            datePickerTheme: DatePickerThemeData(
+              backgroundColor: theme.cardColor,
+              surfaceTintColor: Colors.transparent,
+              headerBackgroundColor: theme.primaryColor,
+              headerForegroundColor: theme.cardColor,
             ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: Colors.blue),
+            colorScheme: theme.colorScheme.copyWith(
+              surface: theme.cardColor,
+              onSurface: theme.textTheme.bodyLarge!.color!,
+              primary: theme.primaryColor,
+              onPrimary: theme.cardColor,
             ),
           ),
           child: child!,
@@ -154,11 +166,13 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: AlertDialog(
+        backgroundColor: Theme.of(context).cardColor,
         title: const Text('Edit reservation'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             buildBlueTextField(
+              context: context,
               controller: startDateController,
               label: 'Start date',
               readOnly: true,
@@ -168,6 +182,7 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
             const SizedBox(height: 10),
 
             buildBlueTextField(
+              context: context,
               controller: endDateController,
               label: 'End date',
               readOnly: true,
@@ -177,6 +192,7 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
             const SizedBox(height: 10),
 
             buildBlueTextField(
+              context: context,
               controller: bankController,
               label: 'Bank account number (optional)',
             ),
@@ -185,19 +201,31 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
         actions: [
           TextButton(
             onPressed: isLoading ? null : () => Navigator.pop(context),
-            child: const Text('Back', style: TextStyle(color: Colors.blue)),
+            child: Text(
+              'Back',
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge!.color!,
+              ),
+            ),
           ),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
             onPressed: isLoading ? null : submitEdit,
             child: isLoading
-                ? const SizedBox(
+                ? SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(color: Colors.blue),
+                    child: CircularProgressIndicator(
+                      color: Theme.of(context).primaryColor,
+                    ),
                   )
-                : const Text(
+                : Text(
                     'Apply edits',
-                    style: TextStyle(color: Colors.blue),
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge!.color!,
+                    ),
                   ),
           ),
         ],
@@ -207,6 +235,7 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
 }
 
 Widget buildBlueTextField({
+  required BuildContext context,
   required TextEditingController controller,
   required String label,
   bool readOnly = false,
@@ -216,19 +245,27 @@ Widget buildBlueTextField({
     controller: controller,
     readOnly: readOnly,
     onTap: onTap,
-    cursorColor: Colors.blue,
+    cursorColor: Theme.of(context).primaryColor,
     decoration: InputDecoration(
       suffixIcon: readOnly
-          ? const Icon(Icons.calendar_month, color: Colors.grey)
+          ? Icon(
+              Icons.calendar_month,
+              color: Theme.of(context).textTheme.bodyLarge!.color!,
+            )
           : null,
       labelText: label,
-      floatingLabelStyle: const TextStyle(color: Colors.blue),
-      labelStyle: const TextStyle(color: Colors.grey, fontSize: 15),
-      enabledBorder: const UnderlineInputBorder(
-        borderSide: BorderSide(color: Colors.grey),
+      floatingLabelStyle: TextStyle(color: Theme.of(context).primaryColor),
+      labelStyle: TextStyle(
+        color: Theme.of(context).textTheme.bodyLarge!.color!,
+        fontSize: 15,
       ),
-      focusedBorder: const UnderlineInputBorder(
-        borderSide: BorderSide(color: Colors.blue, width: 2),
+      enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Theme.of(context).textTheme.bodyLarge!.color!,
+        ),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
       ),
     ),
   );

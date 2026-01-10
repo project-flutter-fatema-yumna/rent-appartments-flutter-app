@@ -1,7 +1,4 @@
-import 'package:flats_app/MyColors.dart';
 import 'package:flutter/material.dart';
-
-import '../widgets/cardHome.dart';
 import '../widgets/cardSeeAllScreen.dart';
 
 class See_all_screen extends StatelessWidget {
@@ -11,13 +8,16 @@ class See_all_screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: myColors.colorWhite,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('Flats', style: TextStyle(color: Colors.white)),
+        title: Text(
+          'Flats',
+          style: TextStyle(color: Theme.of(context).cardColor),
+        ),
         elevation: 5,
         centerTitle: true,
-        backgroundColor: Colors.blue,
-        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: Theme.of(context).primaryColor,
+        iconTheme: IconThemeData(color: Theme.of(context).cardColor),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
         ),

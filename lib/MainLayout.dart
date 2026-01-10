@@ -19,15 +19,16 @@ class MainlayoutScreen extends StatefulWidget {
 
 class _MainlayoutScreenState extends State<MainlayoutScreen> {
   int numberScreen = 0;
+  final GlobalKey<HomescreenState> homeKey = GlobalKey<HomescreenState>();
   late final List<Widget> screens;
 
   @override
   void initState() {
     super.initState();
     screens = [
-      Homescreen(),
-      ReservationsScreen(),
+      Homescreen(key: homeKey,),
       FavoriteScreen(),
+      ReservationsScreen(),
       ChatScreen(),
       ProfileScreen(toggleTheme: widget.toggleTheme),
     ];
@@ -46,10 +47,10 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
             child: Container(
               height: 80,
               decoration: BoxDecoration(
-                color: Colors.grey.shade200,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(40),
                 border: Border.all(
-                  color: Colors.blue,
+                  color: Theme.of(context).primaryColor,
                 )
               ),
               child: Padding(
@@ -58,17 +59,17 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
                   vertical: 20,
                 ),
                 child: GNav(
-                  backgroundColor: Colors.grey.shade200,
-                  color: Colors.blue,
+                  backgroundColor: Theme.of(context).cardColor,
+                  color: Theme.of(context).primaryColor,
                   activeColor: Colors.white,
-                  tabBackgroundColor: Colors. blue.shade200,
+                  tabBackgroundColor: Theme.of(context).primaryColor,
                   padding: EdgeInsets.all(8),
                   gap: 8,
                   selectedIndex: numberScreen,
                   onTabChange: (index) {
-                    print('the index is :$index');
-                    if (index == numberScreen) {
-                      return;
+                    if (index == numberScreen) return;
+                    if (index == 0) {
+                      homeKey.currentState?.fetchApartments();
                     }
                     setState(() {
                       numberScreen = index;
@@ -76,8 +77,8 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
                   },
                   tabs: [
                     GButton(icon: Icons.home, text: 'Home'),
-                    GButton(icon: Icons.list_alt, text: 'Reservations'),
                     GButton(icon: Icons.favorite, text: 'Favorite'),
+                    GButton(icon: Icons.list_alt, text: 'Reservations'),
                     GButton(icon: Icons.chat, text: 'Chat'),
                     GButton(icon: Icons.person, text: 'profile'),
                   ],

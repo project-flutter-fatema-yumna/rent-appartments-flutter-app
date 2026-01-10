@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flats_app/MainLayout.dart';
 import 'package:flats_app/authentication_screens/register_screen.dart';
-import 'package:flats_app/models/snack_bar.dart';
+import 'package:flats_app/widgets/snack_bar.dart';
+import 'package:flats_app/models/user_data.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -79,14 +80,36 @@ class _LoginScreenState extends State<LoginScreen> {
         headers: {"Content-Type": 'application/json'},
         body: jsonEncode({'phone': phone, 'password': password}),
       );
+      print(response.statusCode);
       if (response.statusCode == 200) {
-        var json = jsonDecode(response.body);
-        var token = json['token'];
+        final decoded = jsonDecode(response.body);
+        final jsonMap = decoded['user'];
+        final token = decoded['token'];
+        UserData user = await UserData.fromJson(jsonMap);
 
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', token);
-        prefs.setBool('isLoggedIn', true);
+        await prefs.setString('phone', user.phone);
+        await prefs.setString('firstName', user.firstName);
+        await prefs.setString('lastName', user.lastName);
+        await prefs.setString('userName', user.userName);
+        await prefs.setString('dob', user.dateOfBirth ?? '');
+        await prefs.setString('role', user.role);
 
+        if (user.personalPhotoUrl != null) {
+          await prefs.setString('personalPhotoUrl', user.personalPhotoUrl!);
+        }
+
+        if (user.identityPhotoUrl != null) {
+          await prefs.setString('identityPhotoUrl', user.identityPhotoUrl!);
+        }
+        print("photos");
+        print(user.personalPhotoUrl);
+        print(user.identityPhotoUrl);
+        print('////////////////');
+
+        prefs.setString('token', token);
+
+        prefs.setBool('isLoggedIn', true);
         Navigator.pushReplacementNamed(context, MainlayoutScreen.id);
       } else if (response.statusCode == 401) {
         mySnackBar(context, 'Wrong password or phone number');
@@ -94,6 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
         mySnackBar(context, 'error connection');
       }
     } catch (e) {
+      print(e);
       mySnackBar(context, 'Something went wrong');
     } finally {
       setState(() => _isLoading = false);
@@ -103,132 +127,122 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[50],
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: AlignmentGeometry.center,
-                end: AlignmentGeometry.bottomCenter,
-                colors: [
-                  Colors.blue.shade50,
-                  Colors.blue.shade50,
-                  Colors.blue.shade100,
-                ],
-                stops: [0.0, 0.5, 1.0],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                backgroundColor: Theme.of(context).cardColor,
+                radius: 70,
+                child: Icon(
+                  Icons.person,
+                  color: Theme.of(context).primaryColor,
+                  size: 100,
+                ),
               ),
-            ),
-          ),
-          Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Column(
+              SizedBox(height: 20),
+              Text(
+                'Login',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 34),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Welcome back! Please enter your details',
+                style: TextStyle(fontSize: 17),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(25, 50, 50, 20),
+                child: TextFieldWidget(
+                  controller: _phoneController,
+                  hint: 'Phone number',
+                  icon: Icons.phone,
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(25, 0, 50, 20),
+                child: TextFieldWidget(
+                  controller: _passwordController,
+                  hint: 'Password (min 8 chars)',
+                  icon: Icons.lock,
+                  isPassword: true,
+                  obscureText: _hidePassword,
+                  textInputAction: TextInputAction.done,
+                  onToggleVisibility: () {
+                    setState(() => _hidePassword = !_hidePassword);
+                  },
+                ),
+              ),
+              if (_errorText != null) ...[
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Text(
+                    _errorText!,
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+              Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: _isLoading
+                      ? CircularProgressIndicator(
+                          color: Theme.of(context).primaryColor,
+                        )
+                      : MaterialButton(
+                          onPressed: _tryLogin,
+                          color: Theme.of(context).primaryColor,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 70,
+                            vertical: 10,
+                          ),
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                              color: Theme.of(context).cardColor,
+                              fontSize: 17,
+                            ),
+                          ),
+                        ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    height: 150,
-                    width: 150,
-                    child: Image.asset('assets/yumna.png', fit: BoxFit.cover),
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Login',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 34),
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Welcome back! Please enter your details',
-                    style: TextStyle(fontSize: 17),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(25, 50, 50, 20),
-                    child: TextFieldWidget(
-                      controller: _phoneController,
-                      hint: 'Phone number',
-                      icon: Icons.phone,
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(10),
+                  RichText(
+                    text: TextSpan(
+                      text: "Don't have an account? ",
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: "Sign up",
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: _signUpRecognizer,
+                        ),
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(25, 0, 50, 20),
-                    child: TextFieldWidget(
-                      controller: _passwordController,
-                      hint: 'Password (min 8 chars)',
-                      icon: Icons.lock,
-                      isPassword: true,
-                      obscureText: _hidePassword,
-                      textInputAction: TextInputAction.done,
-                      onToggleVisibility: () {
-                        setState(() => _hidePassword = !_hidePassword);
-                      },
-                    ),
-                  ),
-                  if (_errorText != null) ...[
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: Text(
-                        _errorText!,
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                  Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: _isLoading
-                          ? CircularProgressIndicator(color: Colors.blue)
-                          : MaterialButton(
-                              onPressed: _tryLogin,
-                              color: Colors.blue,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 70,
-                                vertical: 10,
-                              ),
-                              child: Text(
-                                'Login',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                ),
-                              ),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RichText(
-                        text: TextSpan(
-                          text: "Don't have an account? ",
-                          style: TextStyle(color: Colors.black),
-                          children: [
-                            TextSpan(
-                              text: "Sign up",
-                              style: TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline,
-                              ),
-                              recognizer: _signUpRecognizer,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -21,6 +21,18 @@ Future<void> logout(BuildContext context) async {
     if (response.statusCode == 200) {
       await prefs.remove('token');
       await prefs.remove('isLoggedIn');
+
+      await prefs.remove('phone');
+      await prefs.remove('firstName');
+      await prefs.remove('lastName');
+      await prefs.remove('userName');
+
+      await prefs.remove('dob');
+      await prefs.remove('role');
+
+      await prefs.remove('personalPhotoPath');
+      await prefs.remove('identityPhotoPath');
+
       Navigator.pushReplacementNamed(context, LoginScreen.id);
     } else {
       print('Logout failed: ${response.body}');

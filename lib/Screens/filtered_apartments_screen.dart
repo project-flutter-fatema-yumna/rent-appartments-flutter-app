@@ -51,23 +51,33 @@ class _FilteredApartmentsScreenState extends State<FilteredApartmentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Filtered apartments'),),
+      appBar: AppBar(title: Text('Filtered apartments',
+          style: TextStyle(color:  Theme.of(context).cardColor),
+        ),
+        elevation: 5,
+        centerTitle: true,
+        backgroundColor:  Theme.of(context).primaryColor,
+        iconTheme: IconThemeData(color:  Theme.of(context).cardColor),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
+        ),
+      ),
       body: _buildBody(),
     );
   }
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.blue));
+      return Center(child: CircularProgressIndicator(color:  Theme.of(context).primaryColor));
     }
     if (_errorMsg != null) {
       return Center(child: Text(_errorMsg!));
     }
     if (apartments.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No apartments match your filters',
-          style: TextStyle(fontSize: 16),
+          style: TextStyle(fontSize: 16, color:  Theme.of(context).textTheme.bodyLarge!.color),
         ),
       );
     }

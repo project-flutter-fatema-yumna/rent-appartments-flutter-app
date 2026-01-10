@@ -2,25 +2,30 @@ import 'dart:io';
 import 'package:flats_app/Screens/filtered_apartments_screen.dart';
 import 'package:flats_app/Screens/seeAllScreen.dart';
 import 'package:flats_app/Services/Get_Paginate_Apartment.dart';
+import 'package:flats_app/Services/get_cities.dart';
+import 'package:flats_app/Services/get_favoutite_apartments.dart';
 import 'package:flats_app/models/filter_criteria.dart';
 import 'package:flats_app/models/model_apartment.dart';
+import 'package:flats_app/providers/favorite_provider.dart';
 import 'package:flats_app/providers/user_provider.dart';
 import 'package:flats_app/widgets/cardHome.dart';
+import 'package:flats_app/widgets/personal_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../MyColors.dart';
+import '../app_colors.dart';
 import '../widgets/secondCardHome.dart';
 
 class Homescreen extends StatefulWidget {
   static String id = 'Homescreen';
+  const Homescreen({super.key});
   @override
-  State<Homescreen> createState() => _HomescreenState();
+  State<Homescreen> createState() => HomescreenState();
 }
 
-class _HomescreenState extends State<Homescreen> {
+class HomescreenState extends State<Homescreen> {
   Future<List<Model_Apartment>>? apartmentsFuture;
-  
+
   Future<String?> getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
@@ -28,12 +33,28 @@ class _HomescreenState extends State<Homescreen> {
 
   void fetchApartments() async {
     String? token = await getToken();
-    if (token == null) {
-      return;
-    }
+    if (token == null) return;
+
     setState(() {
       apartmentsFuture = get_apartment().getAllApartment(token: token);
     });
+
+    try {
+      final favorites = await fetchFavorites();
+
+      if (favorites != null) {
+        List<int> ids = favorites.map((e) => e.id).toList();
+
+        if (mounted) {
+          Provider.of<FavoriteProvider>(
+            context,
+            listen: false,
+          ).loadInitialFavorites(ids);
+        }
+      }
+    } catch (e) {
+      print("Error loading initial favorites: $e");
+    }
   }
 
   @override
@@ -58,9 +79,9 @@ class _HomescreenState extends State<Homescreen> {
       return CircularProgressIndicator();
     }
     return Scaffold(
-      backgroundColor: myColors.colorWhite,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
+        padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 20),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -70,27 +91,22 @@ class _HomescreenState extends State<Homescreen> {
                   //User info row
                   Row(
                     children: [
-                      CircleAvatar(
-                        radius: 25,
-                        backgroundImage: user.personalPhoto != null
-                            ? FileImage(File(user.personalPhoto!.path))
-                            : const AssetImage('assets/person2.jfif'),
-                      ),
+                      personalImage(user, 25),
                       SizedBox(width: 15),
                       Text(
                         user?.userName ?? 'Guest',
-                        style: TextStyle(color: Colors.black, fontSize: 20),
+                        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: 20),
                       ),
                     ],
                   ),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(50),
                     ),
                     child: IconButton(
                       onPressed: () {},
-                      icon: Icon(Icons.notifications_none),
+                      icon: Icon(Icons.notifications_none, color: Theme.of(context).textTheme.bodyLarge!.color,),
                     ),
                   ),
                 ],
@@ -114,19 +130,20 @@ class _HomescreenState extends State<Homescreen> {
                       readOnly: true,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Theme.of(context).cardColor,
                         hintText: 'Filter apartments',
+                        hintStyle: Theme.of(context).textTheme.bodyLarge,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(50),
-                          borderSide: BorderSide(color: Colors.white),
+                          borderSide: BorderSide(color: Theme.of(context).cardColor),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(50),
-                          borderSide: BorderSide(color: Colors.white),
+                          borderSide: BorderSide(color: Theme.of(context).cardColor),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(50),
-                          borderSide: BorderSide(color: Colors.white),
+                          borderSide: BorderSide(color: Theme.of(context).cardColor),
                         ),
                       ),
                     ),
@@ -136,11 +153,11 @@ class _HomescreenState extends State<Homescreen> {
                       child: IconButton(
                         onPressed: () => openFilter(context),
                         style: IconButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: Theme.of(context).primaryColor,
                         ),
                         padding: EdgeInsets.all(12),
                         icon: Icon(Icons.tune),
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                       ),
                     ),
                   ],
@@ -157,7 +174,7 @@ class _HomescreenState extends State<Homescreen> {
                   children: [
                     Text(
                       'Recommended Property',
-                      style: TextStyle(color: Colors.black, fontSize: 20),
+                      style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: 20),
                     ),
                   ],
                 ),
@@ -171,13 +188,13 @@ class _HomescreenState extends State<Homescreen> {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
+                            return Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor,));
                           }
                           if (snapshot.hasError) {
-                            return Center(child: Text('Error'));
+                            return Center(child: Text('Error', style: Theme.of(context).textTheme.bodyLarge,));
                           }
                           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Center(child: Text('No apartment'));
+                            return Center(child: Text('No apartment',style: Theme.of(context).textTheme.bodyLarge,));
                           }
                           List<Model_Apartment> apartments = snapshot.data!;
                           //.where((apt)=>(apt.home_rate??0)>4).toList();
@@ -204,14 +221,14 @@ class _HomescreenState extends State<Homescreen> {
                                       width: 50,
                                       height: 50,
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: Theme.of(context).cardColor,
                                         borderRadius: BorderRadius.circular(50),
                                       ),
                                       child: IconButton(
                                         onPressed: () {},
                                         icon: Icon(
                                           Icons.navigate_next,
-                                          color: Colors.black,
+                                          color: Theme.of(context).primaryColor,
                                         ),
                                       ),
                                     ),
@@ -230,7 +247,7 @@ class _HomescreenState extends State<Homescreen> {
                   children: [
                     Text(
                       'Flats',
-                      style: TextStyle(color: Colors.black, fontSize: 20),
+                      style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: 20),
                     ),
                     InkWell(
                       onTap: () {
@@ -238,7 +255,7 @@ class _HomescreenState extends State<Homescreen> {
                       },
                       child: Text(
                         'See All',
-                        style: TextStyle(color: Colors.blueGrey, fontSize: 20),
+                        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: 20),
                       ),
                     ),
                   ],
@@ -248,15 +265,15 @@ class _HomescreenState extends State<Homescreen> {
                 future: apartmentsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor,));
                   }
 
                   if (snapshot.hasError) {
-                    return Center(child: Text('ERROR: ${snapshot.error}'));
+                    return Center(child: Text('ERROR: ${snapshot.error}', style: Theme.of(context).textTheme.bodyLarge,));
                   }
 
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No apartment'));
+                    return Center(child: Text('No apartment', style: Theme.of(context).textTheme.bodyLarge,));
                   }
 
                   final flats = snapshot.data!;
@@ -288,6 +305,23 @@ class ApartmentFilterSheet extends StatefulWidget {
 
 class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
   FilterCriteria filters = FilterCriteria();
+  List<String> governorates = [
+    'Damascus',
+    'Rif Dimashq (Rural Damascus)',
+    'Aleppo',
+    'Homs',
+    'Hama',
+    'Latakia',
+    'Tartus',
+    'Idlib',
+    'Deir ez-Zor',
+    'Raqqa',
+    'Hasakah',
+    'Daraa',
+    'As-Suwayda',
+    'Quneitra',
+  ];
+  List<String> cities = [];
 
   @override
   Widget build(BuildContext context) {
@@ -296,8 +330,8 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
       child: Container(
         height: MediaQuery.of(context).size.height * 0.75,
         padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
@@ -306,14 +340,15 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.shade400,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Filter Apartments',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge!.color,
+              ),
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -326,16 +361,31 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
                       child: _dropdown(
                         label: 'Governorate',
                         value: filters.governorate,
-                        items: const ['Damascus', 'Rural Damascus', 'Homs'],
-                        onChanged: (v) =>
-                            setState(() => filters.governorate = v),
+                        items: governorates,
+                        onChanged: (v) async {
+                          setState(() {
+                            filters.governorate = v;
+                            filters.city = null;
+                            cities = [];
+                          });
+
+                          if (v != null) {
+                            final result =
+                                await getCitiesAccourdingToGovernorate(v);
+                            setState(() {
+                              cities = result;
+                            });
+                          }
+                        },
                       ),
                     ),
                     _dropdown(
                       label: 'City',
                       value: filters.city,
-                      items: const ['Mazzeh', 'Jaramana', 'Zahera'],
-                      onChanged: (v) => setState(() => filters.city = v),
+                      items: cities,
+                      onChanged: cities.isEmpty
+                          ? null
+                          : (v) => setState(() => filters.city = v),
                     ),
                     const SizedBox(height: 12),
                     _title('Furnished'),
@@ -422,7 +472,7 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
                 Expanded(
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.blue),
+                      side: BorderSide(color: Theme.of(context).primaryColor),
                     ),
                     onPressed: () {
                       setState(() {
@@ -432,9 +482,9 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
                                     filters.space = filters.rent = filters.rate = null;
                       });
                     },
-                    child: const Text(
+                    child: Text(
                       'Reset',
-                      style: TextStyle(color: Colors.blue),
+                      style: TextStyle(color: Theme.of(context).primaryColor),
                     ),
                   ),
                 ),
@@ -442,7 +492,7 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Theme.of(context).primaryColor,
                     ),
                     onPressed: () {
                       if (filters.isFiltered()) {
@@ -451,9 +501,9 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
                         Navigator.pop(context, filters);
                       }
                     },
-                    child: const Text(
+                    child: Text(
                       'Apply Filters',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).cardColor)
                     ),
                   ),
                 ),
@@ -467,30 +517,32 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
 
   Widget _title(String t) => Padding(
     padding: const EdgeInsets.only(bottom: 6),
-    child: Text(t, style: const TextStyle(fontWeight: FontWeight.w600)),
+    child: Text(t, style: TextStyle(fontWeight: FontWeight.w600, color: Theme.of(context).textTheme.bodyLarge!.color,
+      )),
   );
 
   Widget _dropdown({
     required String label,
     required String? value,
     required List<String> items,
-    required Function(String?) onChanged,
+    required Function(String?)? onChanged,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<String>(
+        dropdownColor: Theme.of(context).cardColor,
         value: value,
         decoration: InputDecoration(
-          floatingLabelStyle: TextStyle(color: Colors.blue),
+          floatingLabelStyle: TextStyle(color: Theme.of(context).primaryColor),
           labelText: label,
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.blue, width: 1.5),
+            borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
           ),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
         items: items
-            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+            .map((e) => DropdownMenuItem(value: e, child: Text(e, style: Theme.of(context).textTheme.bodyLarge,),))
             .toList(),
         onChanged: onChanged,
       ),
@@ -499,11 +551,13 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
 
   Widget _chip(String text, bool selected, VoidCallback onTap) {
     return ChoiceChip(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      side: BorderSide(color: Theme.of(context).textTheme.bodyLarge!.color!),
       label: Text(text),
       selected: selected,
-      selectedColor: Colors.blue,
-      labelStyle: TextStyle(color: selected ? Colors.white : Colors.black),
-      checkmarkColor: Colors.white,
+      selectedColor: Theme.of(context).primaryColor,
+      labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color),
+      checkmarkColor: Theme.of(context).textTheme.bodyLarge!.color!,
       onSelected: (_) => onTap(),
     );
   }
@@ -519,10 +573,12 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
       children: [
         Text('$label: ${value == -1 ? 'Any' : value.toInt()}'),
         Slider(
+          inactiveColor: Theme.of(context).scaffoldBackgroundColor,
+          
           value: value == -1 ? 0 : value,
           max: max.toDouble(),
           divisions: max,
-          activeColor: Colors.blue,
+          activeColor: Theme.of(context).primaryColor,
           onChanged: onChanged,
         ),
       ],

@@ -5,10 +5,12 @@ import 'package:flats_app/Screens/filtered_apartments_screen.dart';
 import 'package:flats_app/Screens/homeScreen.dart';
 import 'package:flats_app/Screens/profileScreen.dart';
 import 'package:flats_app/Screens/showScreen.dart';
+import 'package:flats_app/app_colors.dart';
 import 'package:flats_app/authentication_screens/onboarding_screens.dart';
 import 'package:flats_app/authentication_screens/waiting_for_acception.dart';
 import 'package:flats_app/lessor/ListApartmentScreen.dart';
 import 'package:flats_app/lessor/homePage.dart';
+import 'package:flats_app/providers/favorite_provider.dart';
 import 'package:flats_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,7 +28,10 @@ void main() async {
   bool isDarkMode = prefs.getBool('isDarkMode') ?? false;
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => UserProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => FavoriteProvider()),
+      ],
       child: MyApp(isDarkMode: isDarkMode),
     ),
   );
@@ -77,12 +82,26 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.light,
-        primarySwatch: Colors.blue,
+        primaryColor: AppColors.primaryLight,
+        cardColor : AppColors.backgroundLight,
+        scaffoldBackgroundColor: AppColors.secondaryLight,
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: AppColors.textLight),
+          bodyMedium: TextStyle(color: AppColors.textLight),
+        ),
       ),
+
       darkTheme: ThemeData(
         brightness: Brightness.dark,
-        primarySwatch: Colors.blue,
+        primaryColor: AppColors.primaryDark,
+        scaffoldBackgroundColor: const Color.fromARGB(255, 41, 79, 107),
+        cardColor: AppColors.secondaryDark,
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: AppColors.textDark),
+          bodyMedium: TextStyle(color: AppColors.textDark),
+        ),
       ),
+      
       themeMode: _themeMode,
 
       routes: {
@@ -124,7 +143,7 @@ class _MyAppState extends State<MyApp> {
           }
           return snapshot.data!;
         },
-      )
+      ),
     );
   }
 }

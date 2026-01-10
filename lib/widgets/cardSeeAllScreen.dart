@@ -77,16 +77,24 @@ class _CardSeeAllState extends State<CardSeeAll> {
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                 child: Text(
                   r'$ 19,000,000',
-                  style: TextStyle(color: Colors.blue, fontSize: 20),
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontSize: 20,
+                  ),
                 ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Icon(Icons.location_on, color: Colors.blueGrey),
+                  Icon(
+                    Icons.location_on,
+                    color: Theme.of(context).primaryColor,
+                  ),
                   Text(
                     ' Syria , Damascus ',
-                    style: TextStyle(color: Colors.blueGrey),
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                    ),
                   ),
                 ],
               ),

@@ -70,6 +70,8 @@ class _WaitingForAcceptionState extends State<WaitingForAcception> {
     }
     try {
       String token = await createToken(phone);
+      print('////////////////////////');
+      print(token);
       await prefs.setString('token', token);
       prefs.setBool('isLoggedIn', true);
       prefs.setBool('isRegistered', false);
@@ -104,44 +106,54 @@ class _WaitingForAcceptionState extends State<WaitingForAcception> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE3F2FD),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: Colors.blue))
+          ? Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              ),
+            )
           : Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 90),
               child: Container(
                 padding: EdgeInsets.all(30),
                 decoration: BoxDecoration(
-                  color: Colors.blue[50],
-                  border: Border.all(color: Colors.black, width: 1),
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  border: Border.all(
+                    color: Theme.of(context).textTheme.bodyLarge!.color!,
+                    width: 1,
+                  ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       _status == 'pending'
-                          ? 'Your account is pending admin approval!'
+                          ? 'Please wait while our admin reviews your information!'
                           : (_status == 'active')
-                          ? 'You are active!'
-                          : 'Sorry, your account is rejected',
+                          ? 'Now, your account is active, you can start using the app!'
+                          : 'Unfortunately... your account was not approved!',
 
                       style: TextStyle(
-                        fontSize: 38,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
                       ),
                     ),
                     Image.asset(
                       _status == 'pending'
-                          ? 'assets/undraw_season-change_ohe6.png'
+                          ? 'assets/undraw_season-change_ohe6-removebg-preview.png'
                           : (_status == 'active')
-                          ? 'assets/undraw_order-confirmed_m9e9.png'
-                          : 'assets/undraw_access-denied_krem.png',
+                          ? 'assets/undraw_order-confirmed_m9e9-removebg-preview.png'
+                          : 'assets/undraw_access-denied_krem-removebg-preview.png',
                       height: 200,
                       width: 400,
                     ),
                     _status == 'active'
                         ? _loggingIn
-                              ? CircularProgressIndicator(color: Colors.blue)
+                              ? CircularProgressIndicator(
+                                  color: Theme.of(context).primaryColor,
+                                )
                               : MaterialButton(
                                   onPressed: () {
                                     _createToken();

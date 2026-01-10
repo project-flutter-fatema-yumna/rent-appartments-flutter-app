@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flats_app/Services/log_out.dart';
-import 'package:flats_app/main.dart';
 import 'package:flats_app/providers/user_provider.dart';
+import 'package:flats_app/widgets/personal_image.dart';
+import 'package:flats_app/widgets/identity_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,10 +34,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final user = context.watch<UserProvider>().user;
     return Scaffold(
-      backgroundColor: Colors.blue[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: Colors.blue[50],
+        automaticallyImplyLeading: false,
+        title: Text('Profile', style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge!.color!,
+          ),),
+        centerTitle: true,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -54,18 +56,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.black, width: 1.5),
                   ),
-                  child: CircleAvatar(
-                    radius: 85,
-                    backgroundImage: user!.personalPhoto != null
-                        ? FileImage(File(user.personalPhoto!.path))
-                        : AssetImage('assets/img_2.png'),
-                  ),
+                  child: personalImage(user!, 85),
                 ),
               ),
               const SizedBox(height: 30),
-              const Text(
+              Text(
                 'Account info',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge!.color!,
+                ),
               ),
               const SizedBox(height: 15),
               _readOnlyField(label: 'First name', value: user.firstName),
@@ -76,36 +74,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               _readOnlyField(label: 'Phone number', value: user.phone),
               const SizedBox(height: 15),
-              const Text(
+              Text(
                 'Identity photo',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 15),
-              Container(
-                height: 180,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.black, width: 1.5),
-                  image: user.identityPhoto != null
-                      ? DecorationImage(
-                          image: FileImage(File(user.identityPhoto!.path)),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyLarge!.color!,
                 ),
               ),
               const SizedBox(height: 15),
-              const Divider(),
-              const Text(
+              identityImage(user),
+              const SizedBox(height: 15),
+              Divider(color: Theme.of(context).textTheme.bodyLarge!.color!),
+              Text(
                 'Settings',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyLarge!.color!,
+                ),
               ),
               const SizedBox(height: 15),
               ListTile(
                 leading: const Icon(Icons.dark_mode_outlined),
-                title: const Text('Dark mode'),
+                title: Text('Dark mode',style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color!),),
                 trailing: Switch(
+                  activeColor: Theme.of(context).primaryColor,
                   value: isDarkMode,
                   onChanged: (value) {
                     setState(() {
@@ -115,18 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                 ),
               ),
-
-              ListTile(
-                leading: const Icon(Icons.language),
-                title: const Text('Language'),
-                trailing: Text(
-                  'English',
-                  style: TextStyle(color: Colors.grey, fontSize: 16),
-                ),
-                onTap: () {},
-              ),
-              const SizedBox(height: 15),
-              const Divider(),
+              Divider(color: Theme.of(context).textTheme.bodyLarge!.color!,),
               ListTile(
                 leading: const Icon(Icons.logout, color: Colors.red),
                 title: const Text(
@@ -152,8 +131,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         readOnly: true,
         decoration: InputDecoration(
           labelText: label,
-          floatingLabelStyle: const TextStyle(
-            color: Colors.blue,
+          floatingLabelStyle: TextStyle(
+            color: Theme.of(context).primaryColor,
             fontWeight: FontWeight.w600,
           ),
           suffixIcon: const Icon(Icons.lock_outline, size: 18),
@@ -162,7 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Colors.blue, width: 1.5),
+            borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
           ),
         ),
         controller: TextEditingController(text: value),

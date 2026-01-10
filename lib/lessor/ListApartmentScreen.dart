@@ -1,4 +1,4 @@
-import 'package:flats_app/MyColors.dart';
+import 'package:flats_app/app_colors.dart';
 import 'package:flats_app/Services/Get_All_Apartment_for_lessor.dart';
 import 'package:flats_app/models/model_apartment.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +25,7 @@ class _List_ApatmentState extends State<List_Apatment> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:myColors.colorWhite,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),

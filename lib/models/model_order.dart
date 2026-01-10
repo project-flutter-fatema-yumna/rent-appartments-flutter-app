@@ -7,7 +7,7 @@ class Modal_Order {
   final DateTime startDate;
   final DateTime endDate;
   final double fullAmount;
-   String status; // pending / accepted / rejected
+  String status; // pending / accepted / rejected
   final int bankId;
   final DateTime? acceptedAt;
   final DateTime createdAt;
@@ -15,6 +15,9 @@ class Modal_Order {
 
   final Model_Apartment apartment;
   final ReservationUser? user;
+  bool isRated;
+  double? userRate;
+
   Modal_Order({
     required this.id,
     required this.userId,
@@ -29,6 +32,8 @@ class Modal_Order {
     required this.updatedAt,
     required this.apartment,
     required this.user,
+    this.isRated = false,
+    this.userRate,
   });
 
   factory Modal_Order.fromJson(Map<String, dynamic> json) {
@@ -44,11 +49,13 @@ class Modal_Order {
       acceptedAt: _parseNullableDate(json['accepted_at']),
       createdAt: DateTime.parse(json['created_at'].toString()),
       updatedAt: DateTime.parse(json['updated_at'].toString()),
-      
+
       apartment: Model_Apartment.fromJson(json['apartment']),
       user: json.containsKey('user') && json['user'] != null
           ? ReservationUser.fromJson(json['user'])
           : null,
+      isRated: json['isRated'] ?? false,
+      userRate: json['userRate'] != null ? _asDouble(json['userRate']) : null,
     );
   }
 
