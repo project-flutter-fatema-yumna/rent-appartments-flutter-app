@@ -1,5 +1,5 @@
 import 'dart:io';
-import '../API/api.dart';
+import '../../API/api.dart';
 
 class addApartment {
   Future<dynamic> storeApartment({

@@ -1,4 +1,4 @@
-import 'package:flats_app/models/model_apartment.dart'; // عدلي المسار حسب مشروعك
+import 'package:flats_app/models/model_apartment.dart';
 
 class Modal_Order {
   final int id;
