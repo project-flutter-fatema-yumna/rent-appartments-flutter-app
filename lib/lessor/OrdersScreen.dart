@@ -1,12 +1,14 @@
 import 'package:flats_app/Services/Lessor_Services/accept_reservation_service.dart';
 import 'package:flats_app/Services/Lessor_Services/reject_reservation_service.dart';
+import 'package:flats_app/global_data.dart';
 import 'package:flats_app/models/model_order.dart';
+import 'package:flats_app/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../Services/Lessor_Services/GetAllOrderServices.dart';
 
 class OrdersScreen extends StatefulWidget {
-  static String id='OrdersScreen';
+  static String id = 'OrdersScreen';
   const OrdersScreen({super.key});
 
   @override
@@ -15,14 +17,15 @@ class OrdersScreen extends StatefulWidget {
 
 class _OrdersScreenState extends State<OrdersScreen> {
   late Future<List<Modal_Order>> OrdersFutur;
-  List<Modal_Order> allOrders=[];
-  String selectedFilter="all";
+  List<Modal_Order> allOrders = [];
+  String selectedFilter = "all";
 
   List<Modal_Order> get filteredOrders {
     if (selectedFilter == "all") return allOrders;
     return allOrders.where((o) => o.status == selectedFilter).toList();
   }
-  final String token='1|EZIEoy5aLnCdi5XP2jxeaGtnNT60yqCeYyfoaP0W9a2b30e6';
+
+  final String token = userToken;
 
   @override
   void initState() {
@@ -33,7 +36,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF6F7FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -46,7 +49,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             const SizedBox(height: 6),
             Text(
               "Review requests and accept or reject",
-              style: TextStyle(color: Colors.grey.shade600,fontSize: 18),
+              style: TextStyle(color: Colors.grey, fontSize: 18),
             ),
 
             const SizedBox(height: 20),
@@ -55,26 +58,42 @@ class _OrdersScreenState extends State<OrdersScreen> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  filterChip(label: "All", selected: selectedFilter=="all", onTap: () {
-                    setState(() {
-                      selectedFilter="all";
-                    });
-                  }),
-                  filterChip(label: "Pending", selected: selectedFilter=="pending", onTap: () {
-                    setState(() {
-                      selectedFilter="pending";
-                    });
-                  }),
-                  filterChip(label: "Accepted", selected: selectedFilter=="accepted", onTap: () {
-                    setState(() {
-                      selectedFilter="accepted";
-                    });
-                  }),
-                  filterChip(label: "Rejected", selected: selectedFilter=="rejected", onTap: () {
-                    setState(() {
-                      selectedFilter="rejected";
-                    });
-                  }),
+                  filterChip(
+                    label: "All",
+                    selected: selectedFilter == "all",
+                    onTap: () {
+                      setState(() {
+                        selectedFilter = "all";
+                      });
+                    },
+                  ),
+                  filterChip(
+                    label: "Pending",
+                    selected: selectedFilter == "pending",
+                    onTap: () {
+                      setState(() {
+                        selectedFilter = "pending";
+                      });
+                    },
+                  ),
+                  filterChip(
+                    label: "Accepted",
+                    selected: selectedFilter == "accepted",
+                    onTap: () {
+                      setState(() {
+                        selectedFilter = "accepted";
+                      });
+                    },
+                  ),
+                  filterChip(
+                    label: "Rejected",
+                    selected: selectedFilter == "rejected",
+                    onTap: () {
+                      setState(() {
+                        selectedFilter = "rejected";
+                      });
+                    },
+                  ),
                 ],
               ),
             ),
@@ -85,7 +104,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 future: OrdersFutur,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child:SpinKitThreeBounce(color: Colors.blue,size: 20,));
+                    return const Center(
+                      child: SpinKitThreeBounce(color: Colors.blue, size: 20),
+                    );
                   }
                   if (snapshot.hasError) {
                     return Center(child: Text("Error: ${snapshot.error}"));
@@ -93,12 +114,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(child: Text("No orders yet"));
                   }
-                  if(allOrders.isEmpty){
-                   allOrders = snapshot.data!;
+                  if (allOrders.isEmpty) {
+                    allOrders = snapshot.data!;
                   }
-                  final showOrders=filteredOrders;
+                  final showOrders = filteredOrders;
                   if (showOrders.isEmpty) {
-                    return const Center(child: Text("No orders in this filter"));
+                    return const Center(
+                      child: Text("No orders in this filter"),
+                    );
                   }
 
                   return ListView.separated(
@@ -111,14 +134,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           try {
                             await AcceptReservationService().accept(
                               reservationId: showOrders[index].id,
-                              token:token
+                              token: token,
                             );
                             if (!mounted) return;
                             setState(() {
                               showOrders[index].status = 'accepted';
                             });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Accepted ")),
+                            mySnackBar(
+                              context,
+                              "Accepted ",
+                              color: Colors.green,
                             );
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -130,15 +155,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           try {
                             await RejectReservationService().reject(
                               reservationId: showOrders[index].id,
-                              token:token
+                              token: token,
                             );
                             if (!mounted) return;
                             setState(() {
                               showOrders[index].status = 'rejected';
                             });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Rejected ")),
-                            );
+                            mySnackBar(context, "Rejected ");
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("Error: $e")),
@@ -176,12 +199,13 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final isPending = status == "pending";
-    final path=modal_order.apartment.images.isNotEmpty;
-    final url=path?
-        'http://10.0.2.2:8000/storage/${modal_order.apartment.images[0].image.trim()}':null;
+    final path = modal_order.apartment.images.isNotEmpty;
+    final url = path
+        ? 'http://10.0.2.2:8000/storage/${modal_order.apartment.images[0].image.trim()}'
+        : null;
 
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       borderRadius: BorderRadius.circular(16),
       elevation: 0.6,
       child: InkWell(
@@ -197,19 +221,22 @@ class OrderCard extends StatelessWidget {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                     // borderRadius: BorderRadius.circular(12),
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      // borderRadius: BorderRadius.circular(12),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: path?
-                      Image.network(
-                        url!,
-                        width: 44,
-                        height: 44,
-                        fit: BoxFit.cover,
-                      ):
-                          Icon(Icons.home,color: Colors.blue,),
+                      child: path
+                          ? Image.network(
+                              url!,
+                              width: 44,
+                              height: 44,
+                              fit: BoxFit.cover,
+                            )
+                          : Icon(
+                              Icons.home,
+                              color: Theme.of(context).primaryColor,
+                            ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -227,16 +254,12 @@ class OrderCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(
-                              Icons.person,
-                              size: 16,
-                              color: Colors.grey.shade600,
-                            ),
+                            Icon(Icons.person, size: 16, color: Colors.grey),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
-                                modal_order.user?.username??'Guest',
-                                style: TextStyle(color: Colors.grey.shade700),
+                                modal_order.user?.username ?? 'Guest',
+                                style: TextStyle(color: Colors.grey),
                               ),
                             ),
                           ],
@@ -350,21 +373,18 @@ class InfoTile extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       height: 100,
       decoration: BoxDecoration(
-        color: const Color(0xffF6F7FB),
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: Colors.blueGrey),
+          Icon(icon, size: 18, color: Colors.grey),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                ),
+                Text(title, style: TextStyle(fontSize: 12, color: Colors.grey)),
                 const SizedBox(height: 3),
                 Text(
                   value,
@@ -440,13 +460,16 @@ class filterChip extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ChoiceChip(
+        backgroundColor: Theme.of(context).cardColor,
+        side: BorderSide(color: Theme.of(context).primaryColor),
         label: Text(label),
         selected: selected,
         onSelected: (_) => onTap(),
-        selectedColor: Colors.blue.shade100,
+        selectedColor: Theme.of(context).primaryColor,
+        checkmarkColor: Colors.white,
         labelStyle: TextStyle(
           fontWeight: FontWeight.w700,
-          color: selected ? Colors.blue.shade900 : Colors.black87,
+          color: selected ? Colors.white : Theme.of(context).primaryColor,
         ),
       ),
     );

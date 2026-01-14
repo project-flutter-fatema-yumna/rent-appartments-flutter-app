@@ -8,6 +8,7 @@ import 'package:flats_app/Screens/showScreen.dart';
 import 'package:flats_app/app_colors.dart';
 import 'package:flats_app/authentication_screens/onboarding_screens.dart';
 import 'package:flats_app/authentication_screens/waiting_for_acception.dart';
+import 'package:flats_app/global_data.dart';
 import 'package:flats_app/lessor/ListApartmentScreen.dart';
 import 'package:flats_app/lessor/homePage.dart';
 import 'package:flats_app/providers/favorite_provider.dart';
@@ -31,7 +32,6 @@ import 'lessor/chat/chatSecondScreen.dart';
 import 'lessor/chat/homeChatScreen.dart';
 import 'lessor/help_support_screen.dart';
 import 'lessor/notificationsLessorScreen.dart';
-import 'lessor/profileLessor.dart';
 import 'lessor/tenantScreen.dart';
 import 'lessor/walletLessorScreens/homCardLessor.dart';
 import 'noti_service.dart';
@@ -40,6 +40,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService.instance.initNotification();
   SharedPreferences prefs = await SharedPreferences.getInstance();
+  userToken = prefs.getString('token') ?? "";
   bool isDarkMode = prefs.getBool('isDarkMode') ?? false;
   runApp(
     OverlaySupport.global(
@@ -137,13 +138,12 @@ class _MyAppState extends State<MyApp> {
         OnboardingScreen.id: (context) => OnboardingScreen(),
         WaitingForAcception.id: (context) => WaitingForAcception(),
         FilteredApartmentsScreen.id: (context) => FilteredApartmentsScreen(),
-        Homepage.id: (context) => Homepage(),
+        Homepage.id: (context) => Homepage(toggleTheme: toggleTheme),
         List_Apatment.id: (context) => List_Apatment(),
         ReservationsScreen.id: (context) => ReservationsScreen(),
         EditeapartmentLessor.id: (context) => EditeapartmentLessor(),
         // ApartmentDetailsSheet.id:(context)=>ApartmentDetailsSheet(),
         OrdersScreen.id: (context) => OrdersScreen(),
-        profileLessor.id: (context) => profileLessor(),
         notificationsLessor.id: (context) => notificationsLessor(),
         notificationScreen.id: (context) => notificationScreen(),
         LessorWalletScreen.id: (context) => LessorWalletScreen(),

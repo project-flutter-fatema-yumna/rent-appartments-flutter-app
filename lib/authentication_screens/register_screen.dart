@@ -200,7 +200,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Text(
                       'Verify',
                       style: TextStyle(
-                        color: Theme.of(context).cardColor,
+                        color: Colors.white,
                         fontSize: 17,
                       ),
                     ),

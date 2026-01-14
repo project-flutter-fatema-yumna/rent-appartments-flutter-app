@@ -1,6 +1,7 @@
 import 'package:flats_app/MainLayout.dart';
 import 'package:flats_app/authentication_screens/login_screen.dart';
 import 'package:flats_app/authentication_screens/onboarding_screens.dart';
+import 'package:flats_app/lessor/homePage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,7 +46,11 @@ class _SplashScreenState extends State<SplashScreen>
       bool? isLoggedIn = prefs.getBool('isLoggedIn');
       if (isOnboardingSeen == true) {
         if(isLoggedIn==true){
-          Navigator.pushReplacementNamed(context, MainlayoutScreen.id);
+          if (prefs.getString('role') == 'tenant') {
+            Navigator.pushReplacementNamed(context, MainlayoutScreen.id);
+          } else {
+            Navigator.pushReplacementNamed(context, Homepage.id);
+          }
         }else{
           Navigator.pushReplacementNamed(context, LoginScreen.id);
         }

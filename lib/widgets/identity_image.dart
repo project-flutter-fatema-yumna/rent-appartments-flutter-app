@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 Widget identityImage(UserData user) {
   ImageProvider? image;
-
   if (user.identityPhoto != null) {
     image = FileImage(File(user.identityPhoto!.path));
   } else if (user.identityPhotoUrl != null) {

@@ -1,3 +1,4 @@
+import 'package:flats_app/global_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,22 +15,20 @@ class Chat_Screen extends StatefulWidget {
 }
 
 class _Chat_ScreenState extends State<Chat_Screen> {
-   String? token =
-      '1|EZIEoy5aLnCdi5XP2jxeaGtnNT60yqCeYyfoaP0W9a2b30e6';
-    int? myId
-   = 1;
+  String? token = userToken;
+  int? myId = 1;
 
   bool loading = true;
   List<ModelCurrentChat> chats = [];
 
-
   @override
   void initState() {
     super.initState();
-   // _loadUserData();
+    // _loadUserData();
 
     fetchChats();
   }
+
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -40,13 +39,14 @@ class _Chat_ScreenState extends State<Chat_Screen> {
     //print("token from prefs => $token");
     //print("myId from prefs => $myId");
 
-     await fetchChats();
+    await fetchChats();
   }
 
   Future<void> fetchChats() async {
     try {
-      final data =
-      await GetCurrentChatsService().getCurrentChats(token: token!);
+      final data = await GetCurrentChatsService().getCurrentChats(
+        token: token!,
+      );
       print('TOKEN USED FOR Lessor WEBSOCKET BROADCAST = ${token}');
       print('MY ID = ${myId}');
 
@@ -63,45 +63,44 @@ class _Chat_ScreenState extends State<Chat_Screen> {
   @override
   Widget build(BuildContext context) {
     if (loading) {
-      return const Scaffold(
-        body: Center(child: SpinKitThreeBounce(color: Colors.blue,size: 20,)),
+      return Scaffold(
+        body: Center(child: SpinKitThreeBounce(color: Theme.of(context).primaryColor, size: 20)),
       );
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: chats.isEmpty
             ? const Center(child: Text("No chats yet"))
             : ListView.separated(
-          itemCount: chats.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 10),
-          itemBuilder: (context, index) {
-            final chat = chats[index];
+                itemCount: chats.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                itemBuilder: (context, index) {
+                  final chat = chats[index];
 
-            final name =
-            "${chat.firstName} ${chat.lastName}".trim();
+                  final name = "${chat.firstName} ${chat.lastName}".trim();
 
-            return ChatCardStatic(
-              modelCurrentChat: chat,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => chatSecondScreen(
-                      phone: chat.phone,
-                      title: name,
-                      myId: myId!,
-                      otherUserId: chat.otherUserId,
-                      token: token!,
-                    ),
-                  ),
-                );
-              },
-            );
-          },
-        ),
+                  return ChatCardStatic(
+                    modelCurrentChat: chat,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => chatSecondScreen(
+                            phone: chat.phone,
+                            title: name,
+                            myId: myId!,
+                            otherUserId: chat.otherUserId,
+                            token: token!,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
       ),
     );
   }
@@ -119,24 +118,24 @@ class ChatCardStatic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name =
-    "${modelCurrentChat.firstName} ${modelCurrentChat.lastName}".trim();
-    
+    final name = "${modelCurrentChat.firstName} ${modelCurrentChat.lastName}"
+        .trim();
+
     final lastMessage = "Last message ...";
 
     final time = modelCurrentChat.lastMessageAt;
 
     const int unreadCount = 0;
-    
+
     final initials = name.isEmpty
         ? "?"
         : name
-        .split(" ")
-        .where((e) => e.isNotEmpty)
-        .take(2)
-        .map((e) => e[0])
-        .join()
-        .toUpperCase();
+              .split(" ")
+              .where((e) => e.isNotEmpty)
+              .take(2)
+              .map((e) => e[0])
+              .join()
+              .toUpperCase();
 
     return Material(
       color: Colors.white,
@@ -203,10 +202,7 @@ class ChatCardStatic extends StatelessWidget {
                 children: [
                   Text(
                     time,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                   const SizedBox(height: 8),
                   if (unreadCount > 0)
@@ -239,4 +235,3 @@ class ChatCardStatic extends StatelessWidget {
     );
   }
 }
-

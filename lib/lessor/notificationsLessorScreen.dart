@@ -1,3 +1,4 @@
+import 'package:flats_app/global_data.dart';
 import 'package:flats_app/models/model_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -13,7 +14,7 @@ class notificationsLessor extends StatefulWidget {
 }
 
 class _notificationsLessorState extends State<notificationsLessor> {
-  final String token='1|EZIEoy5aLnCdi5XP2jxeaGtnNT60yqCeYyfoaP0W9a2b30e6';
+  final String token= userToken;
   @override
   void initState() {
     super.initState();
@@ -51,7 +52,7 @@ class _notificationsLessorState extends State<notificationsLessor> {
     final provi = context.watch<notification_provider>();
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
         title: Text('Notifications', style: TextStyle(color: Colors.white)),
         leading: IconButton(
@@ -62,7 +63,7 @@ class _notificationsLessorState extends State<notificationsLessor> {
         ),
       ),
       body: provi.isLoading
-          ? Center(child: SpinKitThreeBounce(color: Colors.blue, size: 20))
+          ? Center(child: SpinKitThreeBounce(color: Theme.of(context).primaryColor, size: 20))
           : RefreshIndicator(
               onRefresh: () => provi.getNumberMesseageUnRead(token: token!),
               child: ListView(
@@ -75,7 +76,7 @@ class _notificationsLessorState extends State<notificationsLessor> {
                       onTap: (){
                         provi.markNotificationAsRead(token: token!, notificationId:n.id);
                       },
-                      child: notificationCardByType(n),
+                      child: notificationCardByType(n,context),
                     )),
 
                     const SizedBox(height: 14),
@@ -86,7 +87,7 @@ class _notificationsLessorState extends State<notificationsLessor> {
                     ...provi.readList.map(
                       (n) => Padding(
                         padding: const EdgeInsets.only(bottom: 10),
-                        child: notificationCardByType(n),
+                        child: notificationCardByType(n, context),
                       ),
                     ),
                   ],
@@ -105,12 +106,12 @@ class _notificationsLessorState extends State<notificationsLessor> {
 Widget _infoRow({required IconData icon, required String text}) {
   return Row(
     children: [
-      Icon(icon, size: 18, color: Colors.grey.shade700),
+      Icon(icon, size: 18, color: Colors.grey),
       const SizedBox(width: 8),
       Expanded(
         child: Text(
           text,
-          style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
+          style: TextStyle(fontSize: 13, color: Colors.grey),
         ),
       ),
     ],
@@ -191,7 +192,7 @@ class TenantCancelledBookingCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       height: 220,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -294,9 +295,9 @@ class WalletAddedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -393,7 +394,7 @@ class WalletWithdrawnCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -495,7 +496,7 @@ class BookingAcceptedCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -608,7 +609,7 @@ class BookingRejectedCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -708,7 +709,7 @@ class BookingCancelledRefundCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -836,7 +837,7 @@ Widget _notifTile(
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -895,7 +896,7 @@ Widget _notifTile(
   );
 }
 
-Widget notificationCardByType(NotificationItemModel noti){
+Widget notificationCardByType(NotificationItemModel noti, BuildContext context){
   final cardType=noti.type.split('\\').last;
   //print("TYPE = ${noti.type}");
   //print("cardType = ${noti.type.split('\\').last}");
@@ -916,7 +917,7 @@ Widget notificationCardByType(NotificationItemModel noti){
       return Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(noti.data.message),

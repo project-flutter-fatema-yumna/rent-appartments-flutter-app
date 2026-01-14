@@ -1,3 +1,4 @@
+import 'package:flats_app/global_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,8 +30,7 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
     // final prefs = await SharedPreferences.getInstance();
     // final token = prefs.getString('token') ?? '';
 
-    const token =
-        '11|Zqope5z8ZqmMonutPrcU6wA1DPDk5mz8w2LZqXrZcc5c38ec';
+    final String token = userToken;
 
     return GetWalletService().getWalletData(token: token);
   }
@@ -66,24 +66,25 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text(
           "My Card",
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: Theme.of(context).primaryColor,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: FutureBuilder<WalletData>(
         future: _futureWallet,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
+            return Center(
               child: SpinKitThreeBounce(
-                color: Colors.blue,
+                color: Theme.of(context).primaryColor,
                 size: 20,
               ),
             );
@@ -115,7 +116,7 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -128,28 +129,29 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Current Balance",
                       style: TextStyle(
                         fontSize: 13,
-                        color: Colors.grey,
+                        color: Theme.of(context).textTheme.bodyMedium!.color,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       "${available.toStringAsFixed(2)} ",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.bodyMedium!.color
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       "$role wallet",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: Colors.black54,
+                        color: Theme.of(context).textTheme.bodyMedium!.color,
                       ),
                     ),
                   ],
@@ -170,7 +172,7 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: Theme.of(context).primaryColor,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -211,20 +213,21 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
                     child: SizedBox(
                       height: 48,
                       child: OutlinedButton.icon(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.north_east,
                           size: 19,
-                          color: Colors.blue,
+                          color: Theme.of(context).primaryColor,
                         ),
-                        label: const Text(
+                        label: Text(
                           "Add Funds",
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: Colors.blue,
+                            color: Theme.of(context).primaryColor,
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.blue),
+                          side: BorderSide(color: Theme.of(context).primaryColor,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -274,6 +277,7 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
                     ),
                   ),
                   DropdownButton<String>(
+                    dropdownColor: Theme.of(context).cardColor,
                     value: selectedStatus,
                     borderRadius: BorderRadius.circular(12),
                     items: const [
@@ -367,15 +371,15 @@ class _RequestTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade300),
       ),
       child: ListTile(
         leading: CircleAvatar(
           radius: 20,
-          backgroundColor: Colors.blue.withOpacity(0.1),
-          child: Icon(icon, color: Colors.blue, size: 20),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          child: Icon(icon, color: Theme.of(context).primaryColor, size: 20),
         ),
         title: Text(
           title,
@@ -383,7 +387,8 @@ class _RequestTile extends StatelessWidget {
         ),
         subtitle: Text(
           date,
-          style: const TextStyle(fontSize: 12, color: Colors.black54),
+          style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodyMedium!.color,
+          ),
         ),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flats_app/MainLayout.dart';
 import 'package:flats_app/authentication_screens/register_screen.dart';
+import 'package:flats_app/global_data.dart';
+import 'package:flats_app/lessor/homePage.dart';
 import 'package:flats_app/widgets/snack_bar.dart';
 import 'package:flats_app/models/user_data.dart';
 import 'package:flutter/gestures.dart';
@@ -108,9 +110,17 @@ class _LoginScreenState extends State<LoginScreen> {
         print('////////////////');
 
         prefs.setString('token', token);
+        userToken = token;
 
         prefs.setBool('isLoggedIn', true);
-        Navigator.pushReplacementNamed(context, MainlayoutScreen.id);
+        print('////////////////////////////////////');
+        print('role');
+        print(prefs.getString('role'));
+        if (prefs.getString('role') == 'tenant') {
+          Navigator.pushReplacementNamed(context, MainlayoutScreen.id);
+        } else {
+          Navigator.pushReplacementNamed(context, Homepage.id);
+        }
       } else if (response.statusCode == 401) {
         mySnackBar(context, 'Wrong password or phone number');
       } else if (response.statusCode == 500) {
@@ -208,10 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           child: Text(
                             'Login',
-                            style: TextStyle(
-                              color: Theme.of(context).cardColor,
-                              fontSize: 17,
-                            ),
+                            style: TextStyle(color: Colors.white, fontSize: 17),
                           ),
                         ),
                 ),

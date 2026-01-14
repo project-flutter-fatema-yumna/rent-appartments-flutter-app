@@ -27,7 +27,7 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
           centerTitle: true,
           title: Text(
             'My Reservations',
-            style: TextStyle(color: Theme.of(context).cardColor),
+            style: TextStyle(color: Colors.white),
           ),
           backgroundColor: Theme.of(context).primaryColor,
           bottom: PreferredSize(

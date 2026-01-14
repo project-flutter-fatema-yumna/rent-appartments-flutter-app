@@ -131,7 +131,7 @@ class _ApartmentDetailsSheetState extends State<ApartmentDetailsSheet> {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w900,
-                  color: Colors.blue.shade800,
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
               const SizedBox(height: 14),
@@ -166,7 +166,7 @@ class _ApartmentDetailsSheetState extends State<ApartmentDetailsSheet> {
                   Expanded(
                     child: Text(
                       "Furnished",
-                      style: TextStyle(color: Colors.grey.shade700, fontSize: 16),
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
                     ),
                   ),
                   Row(
@@ -192,8 +192,9 @@ class _ApartmentDetailsSheetState extends State<ApartmentDetailsSheet> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                  label: const Text("Close"),
+                  icon: Icon(Icons.close, color: Theme.of(context).textTheme.bodyMedium!.color,),
+                  label: Text("Close", style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color,
+                    ),),
                 ),
               ),
             ],

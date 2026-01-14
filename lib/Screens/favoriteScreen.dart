@@ -46,12 +46,12 @@ bool _isLoading = true;
       backgroundColor:  Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Your Favorites', style: TextStyle(color: Theme.of(context).cardColor,
+        title: Text('My Favourites', style: TextStyle(color: Colors.white,
           )),
         elevation: 5,
         centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
-        iconTheme: IconThemeData(color: Theme.of(context).cardColor
+        iconTheme: IconThemeData(color: Colors.white
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),

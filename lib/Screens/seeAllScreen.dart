@@ -104,12 +104,12 @@ class _See_all_screenState extends State<See_all_screen> {
       appBar: AppBar(
         title: Text(
           'Flats',
-          style: TextStyle(color: Theme.of(context).cardColor),
+          style: TextStyle(color: Colors.white),
         ),
         elevation: 5,
         centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
-        iconTheme: IconThemeData(color: Theme.of(context).cardColor),
+        iconTheme: IconThemeData(color: Colors.white),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
         ),

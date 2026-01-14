@@ -42,34 +42,54 @@ class HomescreenState extends State<Homescreen> {
 
   Future<String?> getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
     return prefs.getString('token');
   }
+
   //fast for pagaination
   Future<void> _initToken() async {
     token = await getToken();
   }
-  Future<void> loadingFirstPage() async{
+
+  Future<void> loadingFirstPage() async {
     await _initToken();
-    if(token==null) { setState(() => firstLoading = false);
-    return;}
+    if (token == null) {
+      setState(() => firstLoading = false);
+      return;
+    }
     setState(() => firstLoading = true);
 
     try {
-      final page = await ApartmentsPaginationService().getFirstPage(token: token!);
+      final page = await ApartmentsPaginationService().getFirstPage(
+        token: token!,
+      );
       setState(() {
         flats = page.data;
         nextPageUrl = page.nextPageUrl;
       });
     } catch (e) {
-    } finally {
+    }
+    try {
+      final favorites = await fetchFavorites();
+
+      if (favorites != null) {
+        List<int> ids = favorites.map((e) => e.id).toList();
+
+        if (mounted) {
+          Provider.of<FavoriteProvider>(
+            context,
+            listen: false,
+          ).loadInitialFavorites(ids);
+        }
+      }
+    } catch (e) {
+      print("Error loading initial favorites: $e");
+    }
+     finally {
       setState(() => firstLoading = false);
     }
-
   }
 
-  String fixUrl(String url) =>
-      url.replaceFirst('127.0.0.1', '10.0.2.2');
+  String fixUrl(String url) => url.replaceFirst('127.0.0.1', '10.0.2.2');
 
   Future<void> loadMore() async {
     if (loadingMore) return;
@@ -97,39 +117,6 @@ class HomescreenState extends State<Homescreen> {
     }
   }
 
-
-  /* void fetchApartments() async {
-    String? token = await getToken();
-    if (token == null) return;
-
-    setState(() {
-      apartmentsFuture = get_apartment().getAllApartment(token: token);
-      print("token: $token");
-
-    });
-<<<<<<< HEAD
-
-    try {
-      final favorites = await fetchFavorites();
-
-      if (favorites != null) {
-        List<int> ids = favorites.map((e) => e.id).toList();
-
-        if (mounted) {
-          Provider.of<FavoriteProvider>(
-            context,
-            listen: false,
-          ).loadInitialFavorites(ids);
-        }
-      }
-    } catch (e) {
-      print("Error loading initial favorites: $e");
-    }
-  }
-=======
-  }*/
-
-
   @override
   void initState() {
     super.initState();
@@ -156,8 +143,16 @@ class HomescreenState extends State<Homescreen> {
   Widget build(BuildContext context) {
     final user = context.watch<UserProvider>().user;
     if (user == null) {
-      return SpinKitThreeBounce(color: Colors.blue,size: 20,);
+      return SpinKitThreeBounce(
+        color: Theme.of(context).primaryColor,
+        size: 20,
+      );
     }
+    print('////////////////////personal from home');
+    print(user.personalPhoto);
+    print('////////////////////identity from home');
+    print(user.identityPhoto);
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
@@ -166,7 +161,7 @@ class HomescreenState extends State<Homescreen> {
           controller: _scrollController,
           child: Column(
             children: [
-              SizedBox(height: 10,),
+              SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -177,7 +172,10 @@ class HomescreenState extends State<Homescreen> {
                       SizedBox(width: 15),
                       Text(
                         user?.userName ?? 'Guest',
-                        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: 20),
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          fontSize: 20,
+                        ),
                       ),
                     ],
                   ),
@@ -190,16 +188,19 @@ class HomescreenState extends State<Homescreen> {
                           height: 44,
                           child: Container(
                             decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(25)
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(25),
                             ),
                             child: IconButton(
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
                               onPressed: () {
-                                Navigator.pushNamed(context, TenantWalletScreen.id);
+                                Navigator.pushNamed(
+                                  context,
+                                  TenantWalletScreen.id,
+                                );
                               },
-                              icon:  Icon(Icons.add_card, color:Colors.grey),
+                              icon: Icon(Icons.add_card, color: Colors.grey),
                             ),
                           ),
                         ),
@@ -214,16 +215,22 @@ class HomescreenState extends State<Homescreen> {
                             children: [
                               Container(
                                 decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(25)
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(25),
                                 ),
                                 child: IconButton(
                                   padding: EdgeInsets.zero,
                                   constraints: const BoxConstraints(),
                                   onPressed: () {
-                                    Navigator.pushNamed(context, notificationScreen.id);
+                                    Navigator.pushNamed(
+                                      context,
+                                      notificationScreen.id,
+                                    );
                                   },
-                                  icon:  Icon(Icons.notifications, color:Colors.grey),
+                                  icon: Icon(
+                                    Icons.notifications,
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ),
                               Positioned(
@@ -231,12 +238,18 @@ class HomescreenState extends State<Homescreen> {
                                 top: 2,
                                 child: Consumer<notification_provider>(
                                   builder: (context, p, child) {
-                                    final List=p.unReadList;
-                                    if (List.isEmpty) return const SizedBox.shrink();
+                                    final List = p.unReadList;
+                                    if (List.isEmpty)
+                                      return const SizedBox.shrink();
 
                                     return Container(
-                                      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-                                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                                      constraints: const BoxConstraints(
+                                        minWidth: 18,
+                                        minHeight: 18,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 5,
+                                      ),
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
                                         color: Colors.red,
@@ -260,9 +273,9 @@ class HomescreenState extends State<Homescreen> {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
-                ),
+              ),
 
               SizedBox(height: 30),
               Align(
@@ -288,15 +301,21 @@ class HomescreenState extends State<Homescreen> {
                         hintStyle: Theme.of(context).textTheme.bodyLarge,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(50),
-                          borderSide: BorderSide(color: Theme.of(context).cardColor),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).cardColor,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(50),
-                          borderSide: BorderSide(color: Theme.of(context).cardColor),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).cardColor,
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(50),
-                          borderSide: BorderSide(color: Theme.of(context).cardColor),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).cardColor,
+                          ),
                         ),
                       ),
                     ),
@@ -310,7 +329,7 @@ class HomescreenState extends State<Homescreen> {
                         ),
                         padding: EdgeInsets.all(12),
                         icon: Icon(Icons.tune),
-                        color: Theme.of(context).cardColor,
+                        color: Colors.white,
                       ),
                     ),
                   ],
@@ -327,7 +346,10 @@ class HomescreenState extends State<Homescreen> {
                   children: [
                     Text(
                       'Recommended Property',
-                      style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: 20),
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                        fontSize: 20,
+                      ),
                     ),
                   ],
                 ),
@@ -337,52 +359,64 @@ class HomescreenState extends State<Homescreen> {
                 child: SizedBox(
                   height: 300,
                   child: firstLoading
-                      ? const Center(child: SpinKitThreeBounce(color: Colors.blue,size: 20,))
+                      ? const Center(
+                          child: SpinKitThreeBounce(
+                            color: Colors.blue,
+                            size: 20,
+                          ),
+                        )
                       : flats.isEmpty
                       ? const Center(child: Text('No apartment'))
                       : Builder(
-                    builder: (context) {
-                      final rated = flats
-                          .where((apt) => (apt.home_rate ?? 0) >= 4.0)
-                          .toList();
-                      if (rated.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.roofing_outlined,
-                                  color: Colors.blue, size: 100),
-                              Text(
-                                'There are no apartments rated 5.0',
-                                style: TextStyle(color: Colors.blue),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      return ListView.builder(
-                        itemCount: rated.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: CardHome(model_apartment: rated[index]),
-                          );
-                        },
-                      );
-                    },
-                  ),
+                          builder: (context) {
+                            final rated = flats
+                                .where((apt) => (apt.home_rate ?? 0) >= 4.0)
+                                .toList();
+                            if (rated.isEmpty) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.roofing_outlined,
+                                      color:Theme.of(context).primaryColor ,
+                                      size: 100,
+                                    ),
+                                    Text(
+                                      'There are no apartments rated 5.0',
+                                      style: TextStyle(color: Theme.of(context).primaryColor,),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return ListView.builder(
+                              itemCount: rated.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: CardHome(
+                                    model_apartment: rated[index],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
                 ),
-
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 10,left: 10,right: 10),
+                padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'Flats',
-                      style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: 20),
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                        fontSize: 20,
+                      ),
                     ),
                     InkWell(
                       onTap: () {
@@ -390,34 +424,44 @@ class HomescreenState extends State<Homescreen> {
                       },
                       child: Text(
                         'See All',
-                        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: 20),
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                          fontSize: 20,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
               firstLoading
-                  ? const Center(child:SpinKitThreeBounce(color: Colors.blue,size: 20,))
+                  ? const Center(
+                      child: SpinKitThreeBounce(color: Colors.blue, size: 20),
+                    )
                   : flats.isEmpty
                   ? const Center(child: Text('No apartment'))
                   : ListView.builder(
-                itemCount: flats.length + 1,
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  if (index < flats.length) {
-                    return Second_card_home(model_apartment: flats[index]);
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Center(
-                      child: loadingMore
-                          ? const SpinKitThreeBounce(color: Colors.blue,size: 20,)
-                          : const SizedBox(),
+                      itemCount: flats.length + 1,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        if (index < flats.length) {
+                          return Second_card_home(
+                            model_apartment: flats[index],
+                          );
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Center(
+                            child: loadingMore
+                                ? const SpinKitThreeBounce(
+                                    color: Colors.blue,
+                                    size: 20,
+                                  )
+                                : const SizedBox(),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
               SizedBox(height: 20),
             ],
           ),
@@ -425,6 +469,7 @@ class HomescreenState extends State<Homescreen> {
       ),
     );
   }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -483,7 +528,10 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
             const SizedBox(height: 16),
             Text(
               'Filter Apartments',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge!.color,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
               ),
             ),
             const SizedBox(height: 16),
@@ -639,7 +687,7 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
                     },
                     child: Text(
                       'Apply Filters',
-                      style: TextStyle(color: Theme.of(context).cardColor)
+                      style: TextStyle(color: Theme.of(context).cardColor),
                     ),
                   ),
                 ),
@@ -653,8 +701,13 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
 
   Widget _title(String t) => Padding(
     padding: const EdgeInsets.only(bottom: 6),
-    child: Text(t, style: TextStyle(fontWeight: FontWeight.w600, color: Theme.of(context).textTheme.bodyLarge!.color,
-      )),
+    child: Text(
+      t,
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        color: Theme.of(context).textTheme.bodyLarge!.color,
+      ),
+    ),
   );
 
   Widget _dropdown({
@@ -666,19 +719,27 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<String>(
-        dropdownColor: Theme.of(context).cardColor,
+        dropdownColor: Theme.of(context).scaffoldBackgroundColor,
         value: value,
         decoration: InputDecoration(
           floatingLabelStyle: TextStyle(color: Theme.of(context).primaryColor),
           labelText: label,
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
+            borderSide: BorderSide(
+              color: Theme.of(context).primaryColor,
+              width: 1.5,
+            ),
           ),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
         items: items
-            .map((e) => DropdownMenuItem(value: e, child: Text(e, style: Theme.of(context).textTheme.bodyLarge,),))
+            .map(
+              (e) => DropdownMenuItem(
+                value: e,
+                child: Text(e, style: Theme.of(context).textTheme.bodyLarge),
+              ),
+            )
             .toList(),
         onChanged: onChanged,
       ),
@@ -692,7 +753,9 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
       label: Text(text),
       selected: selected,
       selectedColor: Theme.of(context).primaryColor,
-      labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color),
+      labelStyle: TextStyle(
+        color: Theme.of(context).textTheme.bodyLarge!.color,
+      ),
       checkmarkColor: Theme.of(context).textTheme.bodyLarge!.color!,
       onSelected: (_) => onTap(),
     );
@@ -710,7 +773,7 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
         Text('$label: ${value == -1 ? 'Any' : value.toInt()}'),
         Slider(
           inactiveColor: Theme.of(context).scaffoldBackgroundColor,
-          
+
           value: value == -1 ? 0 : value,
           max: max.toDouble(),
           divisions: max,
@@ -719,7 +782,5 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
         ),
       ],
     );
-
   }
-
 }

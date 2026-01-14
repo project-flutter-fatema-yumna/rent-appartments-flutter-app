@@ -21,11 +21,9 @@ class EditReservationDialog extends StatefulWidget {
 class _EditReservationDialogState extends State<EditReservationDialog> {
   late final String originalStartDate;
   late final String originalEndDate;
-  late final String originalBankAccount;
 
   late TextEditingController startDateController;
   late TextEditingController endDateController;
-  final TextEditingController bankController = TextEditingController();
   bool isLoading = false;
 
   @override
@@ -35,8 +33,6 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
     originalStartDate = widget.oldStartDate.toIso8601String().split('T').first;
 
     originalEndDate = widget.oldEndDate.toIso8601String().split('T').first;
-
-    originalBankAccount = '';
 
     startDateController = TextEditingController(text: originalStartDate);
 
@@ -127,12 +123,9 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
 
   Future<void> submitEdit() async {
     final isStartSame = startDateController.text == originalStartDate;
-
     final isEndSame = endDateController.text == originalEndDate;
 
-    final isBankSame = bankController.text.trim() == originalBankAccount;
-
-    if (isStartSame && isEndSame && isBankSame) {
+    if (isStartSame && isEndSame) {
       Navigator.pop(context);
       return;
     }
@@ -146,9 +139,9 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
       reservationId: widget.reservationId,
       startDate: startDateController.text,
       endDate: endDateController.text,
-      bankAccount: bankController.text,
     );
     if (errorMessage != null) {
+      print('error msg::::::$errorMessage');
       mySnackBar(context, errorMessage, color: Colors.red);
     } else {
       mySnackBar(
@@ -188,14 +181,6 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
               readOnly: true,
               onTap: pickEndDate,
             ),
-
-            const SizedBox(height: 10),
-
-            buildBlueTextField(
-              context: context,
-              controller: bankController,
-              label: 'Bank account number (optional)',
-            ),
           ],
         ),
         actions: [
@@ -221,12 +206,7 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
                       color: Theme.of(context).primaryColor,
                     ),
                   )
-                : Text(
-                    'Apply edits',
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyLarge!.color!,
-                    ),
-                  ),
+                : Text('Apply edits', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

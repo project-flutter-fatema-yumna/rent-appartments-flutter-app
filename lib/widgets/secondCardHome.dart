@@ -27,11 +27,12 @@ class _Second_card_homeState extends State<Second_card_home> {
 
   @override
   Widget build(BuildContext context) {
-
-    if(widget.model_apartment==null || widget.model_apartment!.images.isEmpty) return Center(child: Icon(Icons.image_not_supported));
+    if (widget.model_apartment == null ||
+        widget.model_apartment!.images.isEmpty)
+      return Center(child: Icon(Icons.image_not_supported));
 
     final path = widget.model_apartment!.images[0].image.trim();
-    final url='http://10.0.2.2:8000/storage/$path';
+    final url = 'http://10.0.2.2:8000/storage/$path';
 
     return InkWell(
       onTap: () {
@@ -62,19 +63,50 @@ class _Second_card_homeState extends State<Second_card_home> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5),
-                child:ClipRRect(
+                child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: Image.network(
                     url,
-                    width: 105,
-                    height: 100,
+                    width: 100,
+                    height: 200,
                     fit: BoxFit.cover,
+                    loadingBuilder: (context, child, progress) {
+                      if (progress == null) return child;
+                      return Container(
+                        color: Colors.grey[200],
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Container(
+                          width: 100,
+                          color: Colors.grey[300],
+                          child: const Center(
+                            child: Icon(
+                              Icons.broken_image,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 10,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -85,31 +117,49 @@ class _Second_card_homeState extends State<Second_card_home> {
                           widget.model_apartment!.governorate,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: Colors.black, fontSize: 18),
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium!.color,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Icon(Icons.location_on, color: Colors.blueGrey),
+                          Icon(
+                            Icons.location_on,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium!.color,
+                          ),
                           Text(
                             '${widget.model_apartment!.city} ',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: Colors.blueGrey, fontSize: 15),
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium!.color,
+                              fontSize: 15,
+                            ),
                           ),
                         ],
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: Text(
-                          r'$ ' '${widget.model_apartment!.rent} - ${widget.model_apartment!.rent_type}',
+                          r'$ '
+                          '${widget.model_apartment!.rent} - ${widget.model_apartment!.rent_type}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: Colors.blue, fontSize: 18),
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
-
                     ],
                   ),
                 ),
@@ -151,7 +201,9 @@ class _Second_card_homeState extends State<Second_card_home> {
                                 ? Icons.favorite
                                 : Icons.favorite_border_outlined,
                           ),
-                          color: isFav ? Colors.red : Theme.of(context).textTheme.bodyLarge!.color,
+                          color: isFav
+                              ? Colors.red
+                              : Theme.of(context).textTheme.bodyLarge!.color,
                         );
                       },
                     ),
@@ -160,7 +212,10 @@ class _Second_card_homeState extends State<Second_card_home> {
                         Icon(Icons.star, color: Colors.orange),
                         Text(
                           widget.model_apartment!.home_rate.toInt().toString(),
-                          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: 15),
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                            fontSize: 15,
+                          ),
                         ),
                       ],
                     ),

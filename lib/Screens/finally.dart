@@ -8,141 +8,144 @@ class FinallyPage extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 20,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade400,
-                    borderRadius: BorderRadius.circular(10),
+        Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 20,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade400,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-
-              Center(
-                child: Column(
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey.withOpacity(0.15),
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            child: const Icon(
-                              Icons.check,
-                              color: Colors.white,
-                              size: 20,
+                const SizedBox(height: 20),
+          
+                Center(
+                  child: Column(
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey.withOpacity(0.15),
+                          ),
+                          child: Center(
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              child: const Icon(
+                                Icons.check,
+                                color: Colors.white,
+                                size: 20,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 10),
-                    Column(
-                      children: [
-                        Text(
-                          'Congratulations!',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          'Your investment journey continues!',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 25),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.black12),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      size: 20,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      SizedBox(height: 10),
+                      Column(
                         children: [
                           Text(
-                            'Your order is waiting',
+                            'Congratulations!',
                             style: TextStyle(
-                              fontSize: 16,
-                              color: Theme.of(
-                                context,
-                              ).textTheme.bodyLarge!.color,
-                              height: 1.3,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           Text(
-                            'To track the status of your order, go to',
+                            'Your investment journey continues!',
                             style: TextStyle(
-                              fontSize: 16,
-                              color: Theme.of(
-                                context,
-                              ).textTheme.bodyLarge!.color,
-                              height: 1.3,
-                            ),
-                          ),
-                          Text(
-                            'Your reservations',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Theme.of(context).primaryColor,
-                              height: 1.3,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 30),
-              SizedBox(width: double.infinity, height: 54),
-            ],
+                const SizedBox(height: 25),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.black12),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        size: 20,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Your order is waiting',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodyLarge!.color,
+                                height: 1.3,
+                              ),
+                            ),
+                            Text(
+                              'To track the status of your order, go to',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodyLarge!.color,
+                                height: 1.3,
+                              ),
+                            ),
+                            Text(
+                              'Your reservations',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Theme.of(context).primaryColor,
+                                height: 1.3,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                SizedBox(width: double.infinity, height: 54),
+              ],
+            ),
           ),
         ),
         Positioned(

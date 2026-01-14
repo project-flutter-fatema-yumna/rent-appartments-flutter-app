@@ -19,7 +19,7 @@ class ApartmentCardUI extends StatelessWidget {
     final path = model_apartment.images[0].image.trim();
     final url='http://10.0.2.2:8000/storage/$path';
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       borderRadius: BorderRadius.circular(18),
       elevation: 0.8,
       child: InkWell(
@@ -35,7 +35,7 @@ class ApartmentCardUI extends StatelessWidget {
                 child: Container(
                   width: 100,
                   height: 100,
-                  color: Colors.blue.shade50,
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   child: Image.network(url,  fit:BoxFit.cover,
                   ),
                 ),
@@ -61,7 +61,7 @@ class ApartmentCardUI extends StatelessWidget {
                           "${model_apartment.rent} - ${model_apartment.rent_type}",
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
-                            color: Colors.blue.shade800,
+                            color: Theme.of(context).primaryColor,
                             fontSize: 14,
                           ),
                         ),
@@ -72,14 +72,18 @@ class ApartmentCardUI extends StatelessWidget {
 
                     Row(
                       children: [
-                        Icon(Icons.location_on, size: 16, color: Colors.grey.shade600),
+                        Icon(Icons.location_on, size: 16, color: Theme.of(context).textTheme.bodyMedium!.color,
+                        ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             model_apartment.city,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: Colors.grey.shade700),
+                            style: TextStyle(color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium!.color,
+                            ),
                           ),
                         ),
                       ],

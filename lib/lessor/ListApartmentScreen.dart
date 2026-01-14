@@ -1,5 +1,7 @@
 import 'package:flats_app/Services/Lessor_Services/Get_All_Apartment_for_lessor.dart';
+import 'package:flats_app/global_data.dart';
 import 'package:flats_app/models/model_apartment.dart';
+import 'package:flats_app/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 import '../Services/Lessor_Services/Delete_Apartment_Lessor/deleteApartmentServices.dart';
 import 'EditeApartment_lessor.dart';
@@ -17,12 +19,12 @@ class List_Apatment extends StatefulWidget {
 class _List_ApatmentState extends State<List_Apatment> {
   late Future<List<Model_Apartment>> apartments;
   List<Model_Apartment> flats = [];
-  final String token='1|EZIEoy5aLnCdi5XP2jxeaGtnNT60yqCeYyfoaP0W9a2b30e6';
+  final String token = userToken;
   @override
   void initState() {
     super.initState();
     apartments = get_all_apartment_for_lessor().getApatment_Lessor(
-      token:token ,
+      token: token,
     );
   }
 
@@ -43,7 +45,10 @@ class _List_ApatmentState extends State<List_Apatment> {
               const SizedBox(height: 6),
               Text(
                 "Manage your listings and see details",
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 18),
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium!.color,
+                  fontSize: 18,
+                ),
               ),
               const SizedBox(height: 14),
               Expanded(
@@ -51,7 +56,9 @@ class _List_ApatmentState extends State<List_Apatment> {
                   future: apartments,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: SpinKitThreeBounce(color: Colors.blue,size: 20,));
+                      return Center(
+                        child: SpinKitThreeBounce(color: Colors.blue, size: 20),
+                      );
                     }
                     if (snapshot.hasError) {
                       return Center(child: Text("Error: ${snapshot.error}"));
@@ -72,7 +79,7 @@ class _List_ApatmentState extends State<List_Apatment> {
                             showModalBottomSheet(
                               context: context,
                               isScrollControlled: true,
-                              backgroundColor: Colors.white,
+                              backgroundColor: Theme.of(context).cardColor,
                               shape: const RoundedRectangleBorder(
                                 borderRadius: BorderRadius.vertical(
                                   top: Radius.circular(24),
@@ -88,7 +95,7 @@ class _List_ApatmentState extends State<List_Apatment> {
                             Navigator.pushNamed(
                               context,
                               EditeapartmentLessor.id,
-                              arguments: flats[index]
+                              arguments: flats[index],
                             );
                           },
                           //Delete///////////////////////////////////////////////////
@@ -97,16 +104,31 @@ class _List_ApatmentState extends State<List_Apatment> {
                             final ok = await showDialog<bool>(
                               context: context,
                               builder: (_) => AlertDialog(
+                                backgroundColor: Theme.of(context).cardColor,
                                 title: const Text("Delete apartment"),
-                                content: const Text("Are you sure you want to delete it?"),
+                                content: const Text(
+                                  "Are you sure you want to delete it?",
+                                ),
                                 actions: [
                                   TextButton(
-                                    onPressed: () => Navigator.pop(context, false),
-                                    child: const Text("Cancel"),
+                                    onPressed: () =>
+                                        Navigator.pop(context, false),
+                                    child: Text("Cancel",
+                                      style: TextStyle(color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
                                   ),
                                   ElevatedButton(
-                                    onPressed: () => Navigator.pop(context, true),
-                                    child: const Text("Delete"),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Theme.of(
+                                        context,
+                                      ).primaryColor,
+                                    ),
+                                    onPressed: () =>
+                                        Navigator.pop(context, true),
+                                    child: const Text("Delete",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -124,16 +146,15 @@ class _List_ApatmentState extends State<List_Apatment> {
                                 flats.removeWhere((a) => a.id == apt.id);
                               });
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Deleted ")),
+                              mySnackBar(
+                                context,
+                                'Deleted',
+                                color: Theme.of(context).primaryColor,
                               );
                             } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Error: $e")),
-                              );
+                              mySnackBar(context, 'Edited', color: Theme.of(context).primaryColor);
                             }
                           },
-
                         );
                       },
                     );
@@ -141,7 +162,6 @@ class _List_ApatmentState extends State<List_Apatment> {
                 ),
               ),
               SizedBox(height: 20),
-
             ],
           ),
         ),

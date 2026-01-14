@@ -1,6 +1,9 @@
 import 'package:flats_app/Screens/showScreen.dart';
+import 'package:flats_app/Services/add_and_remove_from_favourites.dart';
 import 'package:flats_app/models/model_apartment.dart';
+import 'package:flats_app/providers/favorite_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CardHome extends StatefulWidget {
   Model_Apartment? model_apartment;
@@ -14,8 +17,6 @@ class CardHome extends StatefulWidget {
 class _CardHomeState extends State<CardHome> {
   /* int? height , width;
   _CardHomeState(this.height, this.width);*/
-
-  bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class _CardHomeState extends State<CardHome> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
@@ -55,9 +56,87 @@ class _CardHomeState extends State<CardHome> {
                       borderRadius: BorderRadius.circular(10),
                       child: Image.network(
                         url,
+                        width: 200,
                         height: 200,
-                        width: 260,
                         fit: BoxFit.cover,
+                        loadingBuilder: (context, child, progress) {
+                          if (progress == null) return child;
+                          return Container(
+                            color: Colors.grey[200],
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 200,
+                            color: Colors.grey[300],
+                            child: const Center(
+                              child: Icon(
+                                Icons.broken_image,
+                                size: 40,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 10,
+                    top: 10,
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Consumer<FavoriteProvider>(
+                        builder: (context, favProvider, child) {
+                          final bool isFav = favProvider.isFavorite(
+                            widget.model_apartment!.id,
+                          );
+
+                          return IconButton(
+                            constraints: const BoxConstraints(),
+                            padding: EdgeInsets.zero,
+                            iconSize: 22,
+                            onPressed: () async {
+                              favProvider.toggleFavorite(
+                                widget.model_apartment!.id,
+                              );
+
+                              final result = await toggleFavoriteStatus(
+                                widget.model_apartment!.id,
+                              );
+
+                              if (result == null) {
+                                favProvider.toggleFavorite(
+                                  widget.model_apartment!.id,
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Failed to download favourites',
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            icon: Icon(
+                              isFav
+                                  ? Icons.favorite
+                                  : Icons.favorite_border_outlined,
+                              color: isFav ? Colors.red : Theme.of(context).cardColor,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -68,30 +147,34 @@ class _CardHomeState extends State<CardHome> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Icon(Icons.location_on, color: Colors.blueGrey),
+                    Icon(Icons.location_on, color: Theme.of(context).textTheme.bodyMedium!.color,
+                    ),
                     Text(
                       ' ${widget.model_apartment!.governorate} , ${widget.model_apartment!.city} ',
-                      style: TextStyle(color: Colors.blueGrey),
+                      style: TextStyle(color: Theme.of(context).textTheme.bodyMedium!.color,
+                      ),
                     ),
                   ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 15, top: 5,right: 5),
+                padding: const EdgeInsets.only(left: 15, top: 5, right: 5),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       r'$ '
                       '${widget.model_apartment!.rent.toString()} - ${widget.model_apartment!.rent_type}',
-                      style: TextStyle(color: Colors.blue, fontSize: 18),
+                      style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 18),
                     ),
                     Row(
                       children: [
                         Icon(Icons.star, color: Colors.orange),
                         Text(
                           widget.model_apartment!.home_rate.toString(),
-                          style: TextStyle(color: Colors.black, fontSize: 15),
+                          style: TextStyle(color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium!.color, fontSize: 15),
                         ),
                       ],
                     ),

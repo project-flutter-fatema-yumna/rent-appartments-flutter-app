@@ -51,13 +51,15 @@ class _FilteredApartmentsScreenState extends State<FilteredApartmentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Filtered apartments',
-          style: TextStyle(color:  Theme.of(context).cardColor),
+      appBar: AppBar(
+        title: Text(
+          'Filtered apartments',
+          style: TextStyle(color: Colors.white),
         ),
         elevation: 5,
         centerTitle: true,
-        backgroundColor:  Theme.of(context).primaryColor,
-        iconTheme: IconThemeData(color:  Theme.of(context).cardColor),
+        backgroundColor: Theme.of(context).primaryColor,
+        iconTheme: IconThemeData(color: Colors.white),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
         ),
@@ -68,7 +70,9 @@ class _FilteredApartmentsScreenState extends State<FilteredApartmentsScreen> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return Center(child: CircularProgressIndicator(color:  Theme.of(context).primaryColor));
+      return Center(
+        child: CircularProgressIndicator(color: Theme.of(context).primaryColor),
+      );
     }
     if (_errorMsg != null) {
       return Center(child: Text(_errorMsg!));
@@ -77,10 +81,14 @@ class _FilteredApartmentsScreenState extends State<FilteredApartmentsScreen> {
       return Center(
         child: Text(
           'No apartments match your filters',
-          style: TextStyle(fontSize: 16, color:  Theme.of(context).textTheme.bodyLarge!.color),
+          style: TextStyle(
+            fontSize: 16,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
+          ),
         ),
       );
     }
+    print(apartments.length);
     return ListView.builder(
       padding: const EdgeInsets.all(12),
       itemCount: apartments.length,

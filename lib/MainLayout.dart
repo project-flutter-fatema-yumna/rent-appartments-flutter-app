@@ -58,7 +58,7 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
               n.type.split('\\').last,
               style: const TextStyle(fontSize: 12),
             ),
-            background: Colors.blue,
+            background: Theme.of(context).primaryColor,
             autoDismiss: true,
             slideDismissDirection: DismissDirection.up,
           );
@@ -120,7 +120,7 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
                   onTabChange: (index) {
                     if (index == numberScreen) return;
                     if (index == 0) {
-                      //homeKey.currentState?.fetchApartments();
+                      homeKey.currentState?.loadingFirstPage();
                     }
                     setState(() {
                       numberScreen = index;

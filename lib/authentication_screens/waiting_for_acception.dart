@@ -4,6 +4,8 @@ import 'package:flats_app/MainLayout.dart';
 import 'package:flats_app/Services/check_user_status.dart';
 import 'package:flats_app/Services/create_token.dart';
 import 'package:flats_app/authentication_screens/login_screen.dart';
+import 'package:flats_app/global_data.dart';
+import 'package:flats_app/lessor/homePage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -73,10 +75,18 @@ class _WaitingForAcceptionState extends State<WaitingForAcception> {
       print('////////////////////////');
       print(token);
       await prefs.setString('token', token);
+      userToken = token;
       prefs.setBool('isLoggedIn', true);
       prefs.setBool('isRegistered', false);
       _loggingIn = false;
-      Navigator.pushReplacementNamed(context, MainlayoutScreen.id);
+      print('////////////////////////////////////');
+      print('role');
+      print(prefs.getString('role'));
+      if (prefs.getString('role') == 'tenant') {
+        Navigator.pushReplacementNamed(context, MainlayoutScreen.id);
+      } else {
+        Navigator.pushReplacementNamed(context, Homepage.id);
+      }
     } catch (e) {
       setState(() {
         _loggingIn = false;

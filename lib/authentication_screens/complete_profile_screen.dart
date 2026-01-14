@@ -99,15 +99,22 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             children: [
               Text(
                 'Select Image Source',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,color: Theme.of(context).textTheme.bodyLarge!.color),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                ),
               ),
               const SizedBox(height: 15),
               Divider(color: Theme.of(context).textTheme.bodyLarge!.color),
               const SizedBox(height: 15),
               ListTile(
-                leading: Icon(Icons.camera_alt, color: Theme.of(context).primaryColor,
+                leading: Icon(
+                  Icons.camera_alt,
+                  color: Theme.of(context).primaryColor,
                 ),
-                title: Text('Camera',
+                title: Text(
+                  'Camera',
                   style: TextStyle(
                     color: Theme.of(context).textTheme.bodyLarge!.color,
                   ),
@@ -119,11 +126,16 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               ),
 
               ListTile(
-                leading: Icon(Icons.image, color: Theme.of(context).primaryColor,
+                leading: Icon(
+                  Icons.image,
+                  color: Theme.of(context).primaryColor,
                 ),
-                title: Text('Gallery', style: TextStyle(
+                title: Text(
+                  'Gallery',
+                  style: TextStyle(
                     color: Theme.of(context).textTheme.bodyLarge!.color,
-                  ),),
+                  ),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage(ImageSource.gallery, isProfile);
@@ -149,12 +161,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             useMaterial3: true,
             datePickerTheme: DatePickerThemeData(
               backgroundColor: theme.cardColor,
-              surfaceTintColor:
-                  Colors.transparent,
-              headerBackgroundColor:
-                  theme.primaryColor,
-              headerForegroundColor:
-                  theme.cardColor,
+              surfaceTintColor: Colors.transparent,
+              headerBackgroundColor: theme.primaryColor,
+              headerForegroundColor: theme.cardColor,
             ),
             colorScheme: theme.colorScheme.copyWith(
               surface: theme.cardColor,
@@ -267,6 +276,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
         if (user.identityPhoto?.path != null) {
           await prefs.setString('identityPhotoPath', user.identityPhoto!.path);
         }
+        print('/////////////////////////////identity photo');
+        print(user.identityPhoto);
+        print(prefs.getString('identityPhotoPath'));
+        print('/////////////////////////////personal photo');
+        print(user.personalPhoto);
+        print(prefs.getString('personalPhotoPath'));
 
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, WaitingForAcception.id);
@@ -292,7 +307,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Theme.of(context).scaffoldBackgroundColor, toolbarHeight: 30),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        toolbarHeight: 30,
+      ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: SingleChildScrollView(
@@ -332,13 +350,18 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               const SizedBox(height: 20),
               Text(
                 'Profile',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28,color: Theme.of(context).textTheme.bodyLarge!.color,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 28,
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
                 ),
               ),
               const SizedBox(height: 12),
               Text(
                 'Let\'s complete your profile!',
-                style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyLarge!.color,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -392,7 +415,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: Theme.of(context).textTheme.bodyLarge!.color!,
+                      border: Border.all(
+                        color: Theme.of(context).textTheme.bodyLarge!.color!,
                       ),
                       image: _idImage != null
                           ? DecorationImage(
@@ -413,7 +437,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                               SizedBox(height: 10),
                               Text(
                                 "Upload ID Card",
-                                style: TextStyle(color: Theme.of(context).primaryColor,
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
                                 ),
                               ),
                             ],
@@ -427,7 +452,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(30),
                   child: _isLoading
-                      ? CircularProgressIndicator(color: Theme.of(context).primaryColor,
+                      ? CircularProgressIndicator(
+                          color: Theme.of(context).primaryColor,
                         )
                       : MaterialButton(
                           onPressed: _tryRegister,
@@ -438,10 +464,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           ),
                           child: const Text(
                             'Register',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                            ),
+                            style: TextStyle(color: Colors.white, fontSize: 17),
                           ),
                         ),
                 ),

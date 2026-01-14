@@ -10,6 +10,7 @@ Future<void> showAppDialog(
     context: context,
     barrierDismissible: false,
     builder: (ctx) => AlertDialog(
+      backgroundColor: Theme.of(context).cardColor,
       title: Text(title),
       content: Text(message),
       actions: [

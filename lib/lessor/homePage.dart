@@ -1,11 +1,14 @@
-
 import 'dart:async';
 
-import 'package:flats_app/lessor/profileLessor.dart';
+import 'package:flats_app/Screens/profileScreen.dart';
+import 'package:flats_app/global_data.dart';
 import 'package:flats_app/lessor/tenantScreen.dart';
 import 'package:flats_app/lessor/walletLessorScreens/homCardLessor.dart';
 import 'package:flats_app/providers/notification_provider.dart';
+import 'package:flats_app/providers/user_provider.dart';
+import 'package:flats_app/widgets/personal_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,7 +23,8 @@ import 'notificationsLessorScreen.dart';
 
 class Homepage extends StatefulWidget {
   static String id = 'Homepage';
-  const Homepage({super.key});
+  final VoidCallback toggleTheme;
+  const Homepage({super.key, required this.toggleTheme});
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -32,7 +36,8 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     super.initState();
-    final String token = '1|EZIEoy5aLnCdi5XP2jxeaGtnNT60yqCeYyfoaP0W9a2b30e6';
+    context.read<UserProvider>().setUserFromPrefs();
+    final String token = userToken;
 
     Future.microtask(() async {
       final provi = context.read<notification_provider>();
@@ -41,26 +46,22 @@ class _HomepageState extends State<Homepage> {
         for (final n in newOnes) {
           showSimpleNotification(
             Text(
-              n.data.message.isEmpty
-                  ? "New notification"
-                  : n.data.message,
+              n.data.message.isEmpty ? "New notification" : n.data.message,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
             subtitle: Text(
-              n.type
-                  .split('\\')
-                  .last,
+              n.type.split('\\').last,
               style: const TextStyle(fontSize: 12),
             ),
-            background: Colors.blue,
+            background: Theme.of(context).primaryColor,
             autoDismiss: true,
             slideDismissDirection: DismissDirection.up,
           );
         }
       };
 
-     // final prefs = await SharedPreferences.getInstance();
+      // final prefs = await SharedPreferences.getInstance();
       //final token = prefs.getString('token');
 
       if (token != null) {
@@ -80,16 +81,15 @@ class _HomepageState extends State<Homepage> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        backgroundColor:  Theme.of(context).cardColor,
-        drawer: DrawerProfile(),
+        backgroundColor: Theme.of(context).cardColor,
+        drawer: DrawerProfile(toggleTheme: widget.toggleTheme),
         appBar: AppBar(
-          backgroundColor: Colors.blue,
+          backgroundColor: Theme.of(context).primaryColor,
           leading: Builder(
             builder: (context) {
               return IconButton(
@@ -116,7 +116,9 @@ class _HomepageState extends State<Homepage> {
                         Navigator.pushNamed(context, notificationsLessor.id);
                       },
                       icon: const Icon(
-                          Icons.notifications, color: Colors.white),
+                        Icons.notifications,
+                        color: Colors.white,
+                      ),
                     ),
                     Positioned(
                       right: 2,
@@ -128,7 +130,9 @@ class _HomepageState extends State<Homepage> {
 
                           return Container(
                             constraints: const BoxConstraints(
-                                minWidth: 18, minHeight: 18),
+                              minWidth: 18,
+                              minHeight: 18,
+                            ),
                             padding: const EdgeInsets.symmetric(horizontal: 5),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
@@ -157,8 +161,8 @@ class _HomepageState extends State<Homepage> {
         body: Column(
           children: [
             TabBar(
-              labelColor: Colors.blue,
-              indicatorColor: Colors.blue,
+              labelColor: Theme.of(context).primaryColor,
+              indicatorColor: Theme.of(context).primaryColor,
               indicatorAnimation: TabIndicatorAnimation.linear,
               indicatorWeight: 3,
               tabs: [
@@ -166,7 +170,6 @@ class _HomepageState extends State<Homepage> {
                 Tab(child: Text('Show', style: TextStyle(fontSize: 18))),
                 Tab(child: Text('Orders', style: TextStyle(fontSize: 18))),
                 Tab(child: Text('Chats', style: TextStyle(fontSize: 18))),
-
               ],
             ),
             Expanded(
@@ -175,7 +178,7 @@ class _HomepageState extends State<Homepage> {
                   addApartmentScreen(),
                   List_Apatment(),
                   OrdersScreen(),
-                  Chat_Screen()
+                  Chat_Screen(),
                 ],
               ),
             ),
@@ -184,19 +187,29 @@ class _HomepageState extends State<Homepage> {
       ),
     );
   }
-
 }
+
 class DrawerProfile extends StatefulWidget {
+  final VoidCallback toggleTheme;
+  const DrawerProfile({super.key, required this.toggleTheme});
+
   @override
   State<DrawerProfile> createState() => _DrawerProfileState();
 }
 
 class _DrawerProfileState extends State<DrawerProfile> {
-  bool isDark = false;
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserProvider>().user;
+    if (user == null) {
+      return SpinKitThreeBounce(
+        color: Theme.of(context).primaryColor,
+        size: 20,
+      );
+    }
     return Drawer(
+      backgroundColor: Theme.of(context).cardColor,
       child: SafeArea(
         child: Column(
           children: [
@@ -204,36 +217,36 @@ class _DrawerProfileState extends State<DrawerProfile> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(color: Colors.blue),
+              decoration: BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
               child: Row(
                 children: [
-                  const CircleAvatar(
-                    radius: 28,
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.person, size: 30, color: Colors.blue),
-                  ),
+                  personalImage(user, 25),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "User name",
+                        Text(
+                          user?.userName??'Guest',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium!.color,
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          "0988892049",
+                          user?.phone ?? "0988892049",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium!.color,
                             fontSize: 13,
                           ),
                         ),
@@ -251,7 +264,13 @@ class _DrawerProfileState extends State<DrawerProfile> {
               icon: Icons.person_outline,
               title: "My Profile",
               onTap: () {
-                Navigator.pushNamed(context, profileLessor.id);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        ProfileScreen(toggleTheme: widget.toggleTheme),
+                  ),
+                );
               },
             ),
             _Tile(
@@ -284,7 +303,7 @@ class _DrawerProfileState extends State<DrawerProfile> {
               icon: Icons.person_outline,
               title: "My Tenants",
               onTap: () {
-                Navigator.pushNamed(context,tenants_Screen.id);
+                Navigator.pushNamed(context, tenants_Screen.id);
               },
             ),
 
@@ -293,36 +312,6 @@ class _DrawerProfileState extends State<DrawerProfile> {
               child: Divider(height: 20),
             ),
 
-            _Tile(
-              icon: Icons.language,
-              title: "Language",
-              onTap: () => Navigator.pop(context),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: ListTile(
-                  leading: const Icon(Icons.dark_mode_outlined),
-                  title: const Text(
-                    "Dark Theme",
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  trailing: Transform.scale(
-                    scale: 0.7,
-                    child: Switch(
-                      value: isDark,
-                      onChanged: (v) {
-                        setState(() => isDark = v);
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ),
             _Tile(
               icon: Icons.help_outline,
               title: "Help & Support",
@@ -335,21 +324,6 @@ class _DrawerProfileState extends State<DrawerProfile> {
             ),
 
             const Spacer(),
-
-            // Logout
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () async {
-                    await logout(context);
-                  },
-                  icon: const Icon(Icons.logout),
-                  label: const Text("Logout"),
-                ),
-              ),
-            ),
           ],
         ),
       ),

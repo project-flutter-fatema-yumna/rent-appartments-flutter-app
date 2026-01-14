@@ -9,8 +9,9 @@ class HelpSupportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
         title: const Text('Help & Support',style: TextStyle(color: Colors.white),),
-        backgroundColor: Colors.blue,
+        backgroundColor: Theme.of(context).primaryColor,
         leading: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.arrow_back_ios_rounded,color: Colors.white,),),
       ),
       body: ListView(
@@ -112,6 +113,7 @@ class HelpSupportScreen extends StatelessWidget {
           const SizedBox(height: 8),
 
           Card(
+            color: Theme.of(context).cardColor,
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -136,7 +138,9 @@ class HelpSupportScreen extends StatelessWidget {
 
           SizedBox(
             width: double.infinity,
-            child: FilledButton(
+            child: MaterialButton(
+              color: Theme.of(context).primaryColor,
+              textColor: Colors.white,
               onPressed: () {
                 // TODO: open report form / WhatsApp
               },

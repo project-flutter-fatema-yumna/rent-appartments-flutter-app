@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flats_app/global_data.dart';
+import 'package:flats_app/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -16,110 +18,115 @@ class addApartmentScreen extends StatefulWidget {
 }
 
 class _addApartmentScreenState extends State<addApartmentScreen> {
- //final governorate=TextEditingController();
- //final city=TextEditingController();
-  final String token='1|EZIEoy5aLnCdi5XP2jxeaGtnNT60yqCeYyfoaP0W9a2b30e6';
- final homeSpace=TextEditingController();
- final rent=TextEditingController();
- String? governorate,city;
+  //final governorate=TextEditingController();
+  //final city=TextEditingController();
+  final String token = userToken;
+  final homeSpace = TextEditingController();
+  final rent = TextEditingController();
+  String? governorate, city;
 
- int? numberFloor,
+  int? numberFloor,
       numberBaths,
       numberRoom,
       numberBedRoom,
       numberParking,
       numberBalcony;
- String? rentType;
-bool? isFurnished;
+  String? rentType;
+  bool? isFurnished;
 
-List<XFile> photos=[];
+  List<XFile> photos = [];
 
- final _formKey = GlobalKey<FormState>();
- ////images
- final ImagePicker _picker = ImagePicker();
- Future<void> pickFromGallery() async {
-   final List<XFile>? picked = await _picker.pickMultiImage(
-     imageQuality: 80,
-   );
+  final _formKey = GlobalKey<FormState>();
+  ////images
+  final ImagePicker _picker = ImagePicker();
+  Future<void> pickFromGallery() async {
+    final List<XFile>? picked = await _picker.pickMultiImage(imageQuality: 80);
 
-   if (picked == null || picked.isEmpty) return;
+    if (picked == null || picked.isEmpty) return;
 
-   setState(() {
-     photos.addAll(picked);
-   });
- }
- Future<void> pickFromCamera() async {
-   final XFile? image = await _picker.pickImage(
-     source: ImageSource.camera,
-     imageQuality: 80,
-   );
+    setState(() {
+      photos.addAll(picked);
+    });
+  }
 
-   if (image == null) return;
+  Future<void> pickFromCamera() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 80,
+    );
 
-   setState(() {
-     photos.add(image);
-   });
- }
- void showPickSourceSheet() {
-   showModalBottomSheet(
-     context: context,
-     shape: const RoundedRectangleBorder(
-       borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-     ),
-     builder: (_) {
-       return SafeArea(
-         child: Padding(
-           padding: const EdgeInsets.all(16),
-           child: Column(
-             mainAxisSize: MainAxisSize.min,
-             children: [
-               ListTile(
-                 leading: const Icon(Icons.camera_alt,color: Colors.blue,),
-                 title: const Text('Camera'),
-                 onTap: () async {
-                   Navigator.pop(context);
-                   await pickFromCamera();
-                 },
-               ),
-               ListTile(
-                 leading: const Icon(Icons.photo_library,color: Colors.green,),
-                 title: const Text('Gallery'),
-                 onTap: () async {
-                   Navigator.pop(context);
-                   await pickFromGallery();
-                 },
-               ),
+    if (image == null) return;
 
-             ],
-           ),
-         ),
-       );
-     },
-   );
- }
+    setState(() {
+      photos.add(image);
+    });
+  }
 
- Map<String,String> buildApartmentFields(){
-   return {
-     "governorate": governorate.toString(),
-     "city": city.toString(),
-     "home_space": homeSpace.text.trim(),
-     "rent": rent.text.trim(),
-     ///
-     "floor_number": numberFloor.toString(),
-     "balcony_number": numberBalcony.toString(),
-     "parking_number": numberParking.toString(),
-     "rooms_number": numberRoom.toString(),
-     "number_of_bedrooms": numberBedRoom.toString(),
-     "number_of_baths": numberBaths.toString(),
+  void showPickSourceSheet() {
+    showModalBottomSheet(
+      backgroundColor: Theme.of(context).cardColor,
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: Icon(
+                    Icons.camera_alt,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  title: const Text('Camera'),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await pickFromCamera();
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.photo_library, color: Theme.of(context).primaryColor,
+                  ),
+                  title: const Text('Gallery'),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await pickFromGallery();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
-     "furnished":isFurnished==true?"1":"0",
-     "rent_type": rentType.toString(),
-   };
- }
+  Map<String, String> buildApartmentFields() {
+    return {
+      "governorate": governorate.toString(),
+      "city": city.toString(),
+      "home_space": homeSpace.text.trim(),
+      "rent": rent.text.trim(),
 
- List<File> getImageFiles() {
-   return photos.map((x) => File(x.path)).toList();
- }
+      ///
+      "floor_number": numberFloor.toString(),
+      "balcony_number": numberBalcony.toString(),
+      "parking_number": numberParking.toString(),
+      "rooms_number": numberRoom.toString(),
+      "number_of_bedrooms": numberBedRoom.toString(),
+      "number_of_baths": numberBaths.toString(),
+
+      "furnished": isFurnished == true ? "1" : "0",
+      "rent_type": rentType.toString(),
+    };
+  }
+
+  List<File> getImageFiles() {
+    return photos.map((x) => File(x.path)).toList();
+  }
 
   Future<void> publishApartment() async {
     if (isPublishing) return;
@@ -144,9 +151,9 @@ List<XFile> photos=[];
       showSuccessSheet();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) {
         setState(() {
@@ -156,925 +163,1066 @@ List<XFile> photos=[];
     }
   }
 
+  void clearForm() {
+    _formKey.currentState?.reset();
+    homeSpace.clear();
+    rent.clear();
 
- void clearForm(){
-   _formKey.currentState?.reset();
-   homeSpace.clear();
-   rent.clear();
+    governorate = null;
+    city = null;
+    numberFloor = null;
+    numberBaths = null;
+    numberRoom = null;
+    numberBedRoom = null;
+    numberParking = null;
+    numberBalcony = null;
+    rentType = null;
+    isFurnished = null;
 
-   governorate=null;
-   city=null;
-   numberFloor=null;
-   numberBaths=null;
-   numberRoom=null;
-   numberBedRoom=null;
-   numberParking=null;
-   numberBalcony=null;
-   rentType=null;
-   isFurnished=null;
+    photos.clear();
 
-   photos.clear();
+    setState(() {});
+  }
 
-   setState(() {
-   });
- }
+  List<int> numbers = List.generate(11, (index) => index);
+  List<String> typs = ['daily', 'monthly', 'yearly'];
+  List<String> governorates = [
+    'Damascus',
+    'Rif Dimashq (Rural Damascus)',
+    'Aleppo',
+    'Homs',
+    'Hama',
+    'Latakia',
+    'Tartus',
+    'Idlib',
+    'Deir ez-Zor',
+    'Raqqa',
+    'Hasakah',
+    'Daraa',
+    'As-Suwayda',
+    'Quneitra',
+  ];
+  bool isPublishing = false;
 
- List<int> numbers = List.generate(11, (index) => index);
- List<String> typs=['daily','monthly','yearly'];
- List<String> governorates=['Damascus','Rif Dimashq (Rural Damascus)','Aleppo','Homs','Hama','Latakia','Tartus','Idlib','Deir ez-Zor','Raqqa','Hasakah','Daraa','As-Suwayda','Quneitra'];
- bool isPublishing = false;
+  List<String> cities = [];
 
- List<String> cities = [];
-
- bool loadingCities = false;
- @override
- void dispose() {
-  rent.dispose();
-  homeSpace.dispose();
-  super.dispose();
- }
+  bool loadingCities = false;
+  @override
+  void dispose() {
+    rent.dispose();
+    homeSpace.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Form(
       //autovalidateMode: AutovalidateMode.onUserInteraction,
       key: _formKey,
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-          child: Column(
-            children: [
-              Icon(Icons.add_home_work_outlined,size: 100,color: Colors.blue,),
-              SizedBox(height: 4),
-              Text(
-                'Add your apartment',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-              ),
-              SizedBox(height: 6),
-              Text(
-                'Fill the details below to publish your listing',
-                style: TextStyle(color: Colors.black54,fontSize: 16),
-              ),
-              SizedBox(height: 20),
-              DropdownButtonFormField2<String>(
-                value: governorate,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelText: 'governorate name',
-                  prefixIcon: Icon(Icons.account_balance),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.blue),
+      child: Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.add_home_work_outlined,
+                  size: 100,
+                  color: Theme.of(context).primaryColor,
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Add your apartment',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  'Fill the details below to publish your listing',
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyMedium!.color,
+                    fontSize: 16,
                   ),
                 ),
-                dropdownStyleData: DropdownStyleData(
-                  maxHeight: 200,
-                  width: double.infinity,
-                  offset: Offset(105, 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
+                SizedBox(height: 20),
+                DropdownButtonFormField2<String>(
+                  value: governorate,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Theme.of(context).cardColor,
+                    labelText: 'governorate name',
+                    prefixIcon: Icon(Icons.account_balance),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Theme.of(context).cardColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
                   ),
+                  dropdownStyleData: DropdownStyleData(
+                    maxHeight: 200,
+                    width: double.infinity,
+                    offset: Offset(105, 20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  items: governorates.map((gover) {
+                    return DropdownMenuItem<String>(
+                      
+                      value: gover,
+                      child: Text(gover),
+                    );
+                  }).toList(),
+                  onChanged: (value) async {
+                    setState(() {
+                      governorate = value;
+                      cities = [];
+                      city = null;
+                      cities.clear();
+                      loadingCities = true;
+                    });
+                    final result = await get_all_cityes().getCityes(
+                      governorate: value!,
+                      token: token,
+                    );
+                    setState(() {
+                      cities = result;
+                      loadingCities = false;
+                    });
+                  },
                 ),
-                items: governorates.map((gover) {
-                  return DropdownMenuItem<String>(
-                    value: gover,
-                    child: Text(gover),
-                  );
-                }).toList(),
-                onChanged: (value)async {
-                  setState(() {
-                     governorate = value;
-                     cities = [];
-                    city = null;
-                    cities.clear();
-                    loadingCities = true;
-                  });
-                  final result = await get_all_cityes().getCityes(
-                    governorate: value!,
-                    token: token,
-                  );
-                  setState(() {
-                    cities = result;
-                    loadingCities = false;
-                  });
-                },
-              ),
-              SizedBox(height: 15),
-              DropdownButtonFormField2<String>(
-                value: city,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelText: 'city name',
-                  prefixIcon: Icon(Icons.location_on),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.white),
+                SizedBox(height: 15),
+                DropdownButtonFormField2<String>(
+                  value: city,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Theme.of(context).cardColor,
+                    labelText: 'city name',
+                    prefixIcon: Icon(Icons.location_on),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Theme.of(context).cardColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.blue),
+                  dropdownStyleData: DropdownStyleData(
+                    maxHeight: 200,
+                    width: double.infinity,
+                    offset: Offset(105, 20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
+                  items: cities.map((cit) {
+                    return DropdownMenuItem<String>(value: cit, child: Text(cit));
+                  }).toList(),
+                  onChanged: cities.isEmpty
+                      ? null
+                      : (value) {
+                          setState(() {
+                            city = value;
+                          });
+                        },
                 ),
-                dropdownStyleData: DropdownStyleData(
-                  maxHeight: 200,
-                  width: double.infinity,
-                  offset: Offset(105, 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
+                SizedBox(height: 15),
+                TextFormField(
+                  controller: homeSpace,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.square_foot),
+                    filled: true,
+                    fillColor: Theme.of(context).cardColor,
+                    labelText: 'home space',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Theme.of(context).cardColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    // labelText: 'City',
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Home space is required';
+                    }
+                    final space = double.tryParse(value);
+                    if (space == null || space <= 0) {
+                      return 'Enter a valid space';
+                    }
+                    return null;
+                  },
                 ),
-                items: cities.map((cit) {
-                  return DropdownMenuItem<String>(
-                    value: cit,
-                    child: Text(cit),
-                  );
-                }).toList(),
-                onChanged: cities.isEmpty?null:(value){
-                  setState(() {
-                    city=value;
-                  });
-                }
-              ),
-              SizedBox(height: 15),
-              TextFormField(
-                controller: homeSpace,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.square_foot),
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelText: 'home space',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                  // labelText: 'City',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Home space is required';
-                  }
-                  final space = double.tryParse(value);
-                  if (space == null || space <= 0) {
-                    return 'Enter a valid space';
-                  }
-                  return null;
-                },
-
-              ),
-              SizedBox(height: 15),
-              Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField2<int>(
-                      value: numberFloor,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        labelText: 'Floor',
-                        prefixIcon: Icon(Icons.meeting_room),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                      ),
-                      dropdownStyleData: DropdownStyleData(
-                        maxHeight: 200,
-                        width: 70,
-                        offset: Offset(105, 20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      items: numbers.map((num) {
-                        return DropdownMenuItem<int>(
-                          value: num,
-                          child: Text(num.toString()),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          numberFloor = value;
-                        });
-                      },
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: DropdownButtonFormField2<int>(
-                      value: numberBaths,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        labelText: 'Baths',
-                        prefixIcon: Icon(Icons.bathtub),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                      ),
-                      dropdownStyleData: DropdownStyleData(
-                        maxHeight: 200,
-                        width: 70,
-                        offset: Offset(105, 20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      items: numbers.map((num) {
-                        return DropdownMenuItem<int>(
-                          value: num,
-                          child: Text(num.toString()),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          numberBaths = value;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 15),
-              Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField2<int>(
-                      value: numberRoom,
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Select rooms';
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        setState(() => numberRoom = value);
-                      },
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        labelText: 'Rooms',
-                        prefixIcon: Icon(Icons.meeting_room_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                      ),
-                      dropdownStyleData: DropdownStyleData(
-                        maxHeight: 200,
-                        width: 70,
-                        offset: Offset(105, 20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      items: numbers.map((num) {
-                        return DropdownMenuItem<int>(
-                          value: num,
-                          child: Text(num.toString()),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: DropdownButtonFormField2<int>(
-                      value: numberBedRoom,
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Select BedRooms';
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        setState(() => numberBedRoom = value);
-                      },
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        labelText: 'BedRooms',
-                        prefixIcon: Icon(Icons.bed_rounded),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                      ),
-                      dropdownStyleData: DropdownStyleData(
-                        maxHeight: 200,
-                        width: 70,
-                        offset: Offset(105, 20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      items: numbers.map((num) {
-                        return DropdownMenuItem<int>(
-                          value: num,
-                          child: Text(num.toString()),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 15),
-              Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField2<int>(
-                      value: numberParking,
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Select Parking';
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        setState(() => numberParking = value);
-                      },
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        labelText: 'Parking',
-                        prefixIcon: Icon(Icons.car_crash),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                      ),
-                      dropdownStyleData: DropdownStyleData(
-                        maxHeight: 200,
-                        width: 70,
-                        offset: Offset(105, 20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      items: numbers.map((num) {
-                        return DropdownMenuItem<int>(
-                          value: num,
-                          child: Text(num.toString()),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: DropdownButtonFormField2<int>(
-                      value: numberBalcony,
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Select Balcony';
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        setState(() => numberBalcony = value);
-                      },
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        labelText: 'Balcony',
-                        prefixIcon: Icon(Icons.balcony),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                      ),
-                      dropdownStyleData: DropdownStyleData(
-                        maxHeight: 200,
-                        width: 70,
-                        offset: Offset(105, 20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      items: numbers.map((num) {
-                        return DropdownMenuItem<int>(
-                          value: num,
-                          child: Text(num.toString()),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 15),
-              TextFormField(
-                controller: rent,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.attach_money,color: Colors.green.shade500,),
-                  filled: true,
-                  fillColor: Colors.white,
-                  labelText: 'Rent',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                  // labelText: 'City',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Rent is required';
-                  }
-                  final rentValue = double.tryParse(value);
-                  if (rentValue == null || rentValue <= 0) {
-                    return 'Enter a valid rent';
-                  }
-                  return null;
-                },
-
-              ),
-              SizedBox(height: 15),
-              Row(
-                children: [
-                  Expanded(
-                    ///month//year//day....
-                    child: DropdownButtonFormField2<String>(
-                      value: rentType,
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Select rooms';
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        setState(() => rentType = value);
-                      },
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        labelText: 'Rent Type',
-                        prefixIcon: Icon(Icons.calendar_month),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                      ),
-                      dropdownStyleData: DropdownStyleData(
-                        maxHeight: 200,
-                        width: 100,
-                        offset: Offset(105, 20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      items: typs.map((type) {
-                        return DropdownMenuItem<String>(
-                          value: type,
-                          child: Text(type.toString()),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child:DropdownButtonFormField2<bool>(
-                      value: isFurnished,
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Select is Furnished';
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        setState(() => isFurnished = value);
-                      },
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        labelText: 'Furnished',
-                        prefixIcon: Icon(Icons.chair),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                      ),
-                      dropdownStyleData: DropdownStyleData(
-                        maxHeight: 200,
-                        width: 70,
-                        offset: Offset(105, 20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      items: const [
-                        DropdownMenuItem(value: true, child: Text('Yes')),
-                        DropdownMenuItem(value: false, child: Text('No')),
-                      ],
-                    ),
-
-                  ),
-                ],
-              ),
-              SizedBox(height: 30),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 5),
-                  child: Text(
-                    'Apartment Photos',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                  ),
-                ),
-              ),
-              SizedBox(height: 10),
-              InkWell(
-                onTap: showPickSourceSheet,
-                borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.blue.shade200),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.add_a_photo_outlined, color: Colors.blue),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          photos.isEmpty ? 'Add photos (min 3)' : 'Add more photos',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                      const Icon(Icons.chevron_right, color: Colors.black45),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 12),
-              if (photos.isNotEmpty)
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: photos.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
-                  ),
-                  itemBuilder: (context, index) {
-                    return Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.file(
-                            File(photos[index].path),
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.cover,
+                SizedBox(height: 15),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField2<int>(
+                        value: numberFloor,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Theme.of(context).cardColor,
+                          labelText: 'Floor',
+                          prefixIcon: Icon(Icons.meeting_room),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).cardColor,
+                            ),
                           ),
-                        ),
-                        Positioned(
-                          top: 6,
-                          right: 6,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                photos.removeAt(index);
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: Colors.black54,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.close, size: 16, color: Colors.white),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
                             ),
                           ),
                         ),
-                      ],
-                    );
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 200,
+                          width: 70,
+                          offset: Offset(105, 20),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items: numbers.map((num) {
+                          return DropdownMenuItem<int>(
+                            value: num,
+                            child: Text(num.toString()),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            numberFloor = value;
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: DropdownButtonFormField2<int>(
+                        value: numberBaths,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Theme.of(context).cardColor,
+                          labelText: 'Baths',
+                          prefixIcon: Icon(Icons.bathtub),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).cardColor,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ),
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 200,
+                          width: 70,
+                          offset: Offset(105, 20),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items: numbers.map((num) {
+                          return DropdownMenuItem<int>(
+                            value: num,
+                            child: Text(num.toString()),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            numberBaths = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 15),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField2<int>(
+                        value: numberRoom,
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Select rooms';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() => numberRoom = value);
+                        },
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Theme.of(context).cardColor,
+                          labelText: 'Rooms',
+                          prefixIcon: Icon(Icons.meeting_room_outlined),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).cardColor,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ),
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 200,
+                          width: 70,
+                          offset: Offset(105, 20),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items: numbers.map((num) {
+                          return DropdownMenuItem<int>(
+                            value: num,
+                            child: Text(num.toString()),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: DropdownButtonFormField2<int>(
+                        value: numberBedRoom,
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Select BedRooms';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() => numberBedRoom = value);
+                        },
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Theme.of(context).cardColor,
+                          labelText: 'BedRooms',
+                          prefixIcon: Icon(Icons.bed_rounded),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).cardColor,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ),
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 200,
+                          width: 70,
+                          offset: Offset(105, 20),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items: numbers.map((num) {
+                          return DropdownMenuItem<int>(
+                            value: num,
+                            child: Text(num.toString()),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 15),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField2<int>(
+                        value: numberParking,
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Select Parking';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() => numberParking = value);
+                        },
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Theme.of(context).cardColor,
+                          labelText: 'Parking',
+                          prefixIcon: Icon(Icons.car_crash),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).cardColor,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ),
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 200,
+                          width: 70,
+                          offset: Offset(105, 20),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items: numbers.map((num) {
+                          return DropdownMenuItem<int>(
+                            value: num,
+                            child: Text(num.toString()),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: DropdownButtonFormField2<int>(
+                        value: numberBalcony,
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Select Balcony';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() => numberBalcony = value);
+                        },
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Theme.of(context).cardColor,
+                          labelText: 'Balcony',
+                          prefixIcon: Icon(Icons.balcony),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).cardColor,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ),
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 200,
+                          width: 70,
+                          offset: Offset(105, 20),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items: numbers.map((num) {
+                          return DropdownMenuItem<int>(
+                            value: num,
+                            child: Text(num.toString()),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 15),
+                TextFormField(
+                  controller: rent,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(
+                      Icons.attach_money,
+                      color: Colors.green.shade500,
+                    ),
+                    filled: true,
+                    fillColor: Theme.of(context).cardColor,
+                    labelText: 'Rent',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Theme.of(context).cardColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    // labelText: 'City',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Rent is required';
+                    }
+                    final rentValue = double.tryParse(value);
+                    if (rentValue == null || rentValue <= 0) {
+                      return 'Enter a valid rent';
+                    }
+                    return null;
                   },
                 ),
-              SizedBox(height: 20),
-              SafeArea(
-                child: InkWell(
-                  onTap: isPublishing
-                      ? null
-                      : () {
-                    showSubmitSheet();
-                  },
-                  borderRadius: BorderRadius.circular(10),
-                  child: Container(
-                    height: 50,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: isPublishing ? Colors.blue.shade200 : Colors.blue,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        if (!isPublishing)
-                          BoxShadow(
-                            color: Colors.blue.withOpacity(0.4),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
+                SizedBox(height: 15),
+                Row(
+                  children: [
+                    Expanded(
+                      ///month//year//day....
+                      child: DropdownButtonFormField2<String>(
+                        value: rentType,
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Select rooms';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() => rentType = value);
+                        },
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Theme.of(context).cardColor,
+                          labelText: 'Rent Type',
+                          prefixIcon: Icon(Icons.calendar_month),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).cardColor,
+                            ),
                           ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ),
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 200,
+                          width: 100,
+                          offset: Offset(105, 20),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items: typs.map((type) {
+                          return DropdownMenuItem<String>(
+                            value: type,
+                            child: Text(type.toString()),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: DropdownButtonFormField2<bool>(
+                        value: isFurnished,
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Select is Furnished';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() => isFurnished = value);
+                        },
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Theme.of(context).cardColor,
+                          labelText: 'Furnished',
+                          prefixIcon: Icon(Icons.chair),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).cardColor,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ),
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 200,
+                          width: 70,
+                          offset: Offset(105, 20),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: true, child: Text('Yes')),
+                          DropdownMenuItem(value: false, child: Text('No')),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 30),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 5),
+                    child: Text(
+                      'Apartment Photos',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                InkWell(
+                  onTap: showPickSourceSheet,
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.add_a_photo_outlined,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            photos.isEmpty
+                                ? 'Add photos (min 3)'
+                                : 'Add more photos',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: Theme.of(context).textTheme.bodyMedium!.color,
+                        ),
                       ],
                     ),
-                    child: Center(
-                      child: isPublishing
-                          ? const SizedBox(
-                        height: 22,
-                        width: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                          : const Text(
-                        'Publish',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ),
+                SizedBox(height: 12),
+                if (photos.isNotEmpty)
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: photos.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                    ),
+                    itemBuilder: (context, index) {
+                      return Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.file(
+                              File(photos[index].path),
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Positioned(
+                            top: 6,
+                            right: 6,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  photos.removeAt(index);
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium!.color,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.close,
+                                  size: 16,
+                                  color: Theme.of(context).cardColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                SizedBox(height: 20),
+                SafeArea(
+                  child: InkWell(
+                    onTap: isPublishing
+                        ? null
+                        : () {
+                            showSubmitSheet();
+                          },
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      height: 50,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: isPublishing
+                            ? Theme.of(context).scaffoldBackgroundColor
+                            : Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          if (!isPublishing)
+                            BoxShadow(
+                              color: Colors.blue.withOpacity(0.4),
+                              blurRadius: 12,
+                              offset: const Offset(0, 6),
+                            ),
+                        ],
+                      ),
+                      child: Center(
+                        child: isPublishing
+                            ? const SizedBox(
+                                height: 22,
+                                width: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : const Text(
+                                'Publish',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                ),
+                              ),
                       ),
                     ),
                   ),
                 ),
-              ),
-
-              SizedBox(height: 30,)
-            ],
+        
+                SizedBox(height: 30),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
- void showSubmitSheet() {
-   if (!_formKey.currentState!.validate()) {
-     return;
-   }
-   if (photos.length < 3) {
-     ScaffoldMessenger.of(context).showSnackBar(
-       const SnackBar(
-         content: Text('Please add at least 3 photos'),
-       ),
-     );
-     return;
-   }
-   showModalBottomSheet(
-     context: context,
-     isScrollControlled: true,
-     shape: const RoundedRectangleBorder(
-       borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-     ),
-     builder: (ctx) {
-       return Padding(
-         padding: EdgeInsets.only(
-           left: 20,
-           right: 20,
-           top: 20,
-           bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
-         ),
-         child: Column(
-           mainAxisSize: MainAxisSize.min,
-           children: [
-             Container(
-               width: 40,
-               height: 5,
-               decoration: BoxDecoration(
-                 color: Colors.grey.shade400,
-                 borderRadius: BorderRadius.circular(10),
-               ),
-             ),
-             const SizedBox(height: 20),
-             Container(
-               width: 80,
-               height: 80,
-               decoration: BoxDecoration(
-                 shape: BoxShape.circle,
-                 color: Colors.grey.withOpacity(0.15),
-               ),
-               child: Center(
-                 child: Container(
-                   width: 40,
-                   height: 40,
-                   decoration: const BoxDecoration(
-                     shape: BoxShape.circle,
-                     color: Colors.blue,
-                   ),
-                   child: const Icon(Icons.info, color: Colors.white, size: 20),
-                 ),
-               ),
-             ),
+  void showSubmitSheet() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    if (photos.length < 3) {
+      mySnackBar(context, 'Please add at least 3 photos');
+      return;
+    }
+    showModalBottomSheet(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade400,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.grey.withOpacity(0.15),
+                ),
+                child: Center(
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    child: const Icon(
+                      Icons.info,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
 
-             const SizedBox(height: 14),
-             const Text(
-               'Are you sure about posting the apartment listing?',
-               textAlign: TextAlign.center,
-               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-             ),
+              const SizedBox(height: 14),
+              const Text(
+                'Are you sure about posting the apartment listing?',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
 
-             const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-             Row(
-               children: [
-                 Expanded(
-                   child: OutlinedButton(
-                     onPressed: () {
-                       Navigator.pop(ctx);
-                     },
-                     child: const Text('Edit'),
-                   ),
-                 ),
-                 const SizedBox(width: 10),
-                 Expanded(
-                   child: ElevatedButton(
-                     onPressed: () async {
-                       Navigator.pop(ctx);
-                       await publishApartment();
-                       // close confirm sheet
-                      /* await publishApartment(); //
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
+                          color: Theme.of(context).primaryColor,
+                        )
+                      ),
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                      },
+                      child: Text('Edit',style: TextStyle(color: Theme.of(context).primaryColor,)
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).primaryColor,),
+                      onPressed: () async {
+                        Navigator.pop(ctx);
+                        await publishApartment();
+                        // close confirm sheet
+                        /* await publishApartment(); //
                        if (!mounted) return;*/
-                      // showSuccessSheet();
-                     },
-                     child: const Text('Ok'),
-                   ),
-                 ),
-               ],
-             ),
-           ],
-         ),
-       );
-     },
-   );
- }
+                        // showSuccessSheet();
+                      },
+                      child: Text('Yes', style: TextStyle(
+                          color: Colors.white,
+                        ),),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
- void showSuccessSheet() {
-   showModalBottomSheet(
-     context: context,
-     isScrollControlled: true,
-     shape: const RoundedRectangleBorder(
-       borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-     ),
-     builder: (ctx) {
-       return Padding(
-         padding: EdgeInsets.only(
-           left: 20,
-           right: 20,
-           top: 20,
-           bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
-         ),
-         child: Column(
-           mainAxisSize: MainAxisSize.min,
-           children: [
-             Container(
-               width: 40,
-               height: 5,
-               decoration: BoxDecoration(
-                 color: Colors.grey.shade400,
-                 borderRadius: BorderRadius.circular(10),
-               ),
-             ),
-             const SizedBox(height: 20),
-
-             Container(
-               width: 80,
-               height: 80,
-               decoration: BoxDecoration(
-                 shape: BoxShape.circle,
-                 color: Colors.grey.withOpacity(0.15),
-               ),
-               child: Center(
-                 child: Container(
-                   width: 40,
-                   height: 40,
-                   decoration: const BoxDecoration(
-                     shape: BoxShape.circle,
-                     color: Colors.blue,
-                   ),
-                   child: const Icon(Icons.check, color: Colors.white, size: 20),
-                 ),
-               ),
-             ),
-
-             const SizedBox(height: 14),
-             const Text(
-               'Congratulations!',
-               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-             ),
-             const SizedBox(height: 6),
-             const Text(
-               'Your apartment is published',
-               style: TextStyle(color: Colors.black54,fontSize: 16),
-             ),
-
-             const SizedBox(height: 20),
-
-             SizedBox(
-               width: double.infinity,
-               height: 48,
-               child: ElevatedButton(
-                 onPressed: () {
-                   Navigator.pop(ctx);
-                   DefaultTabController.of(context).animateTo(1);                 },
-                 child: const Text('Done'),
-               ),
-             ),
-
-             const SizedBox(height: 10),
-           ],
-         ),
-       );
-     },
-   );
- }
+  void showSuccessSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (ctx) {
+        return Container(
+          color: Theme.of(context).cardColor,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 20,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade400,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                const SizedBox(height: 20),
+          
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.grey.withOpacity(0.15),
+                  ),
+                  child: Center(
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+          
+                const SizedBox(height: 14),
+                const Text(
+                  'Congratulations!',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Your apartment is published',
+                  style: TextStyle(fontSize: 16),
+                ),
+          
+                const SizedBox(height: 20),
+          
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor
+                    ),
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      DefaultTabController.of(context).animateTo(1);
+                    },
+                    child: Text('Done', style: TextStyle(color: Colors.white),),
+                  ),
+                ),
+          
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

@@ -38,9 +38,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text('Profile', style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge!.color!,
-          ),),
+        automaticallyImplyLeading:user!.role=='tenant'? false:true,
+        title: Text(
+          'Profile',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).textTheme.bodyLarge!.color!,
+          ),
+        ),
         centerTitle: true,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
@@ -58,13 +63,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.black, width: 1.5),
                   ),
+
                   child: personalImage(user!, 85),
                 ),
               ),
               const SizedBox(height: 30),
               Text(
                 'Account info',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge!.color!,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyLarge!.color!,
                 ),
               ),
               const SizedBox(height: 15),
@@ -78,7 +87,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 15),
               Text(
                 'Identity photo',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                   color: Theme.of(context).textTheme.bodyLarge!.color!,
                 ),
               ),
@@ -88,14 +99,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Divider(color: Theme.of(context).textTheme.bodyLarge!.color!),
               Text(
                 'Settings',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                   color: Theme.of(context).textTheme.bodyLarge!.color!,
                 ),
               ),
               const SizedBox(height: 15),
               ListTile(
                 leading: const Icon(Icons.dark_mode_outlined),
-                title: Text('Dark mode',style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color!),),
+                title: Text(
+                  'Dark mode',
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge!.color!,
+                  ),
+                ),
                 trailing: Switch(
                   activeColor: Theme.of(context).primaryColor,
                   value: isDarkMode,
@@ -107,7 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                 ),
               ),
-              Divider(color: Theme.of(context).textTheme.bodyLarge!.color!,),
+              Divider(color: Theme.of(context).textTheme.bodyLarge!.color!),
               ListTile(
                 leading: const Icon(Icons.logout, color: Colors.red),
                 title: const Text(
@@ -143,7 +161,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
+            borderSide: BorderSide(
+              color: Theme.of(context).primaryColor,
+              width: 1.5,
+            ),
           ),
         ),
         controller: TextEditingController(text: value),

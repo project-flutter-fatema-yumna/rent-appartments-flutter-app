@@ -1080,7 +1080,7 @@ class _ShowScreenState extends State<ShowScreen> {
                               height: 50,
                               width: 200,
                               decoration: BoxDecoration(
-                                color: disabled ? Colors.grey : Colors.blue,
+                                color: disabled ? Colors.grey : Theme.of(context).primaryColor,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Center(

@@ -1,3 +1,4 @@
+import 'package:flats_app/global_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,7 +35,7 @@ class _tenants_ScreenState extends State<tenants_Screen> {
     try {
       //final prefs = await SharedPreferences.getInstance();
       //final token = prefs.getString("token");
-      final String token='1|EZIEoy5aLnCdi5XP2jxeaGtnNT60yqCeYyfoaP0W9a2b30e6';
+      final String token= userToken;
 
 
       if (token == null || token.isEmpty) throw Exception("Token not found");
@@ -75,9 +76,9 @@ class _tenants_ScreenState extends State<tenants_Screen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Theme.of(context).primaryColor,
         surfaceTintColor: Colors.white,
         elevation: 0,
         title: const Text(
@@ -97,8 +98,8 @@ class _tenants_ScreenState extends State<tenants_Screen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
-            decoration: const BoxDecoration(
-              color: Colors.blue,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(22),
                 bottomRight: Radius.circular(22),
@@ -117,11 +118,11 @@ class _tenants_ScreenState extends State<tenants_Screen> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   "Manage your tenants and communicate easily",
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white70,
+                    color: Theme.of(context).textTheme.bodyMedium!.color,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -133,13 +134,14 @@ class _tenants_ScreenState extends State<tenants_Screen> {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFFE4E7EC)),
+                    border: Border.all(color: Colors.white),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.search_rounded, color: Color(0xFF667085)),
+                      Icon(Icons.search_rounded, color: Theme.of(context).primaryColor,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: TextField(
@@ -153,7 +155,8 @@ class _tenants_ScreenState extends State<tenants_Screen> {
                       if (searchText.text.isNotEmpty)
                         IconButton(
                           onPressed: () => searchText.clear(),
-                          icon: const Icon(Icons.close, size: 18, color: Color(0xFF667085)),
+                          icon: Icon(Icons.close, size: 18, color: Theme.of(context).primaryColor,
+                          ),
                         ),
                     ],
                   ),
@@ -168,7 +171,7 @@ class _tenants_ScreenState extends State<tenants_Screen> {
               builder: (_) {
                 if (loading) {
                   return Center(
-                    child: SpinKitThreeBounce(color: Colors.blue, size: 20),
+                    child: SpinKitThreeBounce(color: Theme.of(context).primaryColor, size: 20),
                   );
                 }
 
@@ -240,7 +243,7 @@ class _TenantCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: const Color(0xFFE4E7EC)),
         boxShadow: [
@@ -257,7 +260,7 @@ class _TenantCard extends StatelessWidget {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: const Color(0xFFEEF4FF),
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Center(
@@ -265,10 +268,10 @@ class _TenantCard extends StatelessWidget {
                 tenant.firstName.isNotEmpty
                     ? tenant.firstName.trim()[0].toUpperCase()
                     : "T",
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
-                  color: Color(0xFF0D47A1),
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
             ),
@@ -285,10 +288,10 @@ class _TenantCard extends StatelessWidget {
                         tenant.fullName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
-                          color: Color(0xFF101828),
+                          color: Theme.of(context).textTheme.bodyMedium!.color,
                         ),
                       ),
                     ),
@@ -297,16 +300,16 @@ class _TenantCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   tenant.phone,
-                  style: const TextStyle(
-                    color: Color(0xFF475467),
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyMedium!.color,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   tenant.username,
-                  style: const TextStyle(
-                    color: Color(0xFF667085),
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyMedium!.color,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
                   ),
@@ -327,7 +330,7 @@ class _TenantCard extends StatelessWidget {
               _actionButton(
                 icon: Icons.chat_bubble_rounded,
                 label: "Chat",
-                color: Colors.blue,
+                color: Theme.of(context).primaryColor,
                 onTap: onChat,
               ),
             ],

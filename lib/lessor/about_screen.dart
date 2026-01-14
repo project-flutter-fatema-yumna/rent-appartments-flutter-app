@@ -9,7 +9,9 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
         title: const Text('About'),
+        foregroundColor: Colors.white,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -17,10 +19,11 @@ class AboutScreen extends StatelessWidget {
           // Logo + name
           Center(
             child: Column(
-              children: const [
+              children: [
                 CircleAvatar(
+                  backgroundColor: Theme.of(context).primaryColor,
                   radius: 32,
-                  child: Icon(Icons.apartment, size: 32),
+                  child: Icon(Icons.apartment, size: 32, color: Colors.white,),
                 ),
                 SizedBox(height: 12),
                 Text(

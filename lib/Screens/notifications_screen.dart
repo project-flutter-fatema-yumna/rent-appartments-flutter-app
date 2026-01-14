@@ -41,7 +41,7 @@ class _notificationScreenState extends State<notificationScreen> {
     final provi = context.watch<notification_provider>();
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
         title: const Text('Notifications', style: TextStyle(color: Colors.white)),
         leading: IconButton(
@@ -50,8 +50,8 @@ class _notificationScreenState extends State<notificationScreen> {
         ),
       ),
       body: provi.isLoading
-          ? const Center(
-        child: SpinKitThreeBounce(color: Colors.blue, size: 20),
+          ? Center(
+        child: SpinKitThreeBounce(color: Theme.of(context).primaryColor, size: 20),
       )
           : RefreshIndicator(
         onRefresh: () async {
@@ -105,12 +105,12 @@ class _notificationScreenState extends State<notificationScreen> {
 Widget _infoRow({required IconData icon, required String text}) {
   return Row(
     children: [
-      Icon(icon, size: 18, color: Colors.grey.shade700),
+      Icon(icon, size: 18, color: Colors.grey),
       const SizedBox(width: 8),
       Expanded(
         child: Text(
           text,
-          style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
+          style: TextStyle(fontSize: 13, color: Colors.grey),
         ),
       ),
     ],
@@ -170,7 +170,7 @@ class _SimpleMessageCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -234,7 +234,7 @@ class _SimpleMessageCard extends StatelessWidget {
                       : notificationItemModel.data.message,
                   style: TextStyle(
                     fontSize: 15,
-                    color: Colors.grey.shade800,
+                    color: Colors.grey,
                     height: 1.35,
                   ),
                 ),
@@ -271,7 +271,7 @@ class TenantCancelledBookingCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       height: 220,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -324,7 +324,7 @@ class TenantCancelledBookingCard extends StatelessWidget {
                       formatNotificationTime(notificationItemModel.createdAt),
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade600,
+                        color: Theme.of(context).textTheme.bodyMedium!.color,
                       ),
                     ),
                   ],
@@ -335,7 +335,7 @@ class TenantCancelledBookingCard extends StatelessWidget {
                  // notificationItemModel.data.message,
                   style: TextStyle(
                     fontSize: 15,
-                    color: Colors.grey.shade800,
+                    color: Theme.of(context).textTheme.bodyMedium!.color,
                     height: 1.35,
                   ),
                 ),
@@ -570,7 +570,7 @@ class BookingAcceptedCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -686,7 +686,7 @@ class BookingRejectedCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -748,7 +748,7 @@ class BookingRejectedCard extends StatelessWidget {
                   notificationItemModel.data.message,
                   style: TextStyle(
                     fontSize: 15,
-                    color: Colors.grey.shade800,
+                    color: Colors.grey,
                     height: 1.35,
                   ),
                 ),
@@ -789,7 +789,7 @@ class BookingCancelledRefundCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
