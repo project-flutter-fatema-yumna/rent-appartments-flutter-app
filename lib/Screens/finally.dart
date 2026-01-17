@@ -1,4 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+
+import 'Reservations.dart';
 
 class FinallyPage extends StatelessWidget {
   const FinallyPage({super.key});
@@ -65,19 +68,15 @@ class FinallyPage extends StatelessWidget {
                       Column(
                         children: [
                           Text(
-                            'Congratulations!',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            'congratulations'.tr(),
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                           ),
+
                           Text(
-                            'Your investment journey continues!',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            'investment_journey'.tr(),
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                           ),
+
                         ],
                       ),
                     ],
@@ -109,7 +108,7 @@ class FinallyPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Your order is waiting',
+                              'order_waiting'.tr(),
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Theme.of(
@@ -119,8 +118,7 @@ class FinallyPage extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'To track the status of your order, go to',
-                              style: TextStyle(
+                              'order_waiting'.tr(),                              style: TextStyle(
                                 fontSize: 16,
                                 color: Theme.of(
                                   context,
@@ -128,12 +126,17 @@ class FinallyPage extends StatelessWidget {
                                 height: 1.3,
                               ),
                             ),
-                            Text(
-                              'Your reservations',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Theme.of(context).primaryColor,
-                                height: 1.3,
+                            InkWell(
+                              onTap: (){
+                                Navigator.pushNamed(context, ReservationsScreen.id);
+                              },
+                              child: Text(
+                                'your_reservations'.tr(),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Theme.of(context).primaryColor,
+                                  height: 1.3,
+                                ),
                               ),
                             ),
                           ],

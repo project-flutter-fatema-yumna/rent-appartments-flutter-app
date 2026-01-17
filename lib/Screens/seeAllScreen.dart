@@ -1,7 +1,11 @@
-import 'package:flutter/material.dart';import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart'; // 👈 أضف هاد السطر
 
 import '../Services/ApartmentsPaginationService.dart';
 import '../Services/Get_Paginate_Apartment.dart';
+import '../helper/Host.dart';
 import '../models/model_apartment.dart';
 import '../widgets/cardHome.dart';
 import '../widgets/cardSeeAllScreen.dart';
@@ -56,7 +60,7 @@ class _See_all_screenState extends State<See_all_screen> {
     }
   }
 
-  String fixUrl(String url) => url.replaceFirst('127.0.0.1', '10.0.2.2');
+  String fixUrl(String url) => url.replaceFirst('127.0.0.1', '${Host.host}');
 
   Future<void> loadMore() async {
     if (loadingMore) return;
@@ -103,63 +107,65 @@ class _See_all_screenState extends State<See_all_screen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Flats',
-          style: TextStyle(color: Colors.white),
+          'flats_title'.tr(),
+          style: const TextStyle(color: Colors.white),
         ),
         elevation: 5,
         centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
-        iconTheme: IconThemeData(color: Colors.white),
-        shape: RoundedRectangleBorder(
+        iconTheme: const IconThemeData(color: Colors.white),
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
         ),
       ),
       body: firstLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child:SpinKitThreeBounce(color: Colors.blue, size: 20))
           : flats.isEmpty
-          ? const Center(child: Text('No apartment'))
+          ? Center(
+        child: Text(
+          'no_apartments'.tr(),
+        ),
+      )
           : SingleChildScrollView(
-              controller: scroll,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
-                  children: [
-                    GridView.builder(
-                      itemCount: flats.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            mainAxisExtent: 246,
-                          ),
-                      itemBuilder: (context, index) {
-                        return CardSeeAll(model_apartment: flats[index]);
-                      },
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Center(
-                        child: loadingMore
-                            ? const CircularProgressIndicator()
-                            : const SizedBox(),
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-                  ],
+        controller: scroll,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Column(
+            children: [
+              GridView.builder(
+                itemCount: flats.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  mainAxisExtent: 246,
+                ),
+                itemBuilder: (context, index) {
+                  return CardSeeAll(model_apartment: flats[index]);
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Center(
+                  child: loadingMore
+                      ? const CircularProgressIndicator()
+                      : const SizedBox(),
                 ),
               ),
-            ),
+              const SizedBox(height: 40),
+            ],
+          ),
+        ),
+      ),
     );
   }
+
   @override
   void dispose() {
     scroll.dispose();
     super.dispose();
   }
-
 }

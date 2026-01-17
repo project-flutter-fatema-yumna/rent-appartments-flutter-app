@@ -5,6 +5,7 @@ import 'package:flats_app/providers/favorite_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../Screens/showScreen.dart';
+import '../helper/Host.dart';
 import '../models/model_apartment.dart';
 
 class CardSeeAll extends StatefulWidget {
@@ -22,7 +23,7 @@ class _CardSeeAllState extends State<CardSeeAll> {
       return Center(child: Icon(Icons.image_not_supported));
 
     final path = widget.model_apartment.images[0].image.trim();
-    final url = 'http://10.0.2.2:8000/storage/$path';
+    final url = 'http://${Host.host}:8000/storage/$path';
 
     return Material(
       borderRadius: BorderRadius.circular(18),

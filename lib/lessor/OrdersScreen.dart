@@ -6,6 +6,10 @@ import 'package:flats_app/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../Services/Lessor_Services/GetAllOrderServices.dart';
+import 'package:easy_localization/easy_localization.dart';
+
+import '../helper/Host.dart';
+
 
 class OrdersScreen extends StatefulWidget {
   static String id = 'OrdersScreen';
@@ -42,15 +46,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Booking Requests",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+            Text(
+              'booking_requests_title'.tr(),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 6),
             Text(
-              "Review requests and accept or reject",
-              style: TextStyle(color: Colors.grey, fontSize: 18),
+              'booking_requests_subtitle'.tr(),
+              style: const TextStyle(color: Colors.grey, fontSize: 18),
             ),
+
 
             const SizedBox(height: 20),
             // Filters
@@ -59,7 +64,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
               child: Row(
                 children: [
                   filterChip(
-                    label: "All",
+                    label: 'filter_all'.tr(),
                     selected: selectedFilter == "all",
                     onTap: () {
                       setState(() {
@@ -68,7 +73,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     },
                   ),
                   filterChip(
-                    label: "Pending",
+                    label: 'filter_pending'.tr(),
                     selected: selectedFilter == "pending",
                     onTap: () {
                       setState(() {
@@ -77,7 +82,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     },
                   ),
                   filterChip(
-                    label: "Accepted",
+                    label: 'filter_accepted'.tr(),
                     selected: selectedFilter == "accepted",
                     onTap: () {
                       setState(() {
@@ -86,7 +91,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     },
                   ),
                   filterChip(
-                    label: "Rejected",
+                    label: 'filter_rejected'.tr(),
                     selected: selectedFilter == "rejected",
                     onTap: () {
                       setState(() {
@@ -112,17 +117,21 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   }
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text("No orders yet"));
+                    return Center(
+                      child: Text('no_orders_yet'.tr()),
+                    );
                   }
+
                   if (allOrders.isEmpty) {
                     allOrders = snapshot.data!;
                   }
                   final showOrders = filteredOrders;
                   if (showOrders.isEmpty) {
-                    return const Center(
-                      child: Text("No orders in this filter"),
+                    return Center(
+                      child: Text('no_orders_in_filter'.tr()),
                     );
                   }
+
 
                   return ListView.separated(
                     itemCount: showOrders.length,
@@ -142,9 +151,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             });
                             mySnackBar(
                               context,
-                              "Accepted ",
+                              'order_accepted'.tr(),
                               color: Colors.green,
                             );
+
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("Error: $e")),
@@ -161,7 +171,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             setState(() {
                               showOrders[index].status = 'rejected';
                             });
-                            mySnackBar(context, "Rejected ");
+                            mySnackBar(
+                              context,
+                              'order_rejected'.tr(),
+                            );
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("Error: $e")),
@@ -201,7 +214,7 @@ class OrderCard extends StatelessWidget {
     // final isPending = status == "pending";
     final path = modal_order.apartment.images.isNotEmpty;
     final url = path
-        ? 'http://10.0.2.2:8000/storage/${modal_order.apartment.images[0].image.trim()}'
+        ? 'http://${Host.host}:8000/storage/${modal_order.apartment.images[0].image.trim()}'
         : null;
 
     return Material(
@@ -278,18 +291,16 @@ class OrderCard extends StatelessWidget {
                   Expanded(
                     child: InfoTile(
                       icon: Icons.date_range,
-                      title: "From - To",
-                      value:
-                          "${modal_order.startDate.year}-${modal_order.startDate.month}-${modal_order.startDate.day} → ${modal_order.endDate.year}-${modal_order.endDate.month}-${modal_order.endDate.day}",
+                      title: 'from_to'.tr(),
+                      value: "${modal_order.startDate.year}-${modal_order.startDate.month}-${modal_order.startDate.day} → ${modal_order.endDate.year}-${modal_order.endDate.month}-${modal_order.endDate.day}",
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: InfoTile(
                       icon: Icons.payments_rounded,
-                      title: "Total",
-                      value:
-                          "${modal_order.fullAmount} - ${modal_order.apartment.rent_type}",
+                      title: 'total'.tr(),
+                      value: "${modal_order.fullAmount} - ${modal_order.apartment.rent_type}",
                     ),
                   ),
                 ],
@@ -304,7 +315,7 @@ class OrderCard extends StatelessWidget {
                       child: OutlinedButton.icon(
                         onPressed: onReject,
                         icon: const Icon(Icons.close),
-                        label: const Text("Reject"),
+                        label: Text('reject'.tr()),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.red,
                           side: const BorderSide(color: Colors.red),
@@ -320,7 +331,7 @@ class OrderCard extends StatelessWidget {
                       child: ElevatedButton.icon(
                         onPressed: onAccept,
                         icon: const Icon(Icons.check),
-                        label: const Text("Accept"),
+                        label: Text('accept'.tr()),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           foregroundColor: Colors.white,
@@ -338,8 +349,8 @@ class OrderCard extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     modal_order.status == "accepted"
-                        ? "Accepted ✔"
-                        : "Rejected ✖",
+                        ? 'accepted_with_icon'.tr()
+                        : 'rejected_with_icon'.tr(),
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: modal_order.status == "accepted"
@@ -413,18 +424,19 @@ class statusChip extends StatelessWidget {
       case "accepted":
         background = Colors.green.shade50;
         colorText = Colors.green.shade800;
-        text = "Accepted";
+        text = 'accepted'.tr();
         break;
       case "rejected":
         background = Colors.red.shade50;
         colorText = Colors.red.shade800;
-        text = "Rejected";
+        text = 'rejected'.tr();
         break;
       default:
         background = Colors.orange.shade50;
         colorText = Colors.orange.shade800;
-        text = "Pending";
+        text = 'pending'.tr();
     }
+
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),

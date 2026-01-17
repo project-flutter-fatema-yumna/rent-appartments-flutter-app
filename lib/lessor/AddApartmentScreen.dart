@@ -5,6 +5,7 @@ import 'package:flats_app/global_data.dart';
 import 'package:flats_app/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:easy_localization/easy_localization.dart'; // 👈 إضافة مهمة
 
 import '../Services/Lessor_Services/add_Apartment.dart';
 import '../Services/getAllCityes_services.dart';
@@ -18,8 +19,6 @@ class addApartmentScreen extends StatefulWidget {
 }
 
 class _addApartmentScreenState extends State<addApartmentScreen> {
-  //final governorate=TextEditingController();
-  //final city=TextEditingController();
   final String token = userToken;
   final homeSpace = TextEditingController();
   final rent = TextEditingController();
@@ -81,16 +80,18 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                     Icons.camera_alt,
                     color: Theme.of(context).primaryColor,
                   ),
-                  title: const Text('Camera'),
+                  title: Text('pick_camera'.tr()),
                   onTap: () async {
                     Navigator.pop(context);
                     await pickFromCamera();
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.photo_library, color: Theme.of(context).primaryColor,
+                  leading: Icon(
+                    Icons.photo_library,
+                    color: Theme.of(context).primaryColor,
                   ),
-                  title: const Text('Gallery'),
+                  title: Text('pick_gallery'.tr()),
                   onTap: () async {
                     Navigator.pop(context);
                     await pickFromGallery();
@@ -144,7 +145,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
         data: fields,
         images: images,
       );
-      print('ADD APARTMENT RESPONSE: $response');
+      //print('ADD APARTMENT RESPONSE: $response');
 
       if (!mounted) return;
       clearForm();
@@ -153,7 +154,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ).showSnackBar(SnackBar(content: Text('error_generic'.tr(args: ['$e']))));
     } finally {
       if (mounted) {
         setState(() {
@@ -214,10 +215,22 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
     super.dispose();
   }
 
+  String _rentTypeLabel(String type) {
+    switch (type) {
+      case 'daily':
+        return 'rent_type_daily'.tr();
+      case 'monthly':
+        return 'rent_type_monthly'.tr();
+      case 'yearly':
+        return 'rent_type_yearly'.tr();
+      default:
+        return type;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
-      //autovalidateMode: AutovalidateMode.onUserInteraction,
       key: _formKey,
       child: Container(
         color: Theme.of(context).scaffoldBackgroundColor,
@@ -231,48 +244,50 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                   size: 100,
                   color: Theme.of(context).primaryColor,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'Add your apartment',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                  'add_apartment_title'.tr(),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 Text(
-                  'Fill the details below to publish your listing',
+                  'add_apartment_subtitle'.tr(),
                   style: TextStyle(
                     color: Theme.of(context).textTheme.bodyMedium!.color,
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 DropdownButtonFormField2<String>(
                   value: governorate,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Theme.of(context).cardColor,
-                    labelText: 'governorate name',
-                    prefixIcon: Icon(Icons.account_balance),
+                    labelText: 'governorate_name'.tr(),
+                    prefixIcon: const Icon(Icons.account_balance),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Theme.of(context).cardColor),
+                      borderSide:
+                      BorderSide(color: Theme.of(context).cardColor),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      borderSide:
+                      BorderSide(color: Theme.of(context).primaryColor),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      borderSide:
+                      BorderSide(color: Theme.of(context).primaryColor),
                     ),
                   ),
                   dropdownStyleData: DropdownStyleData(
                     maxHeight: 200,
                     width: double.infinity,
-                    offset: Offset(105, 20),
+                    offset: const Offset(105, 20),
                     decoration: BoxDecoration(
                       color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(12),
@@ -280,7 +295,6 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                   ),
                   items: governorates.map((gover) {
                     return DropdownMenuItem<String>(
-                      
                       value: gover,
                       child: Text(gover),
                     );
@@ -303,90 +317,90 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                     });
                   },
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 DropdownButtonFormField2<String>(
                   value: city,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Theme.of(context).cardColor,
-                    labelText: 'city name',
-                    prefixIcon: Icon(Icons.location_on),
+                    labelText: 'city_name'.tr(),
+                    prefixIcon: const Icon(Icons.location_on),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Theme.of(context).cardColor),
+                      borderSide:
+                      BorderSide(color: Theme.of(context).cardColor),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      borderSide:
+                      BorderSide(color: Theme.of(context).primaryColor),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      borderSide:
+                      BorderSide(color: Theme.of(context).primaryColor),
                     ),
                   ),
                   dropdownStyleData: DropdownStyleData(
                     maxHeight: 200,
                     width: double.infinity,
-                    offset: Offset(105, 20),
+                    offset: const Offset(105, 20),
                     decoration: BoxDecoration(
                       color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   items: cities.map((cit) {
-                    return DropdownMenuItem<String>(value: cit, child: Text(cit));
+                    return DropdownMenuItem<String>(
+                      value: cit,
+                      child: Text(cit),
+                    );
                   }).toList(),
                   onChanged: cities.isEmpty
                       ? null
                       : (value) {
-                          setState(() {
-                            city = value;
-                          });
-                        },
+                    setState(() {
+                      city = value;
+                    });
+                  },
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 TextFormField(
                   controller: homeSpace,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.square_foot),
+                    prefixIcon: const Icon(Icons.square_foot),
                     filled: true,
                     fillColor: Theme.of(context).cardColor,
-                    labelText: 'home space',
+                    labelText: 'home_space'.tr(),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Theme.of(context).cardColor),
+                      borderSide:
+                      BorderSide(color: Theme.of(context).cardColor),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      borderSide:
+                      BorderSide(color: Theme.of(context).primaryColor),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      borderSide:
+                      BorderSide(color: Theme.of(context).primaryColor),
                     ),
-                    // labelText: 'City',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Home space is required';
+                      return 'home_space_required'.tr();
                     }
                     final space = double.tryParse(value);
                     if (space == null || space <= 0) {
-                      return 'Enter a valid space';
+                      return 'home_space_invalid'.tr();
                     }
                     return null;
                   },
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 Row(
                   children: [
                     Expanded(
@@ -395,8 +409,8 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Theme.of(context).cardColor,
-                          labelText: 'Floor',
-                          prefixIcon: Icon(Icons.meeting_room),
+                          labelText: 'floor'.tr(),
+                          prefixIcon: const Icon(Icons.meeting_room),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
@@ -419,7 +433,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         dropdownStyleData: DropdownStyleData(
                           maxHeight: 200,
                           width: 70,
-                          offset: Offset(105, 20),
+                          offset: const Offset(105, 20),
                           decoration: BoxDecoration(
                             color: Theme.of(context).scaffoldBackgroundColor,
                             borderRadius: BorderRadius.circular(12),
@@ -438,15 +452,15 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         },
                       ),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: DropdownButtonFormField2<int>(
                         value: numberBaths,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Theme.of(context).cardColor,
-                          labelText: 'Baths',
-                          prefixIcon: Icon(Icons.bathtub),
+                          labelText: 'baths'.tr(),
+                          prefixIcon: const Icon(Icons.bathtub),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
@@ -469,7 +483,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         dropdownStyleData: DropdownStyleData(
                           maxHeight: 200,
                           width: 70,
-                          offset: Offset(105, 20),
+                          offset: const Offset(105, 20),
                           decoration: BoxDecoration(
                             color: Theme.of(context).scaffoldBackgroundColor,
                             borderRadius: BorderRadius.circular(12),
@@ -490,7 +504,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 Row(
                   children: [
                     Expanded(
@@ -498,7 +512,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         value: numberRoom,
                         validator: (value) {
                           if (value == null) {
-                            return 'Select rooms';
+                            return 'select_rooms'.tr();
                           }
                           return null;
                         },
@@ -508,8 +522,8 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Theme.of(context).cardColor,
-                          labelText: 'Rooms',
-                          prefixIcon: Icon(Icons.meeting_room_outlined),
+                          labelText: 'rooms'.tr(),
+                          prefixIcon: const Icon(Icons.meeting_room_outlined),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
@@ -532,7 +546,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         dropdownStyleData: DropdownStyleData(
                           maxHeight: 200,
                           width: 70,
-                          offset: Offset(105, 20),
+                          offset: const Offset(105, 20),
                           decoration: BoxDecoration(
                             color: Theme.of(context).scaffoldBackgroundColor,
                             borderRadius: BorderRadius.circular(12),
@@ -546,13 +560,13 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         }).toList(),
                       ),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: DropdownButtonFormField2<int>(
                         value: numberBedRoom,
                         validator: (value) {
                           if (value == null) {
-                            return 'Select BedRooms';
+                            return 'select_bedrooms'.tr();
                           }
                           return null;
                         },
@@ -562,8 +576,8 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Theme.of(context).cardColor,
-                          labelText: 'BedRooms',
-                          prefixIcon: Icon(Icons.bed_rounded),
+                          labelText: 'bedrooms'.tr(),
+                          prefixIcon: const Icon(Icons.bed_rounded),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
@@ -586,7 +600,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         dropdownStyleData: DropdownStyleData(
                           maxHeight: 200,
                           width: 70,
-                          offset: Offset(105, 20),
+                          offset: const Offset(105, 20),
                           decoration: BoxDecoration(
                             color: Theme.of(context).scaffoldBackgroundColor,
                             borderRadius: BorderRadius.circular(12),
@@ -602,7 +616,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 Row(
                   children: [
                     Expanded(
@@ -610,7 +624,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         value: numberParking,
                         validator: (value) {
                           if (value == null) {
-                            return 'Select Parking';
+                            return 'select_parking'.tr();
                           }
                           return null;
                         },
@@ -620,8 +634,8 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Theme.of(context).cardColor,
-                          labelText: 'Parking',
-                          prefixIcon: Icon(Icons.car_crash),
+                          labelText: 'parking'.tr(),
+                          prefixIcon: const Icon(Icons.car_crash),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
@@ -644,7 +658,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         dropdownStyleData: DropdownStyleData(
                           maxHeight: 200,
                           width: 70,
-                          offset: Offset(105, 20),
+                          offset: const Offset(105, 20),
                           decoration: BoxDecoration(
                             color: Theme.of(context).scaffoldBackgroundColor,
                             borderRadius: BorderRadius.circular(12),
@@ -658,13 +672,13 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         }).toList(),
                       ),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: DropdownButtonFormField2<int>(
                         value: numberBalcony,
                         validator: (value) {
                           if (value == null) {
-                            return 'Select Balcony';
+                            return 'select_balcony'.tr();
                           }
                           return null;
                         },
@@ -674,8 +688,8 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Theme.of(context).cardColor,
-                          labelText: 'Balcony',
-                          prefixIcon: Icon(Icons.balcony),
+                          labelText: 'balcony'.tr(),
+                          prefixIcon: const Icon(Icons.balcony),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
@@ -698,7 +712,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         dropdownStyleData: DropdownStyleData(
                           maxHeight: 200,
                           width: 70,
-                          offset: Offset(105, 20),
+                          offset: const Offset(105, 20),
                           decoration: BoxDecoration(
                             color: Theme.of(context).scaffoldBackgroundColor,
                             borderRadius: BorderRadius.circular(12),
@@ -714,7 +728,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 TextFormField(
                   controller: rent,
                   keyboardType: TextInputType.number,
@@ -725,37 +739,35 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                     ),
                     filled: true,
                     fillColor: Theme.of(context).cardColor,
-                    labelText: 'Rent',
+                    labelText: 'rent'.tr(),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Theme.of(context).cardColor),
+                      borderSide:
+                      BorderSide(color: Theme.of(context).cardColor),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      borderSide:
+                      BorderSide(color: Theme.of(context).primaryColor),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
+                      borderSide:
+                      BorderSide(color: Theme.of(context).primaryColor),
                     ),
-                    // labelText: 'City',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Rent is required';
+                      return 'rent_required'.tr();
                     }
                     final rentValue = double.tryParse(value);
                     if (rentValue == null || rentValue <= 0) {
-                      return 'Enter a valid rent';
+                      return 'rent_invalid'.tr();
                     }
                     return null;
                   },
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 Row(
                   children: [
                     Expanded(
@@ -764,7 +776,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         value: rentType,
                         validator: (value) {
                           if (value == null) {
-                            return 'Select rooms';
+                            return 'select_rent_type'.tr();
                           }
                           return null;
                         },
@@ -774,8 +786,8 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Theme.of(context).cardColor,
-                          labelText: 'Rent Type',
-                          prefixIcon: Icon(Icons.calendar_month),
+                          labelText: 'rent_type'.tr(),
+                          prefixIcon: const Icon(Icons.calendar_month),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
@@ -798,7 +810,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         dropdownStyleData: DropdownStyleData(
                           maxHeight: 200,
                           width: 100,
-                          offset: Offset(105, 20),
+                          offset: const Offset(105, 20),
                           decoration: BoxDecoration(
                             color: Theme.of(context).scaffoldBackgroundColor,
                             borderRadius: BorderRadius.circular(12),
@@ -807,18 +819,18 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         items: typs.map((type) {
                           return DropdownMenuItem<String>(
                             value: type,
-                            child: Text(type.toString()),
+                            child: Text(_rentTypeLabel(type)),
                           );
                         }).toList(),
                       ),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: DropdownButtonFormField2<bool>(
                         value: isFurnished,
                         validator: (value) {
                           if (value == null) {
-                            return 'Select is Furnished';
+                            return 'select_furnished'.tr();
                           }
                           return null;
                         },
@@ -828,8 +840,8 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Theme.of(context).cardColor,
-                          labelText: 'Furnished',
-                          prefixIcon: Icon(Icons.chair),
+                          labelText: 'furnished'.tr(),
+                          prefixIcon: const Icon(Icons.chair),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide(
@@ -852,32 +864,41 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         dropdownStyleData: DropdownStyleData(
                           maxHeight: 200,
                           width: 70,
-                          offset: Offset(105, 20),
+                          offset: const Offset(105, 20),
                           decoration: BoxDecoration(
                             color: Theme.of(context).scaffoldBackgroundColor,
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        items: const [
-                          DropdownMenuItem(value: true, child: Text('Yes')),
-                          DropdownMenuItem(value: false, child: Text('No')),
+                        items: [
+                          DropdownMenuItem(
+                            value: true,
+                            child: Text('yes'.tr()),
+                          ),
+                          DropdownMenuItem(
+                            value: false,
+                            child: Text('no'.tr()),
+                          ),
                         ],
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 5),
                     child: Text(
-                      'Apartment Photos',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                      'apartment_photos'.tr(),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 InkWell(
                   onTap: showPickSourceSheet,
                   borderRadius: BorderRadius.circular(14),
@@ -901,9 +922,11 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                         Expanded(
                           child: Text(
                             photos.isEmpty
-                                ? 'Add photos (min 3)'
-                                : 'Add more photos',
-                            style: const TextStyle(fontWeight: FontWeight.w600),
+                                ? 'add_photos_min'.tr()
+                                : 'add_more_photos'.tr(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                         Icon(
@@ -914,13 +937,14 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 if (photos.isNotEmpty)
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: photos.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       mainAxisSpacing: 8,
                       crossAxisSpacing: 8,
@@ -949,9 +973,10 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                               child: Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(
-                                    context,
-                                  ).textTheme.bodyMedium!.color,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .color,
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
@@ -966,14 +991,14 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                       );
                     },
                   ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 SafeArea(
                   child: InkWell(
                     onTap: isPublishing
                         ? null
                         : () {
-                            showSubmitSheet();
-                          },
+                      showSubmitSheet();
+                    },
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
                       height: 50,
@@ -995,28 +1020,27 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                       child: Center(
                         child: isPublishing
                             ? const SizedBox(
-                                height: 22,
-                                width: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
-                                  ),
-                                ),
-                              )
-                            : const Text(
-                                'Publish',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                ),
-                              ),
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                            : Text(
+                          'publish'.tr(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-        
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -1030,7 +1054,7 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
       return;
     }
     if (photos.length < 3) {
-      mySnackBar(context, 'Please add at least 3 photos');
+      mySnackBar(context, 'please_add_min_photos'.tr());
       return;
     }
     showModalBottomSheet(
@@ -1083,47 +1107,49 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 14),
-              const Text(
-                'Are you sure about posting the apartment listing?',
+              Text(
+                'confirm_post_title'.tr(),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style:
+                const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
-
               const SizedBox(height: 20),
-
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        )
+                        side:
+                        BorderSide(color: Theme.of(context).primaryColor),
                       ),
                       onPressed: () {
                         Navigator.pop(ctx);
                       },
-                      child: Text('Edit',style: TextStyle(color: Theme.of(context).primaryColor,)
+                      child: Text(
+                        'edit'.tr(),
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).primaryColor,),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                      ),
                       onPressed: () async {
                         Navigator.pop(ctx);
                         await publishApartment();
-                        // close confirm sheet
-                        /* await publishApartment(); //
-                       if (!mounted) return;*/
-                        // showSuccessSheet();
                       },
-                      child: Text('Yes', style: TextStyle(
+                      child: Text(
+                        'yes_btn'.tr(),
+                        style: const TextStyle(
                           color: Colors.white,
-                        ),),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -1164,7 +1190,6 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-          
                 Container(
                   width: 80,
                   height: 80,
@@ -1188,35 +1213,36 @@ class _addApartmentScreenState extends State<addApartmentScreen> {
                     ),
                   ),
                 ),
-          
                 const SizedBox(height: 14),
-                const Text(
-                  'Congratulations!',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                Text(
+                  'congratulations'.tr(),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  'Your apartment is published',
-                  style: TextStyle(fontSize: 16),
+                Text(
+                  'apartment_published'.tr(),
+                  style: const TextStyle(fontSize: 16),
                 ),
-          
                 const SizedBox(height: 20),
-          
                 SizedBox(
                   width: double.infinity,
                   height: 48,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor
-                    ),
+                        backgroundColor: Theme.of(context).primaryColor),
                     onPressed: () {
                       Navigator.pop(ctx);
                       DefaultTabController.of(context).animateTo(1);
                     },
-                    child: Text('Done', style: TextStyle(color: Colors.white),),
+                    child: Text(
+                      'done'.tr(),
+                      style: const TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
-          
                 const SizedBox(height: 10),
               ],
             ),

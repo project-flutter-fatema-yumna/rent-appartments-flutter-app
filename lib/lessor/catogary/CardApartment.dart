@@ -1,6 +1,8 @@
 import 'package:flats_app/models/model_apartment.dart';
 import 'package:flutter/material.dart';
 
+import '../../helper/Host.dart';
+
 class ApartmentCardUI extends StatelessWidget {
  final  Model_Apartment model_apartment;
   final VoidCallback onTap;
@@ -17,7 +19,7 @@ class ApartmentCardUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final path = model_apartment.images[0].image.trim();
-    final url='http://10.0.2.2:8000/storage/$path';
+    final url='http://${Host.host}:8000/storage/$path';
     return Material(
       color: Theme.of(context).cardColor,
       borderRadius: BorderRadius.circular(18),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flats_app/authentication_screens/waiting_for_acception.dart';
 import 'package:flats_app/models/user_data.dart';
 import 'package:flats_app/widgets/snack_bar.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../helper/Host.dart';
 import '../widgets/text_field_widget.dart';
 
 class CompleteProfileScreen extends StatefulWidget {
@@ -114,7 +116,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                   color: Theme.of(context).primaryColor,
                 ),
                 title: Text(
-                  'Camera',
+                  'camera'.tr(),
                   style: TextStyle(
                     color: Theme.of(context).textTheme.bodyLarge!.color,
                   ),
@@ -131,7 +133,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                   color: Theme.of(context).primaryColor,
                 ),
                 title: Text(
-                  'Gallery',
+                  'gallery'.tr(),
                   style: TextStyle(
                     color: Theme.of(context).textTheme.bodyLarge!.color,
                   ),
@@ -223,7 +225,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       });
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('http://10.0.2.2:8000/api/register'),
+        Uri.parse('http://${Host.host}:8000/api/register'),
       );
       request.fields['first_name'] = user.firstName;
       request.fields['last_name'] = user.lastName;
@@ -276,12 +278,6 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
         if (user.identityPhoto?.path != null) {
           await prefs.setString('identityPhotoPath', user.identityPhoto!.path);
         }
-        print('/////////////////////////////identity photo');
-        print(user.identityPhoto);
-        print(prefs.getString('identityPhotoPath'));
-        print('/////////////////////////////personal photo');
-        print(user.personalPhoto);
-        print(prefs.getString('personalPhotoPath'));
 
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, WaitingForAcception.id);
@@ -349,7 +345,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                'Profile',
+                'profile'.tr(),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 28,
@@ -358,7 +354,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Let\'s complete your profile!',
+                'profile_login_subtitle'.tr(),
                 style: TextStyle(
                   fontSize: 16,
                   color: Theme.of(context).textTheme.bodyLarge!.color,
@@ -367,30 +363,32 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               ),
               const SizedBox(height: 30),
               Padding(
-                padding: const EdgeInsets.only(right: 30),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextFieldWidget(
                   controller: _firstNameController,
-                  hint: 'Enter your first name',
+                  hint: 'enter_first_name'.tr(),
+                  suffixIcon: Icon(Icons.person,color: Colors.blue,),
                   keyboardType: TextInputType.name,
                 ),
               ),
               SizedBox(height: 20),
               Padding(
-                padding: const EdgeInsets.only(right: 30),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextFieldWidget(
                   controller: _lastNameController,
-                  hint: 'Enter your last name',
+                  hint: 'enter_second_name'.tr(),
+                  suffixIcon: Icon(Icons.person,color: Colors.blue),
                   keyboardType: TextInputType.name,
                 ),
               ),
               SizedBox(height: 20),
               Padding(
-                padding: const EdgeInsets.only(right: 30),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextFieldWidget(
                   controller: _dateOfBirthController,
-                  hint: 'Select your date of birth',
+                  hint: 'select_your_date_of_birth'.tr(),
                   readOnly: true,
-                  suffixIcon: Icon(Icons.cake),
+                  suffixIcon: Icon(Icons.cake,color: Colors.blue),
                   onTap: () => _pickDate(),
                 ),
               ),
@@ -462,8 +460,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                             horizontal: 70,
                             vertical: 12,
                           ),
-                          child: const Text(
-                            'Register',
+                          child:  Text(
+                            'register'.tr(),
                             style: TextStyle(color: Colors.white, fontSize: 17),
                           ),
                         ),

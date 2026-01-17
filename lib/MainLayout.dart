@@ -7,10 +7,12 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Screens/chat/homeChatScreen.dart';
 import 'Screens/favoriteScreen.dart';
 import 'Screens/homeScreen.dart';
 import 'Screens/profileScreen.dart';
+import 'chat/homeChatScreen.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class MainlayoutScreen extends StatefulWidget {
   static String id = 'MainlayoutScreen';
@@ -49,7 +51,7 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
           showSimpleNotification(
             Text(
               n.data.message.isEmpty
-                  ? "New notification"
+                  ? "new_notification".tr()
                   : n.data.message,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -126,13 +128,14 @@ class _MainlayoutScreenState extends State<MainlayoutScreen> {
                       numberScreen = index;
                     });
                   },
-                  tabs: const [
-                    GButton(icon: Icons.home, text: 'Home'),
-                    GButton(icon: Icons.favorite, text: 'Favorite'),
-                    GButton(icon: Icons.list_alt, text: 'Reservations'),
-                    GButton(icon: Icons.chat, text: 'Chat'),
-                    GButton(icon: Icons.person, text: 'profile'),
+                  tabs: [
+                    GButton(icon: Icons.home, text: 'home'.tr()),
+                    GButton(icon: Icons.favorite, text: 'favorites'.tr()),
+                    GButton(icon: Icons.list_alt, text: 'my_reservations'.tr()),
+                    GButton(icon: Icons.chat, text: 'chat'.tr()),
+                    GButton(icon: Icons.person, text: 'profile'.tr()),
                   ],
+
                 ),
               ),
             ),

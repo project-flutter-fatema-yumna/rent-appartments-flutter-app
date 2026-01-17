@@ -1,7 +1,7 @@
 import 'package:flats_app/global_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../Services/getAllWalletRequests.dart';
 import '../../models/model_walletRequest.dart';
@@ -38,8 +38,8 @@ class _LessorWalletScreenState extends State<LessorWalletScreen> {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date).inDays;
-    if (diff == 0) return 'Today';
-    if (diff == 1) return 'Yesterday';
+    if (diff == 0) return 'today'.tr();
+    if (diff == 1) return 'yesterday'.tr();
     return '${date.day} ${_monthName(date.month)}';
   }
 
@@ -66,7 +66,10 @@ class _LessorWalletScreenState extends State<LessorWalletScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("My Card", style: TextStyle(color: Colors.white)),
+        title: Text(
+          'my_card'.tr(),
+          style: const TextStyle(color: Colors.white),
+        ),
         backgroundColor: Theme.of(context).primaryColor,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
@@ -79,14 +82,17 @@ class _LessorWalletScreenState extends State<LessorWalletScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: SpinKitThreeBounce(color: Theme.of(context).primaryColor, size: 20),
+              child: SpinKitThreeBounce(
+                color: Theme.of(context).primaryColor,
+                size: 20,
+              ),
             );
           }
 
           if (snapshot.hasError) {
             return Center(
               child: Text(
-                'Error: ${snapshot.error}',
+                'error_generic'.tr(args: ['${snapshot.error}']),
                 textAlign: TextAlign.center,
               ),
             );
@@ -104,6 +110,7 @@ class _LessorWalletScreenState extends State<LessorWalletScreen> {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              // الكرت الأساسي
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -120,9 +127,9 @@ class _LessorWalletScreenState extends State<LessorWalletScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Current Balance",
-                      style: TextStyle(
+                    Text(
+                      'current_balance'.tr(),
+                      style: const TextStyle(
                         fontSize: 13,
                         color: Colors.grey,
                         fontWeight: FontWeight.w500,
@@ -138,7 +145,7 @@ class _LessorWalletScreenState extends State<LessorWalletScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "$role wallet",
+                      "$role ${'wallet_lower'.tr()}",
                       style: TextStyle(
                         fontSize: 13,
                         color: Theme.of(context).primaryColor,
@@ -150,6 +157,7 @@ class _LessorWalletScreenState extends State<LessorWalletScreen> {
 
               const SizedBox(height: 16),
 
+              // الأزرار (سحب / إضافة)
               Row(
                 children: [
                   Expanded(
@@ -157,9 +165,9 @@ class _LessorWalletScreenState extends State<LessorWalletScreen> {
                       height: 48,
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.south_east, size: 19),
-                        label: const Text(
-                          "Withdraw",
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                        label: Text(
+                          'withdraw'.tr(),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).primaryColor,
@@ -180,15 +188,14 @@ class _LessorWalletScreenState extends State<LessorWalletScreen> {
                             ),
                             builder: (_) => Padding(
                               padding: EdgeInsets.only(
-                                bottom: MediaQuery.of(
-                                  context,
-                                ).viewInsets.bottom,
+                                bottom: MediaQuery.of(context)
+                                    .viewInsets
+                                    .bottom,
                               ),
                               child: LessorWalletRequestSheet(
                                 type: WalletRequestType.withdraw,
                                 availableAmount: available,
-                                message:
-                                    "Enter the amount you want to withdraw.",
+                                message: 'withdraw_subtitle'.tr(),
                               ),
                             ),
                           ).then((_) {
@@ -211,14 +218,16 @@ class _LessorWalletScreenState extends State<LessorWalletScreen> {
                           color: Theme.of(context).primaryColor,
                         ),
                         label: Text(
-                          "Add Funds",
+                          'add_funds'.tr(),
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: Theme.of(context).primaryColor,
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Theme.of(context).primaryColor),
+                          side: BorderSide(
+                            color: Theme.of(context).primaryColor,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -234,14 +243,14 @@ class _LessorWalletScreenState extends State<LessorWalletScreen> {
                             ),
                             builder: (_) => Padding(
                               padding: EdgeInsets.only(
-                                bottom: MediaQuery.of(
-                                  context,
-                                ).viewInsets.bottom,
+                                bottom: MediaQuery.of(context)
+                                    .viewInsets
+                                    .bottom,
                               ),
                               child: LessorWalletRequestSheet(
                                 type: WalletRequestType.add,
                                 availableAmount: available,
-                                message: "Enter the amount you want to add.",
+                                message: 'add_subtitle'.tr(),
                               ),
                             ),
                           ).then((_) {
@@ -258,30 +267,37 @@ class _LessorWalletScreenState extends State<LessorWalletScreen> {
 
               const SizedBox(height: 20),
 
+              // العنوان + الفلتر
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Recent Requests",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  Text(
+                    'recent_requests'.tr(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   DropdownButton<String>(
                     dropdownColor: Theme.of(context).cardColor,
                     value: selectedStatus,
                     borderRadius: BorderRadius.circular(12),
-                    items: const [
-                      DropdownMenuItem(value: 'all', child: Text('All')),
+                    items: [
+                      DropdownMenuItem(
+                        value: 'all',
+                        child: Text('all'.tr()),
+                      ),
                       DropdownMenuItem(
                         value: 'approved',
-                        child: Text('Approved'),
+                        child: Text('approved'.tr()),
                       ),
                       DropdownMenuItem(
                         value: 'pending',
-                        child: Text('Pending'),
+                        child: Text('pending'.tr()),
                       ),
                       DropdownMenuItem(
                         value: 'rejected',
-                        child: Text('Rejected'),
+                        child: Text('rejected'.tr()),
                       ),
                     ],
                     onChanged: (value) {
@@ -296,18 +312,18 @@ class _LessorWalletScreenState extends State<LessorWalletScreen> {
               const SizedBox(height: 8),
 
               if (filteredRequests.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.only(top: 20),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
                   child: Center(
                     child: Text(
-                      'No requests for this filter',
-                      style: TextStyle(color: Colors.grey),
+                      'no_requests_for_filter'.tr(),
+                      style: const TextStyle(color: Colors.grey),
                     ),
                   ),
                 )
               else
                 ...filteredRequests.map(
-                  (r) => _RequestTile(
+                      (r) => _RequestTile(
                     type: r.type,
                     amount: r.amount.toStringAsFixed(0),
                     status: r.status,
@@ -338,7 +354,6 @@ class _RequestTile extends StatelessWidget {
   Color get _statusColor {
     switch (status) {
       case "approved":
-      case "accepted":
         return Colors.green;
       case "rejected":
         return Colors.red;
@@ -347,11 +362,23 @@ class _RequestTile extends StatelessWidget {
     }
   }
 
+  String get _statusKey {
+    switch (status) {
+      case "approved":
+        return 'approved';
+      case "rejected":
+        return 'rejected';
+      default:
+        return 'pending';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isWithdraw = type == "withdraw";
     final IconData icon = isWithdraw ? Icons.south_east : Icons.north_east;
-    final String title = isWithdraw ? "Withdraw request" : "Add funds request";
+    final String title =
+    isWithdraw ? 'withdraw_request'.tr() : 'add_funds_request'.tr();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -364,19 +391,31 @@ class _RequestTile extends StatelessWidget {
         leading: CircleAvatar(
           radius: 20,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          child: Icon(icon, color: Theme.of(context).primaryColor, size: 20),
+          child: Icon(
+            icon,
+            color: Theme.of(context).primaryColor,
+            size: 20,
+          ),
         ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
         subtitle: Text(
           date,
-          style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodyMedium!.color,
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).textTheme.bodyMedium!.color,
           ),
         ),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(amount, style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              amount,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 4),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -385,7 +424,7 @@ class _RequestTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                status.toUpperCase(),
+                _statusKey.tr(),
                 style: TextStyle(
                   color: _statusColor,
                   fontSize: 10,

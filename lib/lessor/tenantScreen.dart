@@ -1,10 +1,11 @@
 import 'package:flats_app/global_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../Services/Lessor_Services/getAllTenantsService.dart';
+import '../chat/chatSecondScreen.dart';
 import '../models/model_tenantUser.dart';
 
 class tenants_Screen extends StatefulWidget {
@@ -16,12 +17,15 @@ class tenants_Screen extends StatefulWidget {
 }
 
 class _tenants_ScreenState extends State<tenants_Screen> {
-  final searchText=TextEditingController();
+  int? myId=userId;
+  String t=userToken;
+  final searchText = TextEditingController();
   bool loading = true;
   String? error;
   List<Model_tenant> allTenants = [];
   List<Model_tenant> filteredTenants = [];
 
+  @override
   void initState() {
     super.initState();
     _fetchTenants();
@@ -29,16 +33,17 @@ class _tenants_ScreenState extends State<tenants_Screen> {
       _applySearch(searchText.text);
     });
   }
+
   Future<void> _fetchTenants() async {
-    setState(() { loading = true; error = null; });
+    setState(() {
+      loading = true;
+      error = null;
+    });
 
     try {
-      //final prefs = await SharedPreferences.getInstance();
-      //final token = prefs.getString("token");
-      final String token= userToken;
+      final String token = userToken;
 
-
-      if (token == null || token.isEmpty) throw Exception("Token not found");
+      if (token.isEmpty) throw Exception("no_token".tr());
 
       final list = await get_All_Tenants().getTenants(token: token);
 
@@ -52,6 +57,7 @@ class _tenants_ScreenState extends State<tenants_Screen> {
       setState(() => loading = false);
     }
   }
+
   void _applySearch(String text) {
     final query = text.trim().toLowerCase();
     if (query.isEmpty) {
@@ -67,6 +73,7 @@ class _tenants_ScreenState extends State<tenants_Screen> {
       }).toList();
     });
   }
+
   @override
   void dispose() {
     searchText.dispose();
@@ -81,9 +88,9 @@ class _tenants_ScreenState extends State<tenants_Screen> {
         backgroundColor: Theme.of(context).primaryColor,
         surfaceTintColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          "My Tenants",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+        title: Text(
+          "my_tenants".tr(),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
         ),
         leading: IconButton(
           icon: const Icon(
@@ -100,7 +107,7 @@ class _tenants_ScreenState extends State<tenants_Screen> {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(22),
                 bottomRight: Radius.circular(22),
               ),
@@ -108,9 +115,9 @@ class _tenants_ScreenState extends State<tenants_Screen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Contact & Chat",
-                  style: TextStyle(
+                Text(
+                  "contact_chat".tr(),
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -119,7 +126,7 @@ class _tenants_ScreenState extends State<tenants_Screen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Manage your tenants and communicate easily",
+                  "manage_tenants_subtitle".tr(),
                   style: TextStyle(
                     fontSize: 12,
                     color: Theme.of(context).textTheme.bodyMedium!.color,
@@ -140,14 +147,13 @@ class _tenants_ScreenState extends State<tenants_Screen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.search_rounded, color: Theme.of(context).primaryColor,
-                      ),
+                      Icon(Icons.search_rounded, color: Theme.of(context).primaryColor),
                       const SizedBox(width: 10),
                       Expanded(
                         child: TextField(
                           controller: searchText,
-                          decoration: const InputDecoration(
-                            hintText: "Search tenant name or phone...",
+                          decoration: InputDecoration(
+                            hintText: "search_tenant_hint".tr(),
                             border: InputBorder.none,
                           ),
                         ),
@@ -155,12 +161,10 @@ class _tenants_ScreenState extends State<tenants_Screen> {
                       if (searchText.text.isNotEmpty)
                         IconButton(
                           onPressed: () => searchText.clear(),
-                          icon: Icon(Icons.close, size: 18, color: Theme.of(context).primaryColor,
-                          ),
+                          icon: Icon(Icons.close, size: 18, color: Theme.of(context).primaryColor),
                         ),
                     ],
                   ),
-
                 ),
               ],
             ),
@@ -189,7 +193,7 @@ class _tenants_ScreenState extends State<tenants_Screen> {
                           ElevatedButton.icon(
                             onPressed: _fetchTenants,
                             icon: const Icon(Icons.refresh),
-                            label: const Text("Retry"),
+                            label: Text("retry".tr()),
                           ),
                         ],
                       ),
@@ -198,7 +202,7 @@ class _tenants_ScreenState extends State<tenants_Screen> {
                 }
 
                 if (filteredTenants.isEmpty) {
-                  return const Center(child: Text("No tenants yet"));
+                  return Center(child: Text("no_tenants_yet".tr()));
                 }
 
                 return ListView.separated(
@@ -214,13 +218,46 @@ class _tenants_ScreenState extends State<tenants_Screen> {
                         await launchUrl(phoneUri);
                       }
                     },
-                    onChat: () {},
+                    onChat: () {
+                      final t = userToken;
+                      final id = userId;
+
+                     // print("CHAT CLICK token=$t myId=$id otherId=${filteredTenants[index].id}");
+
+                      if (id == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("User ID is null")),
+                        );
+                        return;
+                      }
+
+                      if (t.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Token is empty")),
+                        );
+                        return;
+                      }
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => chatSecondScreen(
+                            phone: filteredTenants[index].phone,
+                            title: filteredTenants[index].username,
+                            myId: id,
+                            otherUserId: filteredTenants[index].id,
+                            token: t,
+                          ),
+                        ),
+                      );
+                    },
+
+
                   ),
                 );
               },
             ),
           ),
-
         ],
       ),
     );
@@ -281,21 +318,15 @@ class _TenantCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        tenant.fullName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          color: Theme.of(context).textTheme.bodyMedium!.color,
-                        ),
-                      ),
-                    ),
-                  ],
+                Text(
+                  tenant.fullName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: Theme.of(context).textTheme.bodyMedium!.color,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -322,16 +353,18 @@ class _TenantCard extends StatelessWidget {
             children: [
               _actionButton(
                 icon: Icons.call_rounded,
-                label: "Call",
+                label: "call".tr(),
                 color: Colors.green,
                 onTap: onCall,
               ),
               const SizedBox(height: 8),
               _actionButton(
                 icon: Icons.chat_bubble_rounded,
-                label: "Chat",
+                label: "chat".tr(),
                 color: Theme.of(context).primaryColor,
-                onTap: onChat,
+                onTap:(){
+                  onChat();
+                },
               ),
             ],
           ),

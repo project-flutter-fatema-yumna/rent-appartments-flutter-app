@@ -5,6 +5,7 @@ import 'package:flats_app/widgets/identity_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart'; // ⬅️ مهم
 
 import '../authentication_screens/login_screen.dart';
 
@@ -12,12 +13,14 @@ class ProfileScreen extends StatefulWidget {
   static String id = 'ProfileScreen';
   final VoidCallback? toggleTheme;
   const ProfileScreen({super.key, this.toggleTheme});
+
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
   bool isDarkMode = false;
+
   @override
   void initState() {
     super.initState();
@@ -38,9 +41,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        automaticallyImplyLeading:user!.role=='tenant'? false:true,
+        automaticallyImplyLeading: user!.role == 'tenant' ? false : true,
         title: Text(
-          'Profile',
+          'profile'.tr(), // ⬅️ Profile
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Theme.of(context).textTheme.bodyLarge!.color!,
@@ -63,13 +66,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.black, width: 1.5),
                   ),
-
-                  child: personalImage(user!, 85),
+                  child: personalImage(user, 85),
                 ),
               ),
               const SizedBox(height: 30),
+
+              // Account info title
               Text(
-                'Account info',
+                'account_info'.tr(),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -77,16 +81,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               const SizedBox(height: 15),
-              _readOnlyField(label: 'First name', value: user.firstName),
-              _readOnlyField(label: 'Last name', value: user.lastName),
+
+              // Fields
               _readOnlyField(
-                label: 'Date of birth',
+                label: 'first_name'.tr(),
+                value: user.firstName,
+              ),
+              _readOnlyField(
+                label: 'last_name'.tr(),
+                value: user.lastName,
+              ),
+              _readOnlyField(
+                label: 'date_of_birth'.tr(),
                 value: user.dateOfBirth ?? '',
               ),
-              _readOnlyField(label: 'Phone number', value: user.phone),
+              _readOnlyField(
+                label: 'phone_number'.tr(),
+                value: user.phone,
+              ),
+
               const SizedBox(height: 15),
               Text(
-                'Identity photo',
+                'identity_photo'.tr(),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -97,8 +113,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               identityImage(user),
               const SizedBox(height: 15),
               Divider(color: Theme.of(context).textTheme.bodyLarge!.color!),
+
               Text(
-                'Settings',
+                'settings'.tr(),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -106,10 +123,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               const SizedBox(height: 15),
+
+              // Dark mode tile
               ListTile(
                 leading: const Icon(Icons.dark_mode_outlined),
                 title: Text(
-                  'Dark mode',
+                  'dark_mode'.tr(),
                   style: TextStyle(
                     color: Theme.of(context).textTheme.bodyLarge!.color!,
                   ),
@@ -125,18 +144,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                 ),
               ),
+              ListTile(
+                leading: const Icon(Icons.language),
+                title: Text(
+                  'language'.tr(),
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge!.color!,
+                  ),
+                ),
+                trailing: DropdownButton<String>(
+                  value: context.locale.languageCode,
+                  underline: const SizedBox(),
+                  dropdownColor: Theme.of(context).cardColor,
+                  items: const [
+                    DropdownMenuItem(
+                      value: 'en',
+                      child: Text('English'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'ar',
+                      child: Text('العربية'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    if (value == null) return;
+                    final newLocale = Locale(value);
+                    context.setLocale(newLocale);  // 👈 تغيير اللغة فعلياً
+                  },
+                ),
+              ),
               Divider(color: Theme.of(context).textTheme.bodyLarge!.color!),
               ListTile(
                 leading: const Icon(Icons.logout, color: Colors.red),
-                title: const Text(
-                  'Log out',
+                title:  Text(
+                  'logout'.tr(),
                   style: TextStyle(color: Colors.red),
                 ),
                 onTap: () async {
                   await logout(context);
                 },
               ),
-              SizedBox(height: 100),
+              const SizedBox(height: 100),
             ],
           ),
         ),

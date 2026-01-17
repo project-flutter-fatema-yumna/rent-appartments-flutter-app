@@ -1,5 +1,7 @@
 import 'package:flats_app/API/api.dart';
 
+import '../../helper/Host.dart';
+
 class postChatSevices {
   Future<dynamic> postMessage({
     required String token,
@@ -7,7 +9,7 @@ class postChatSevices {
     required String content,
   }) async {
     final response = await api().postFormData(
-      url: 'http://10.0.2.2:8000/api/user/sendMessage/${desId}',
+      url: 'http://${Host.host}:8000/api/user/sendMessage/${desId}',
       body: {"content": content},
       token: token,
     );

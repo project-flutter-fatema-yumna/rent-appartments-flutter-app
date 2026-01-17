@@ -1,0 +1,4 @@
+class Host{
+  static String host='172.20.10.2';
+  //172.20.10.2
+}

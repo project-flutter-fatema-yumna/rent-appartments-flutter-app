@@ -1,12 +1,13 @@
 import 'package:flats_app/models/model_apartment.dart';
 
 import '../API/api.dart';
+import '../helper/Host.dart';
 
 class get_apartment {
 
   Future<List<Model_Apartment>> getAllApartment({required String token}) async {
     final response = await api().get(
-      url: 'http://10.0.2.2:8000/api/apartment/paginate',
+      url: 'http://${Host.host}:8000/api/apartment/paginate',
       token: token,
     );
     //print('the Response is $response');

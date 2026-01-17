@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helper/Host.dart';
+
 Future<String?> getToken() async {
   final prefs = await SharedPreferences.getInstance();
   return prefs.getString('token');
@@ -18,7 +20,7 @@ Future<String?> editReservation({
   final body = {'start_date': startDate, 'end_date': endDate};
 
   final response = await http.post(
-    Uri.parse('http://10.0.2.2:8000/api/reservations/$reservationId/edit'),
+    Uri.parse('http://${Host.host}:8000/api/reservations/$reservationId/edit'),
     headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
     body: body,
   );

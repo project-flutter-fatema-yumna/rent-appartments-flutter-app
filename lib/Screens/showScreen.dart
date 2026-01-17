@@ -6,12 +6,15 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
+
 import '../Services/calculate_reservation_service.dart';
 import '../Services/get_blocked_dates_service.dart';
 import '../Services/reserveApartment.dart';
 import '../authentication_screens/login_screen.dart';
+import '../chat/chatSecondScreen.dart';
+import '../helper/Host.dart';
 import '../helper/alertDialog.dart';
-import '../lessor/chat/chatSecondScreen.dart';
 import '../models/blocked_date.dart';
 import '../models/reservation_calculation.dart';
 import 'finally.dart';
@@ -32,13 +35,12 @@ class _ShowScreenState extends State<ShowScreen> {
   int? _reservationId;
   String? unit;
 
-
   final get_blocked_dates_service _blockedService = get_blocked_dates_service();
   List<BlockedDate> _blockedDates = [];
   bool _loadingBlocked = false;
 
   final CalculateReservationService _calcService =
-      CalculateReservationService();
+  CalculateReservationService();
   ReservationCalculation? _calcResult;
   bool _loadingCalc = false;
 
@@ -59,27 +61,25 @@ class _ShowScreenState extends State<ShowScreen> {
   String _buildPeriodLabel() {
     if (_calcResult == null) return '';
 
-    String unit;
+    final int p = _calcResult!.period;
+    String unitKey;
+
     switch (_calcResult!.rentType.toLowerCase()) {
       case 'daily':
-        unit = 'day';
+        unitKey = p > 1 ? 'days' : 'day';
         break;
       case 'monthly':
-        unit = 'month';
+        unitKey = p > 1 ? 'months' : 'month';
         break;
       case 'yearly':
-        unit = 'year';
+        unitKey = p > 1 ? 'years' : 'year';
         break;
       default:
-        unit = 'day';
+        unitKey = p > 1 ? 'days' : 'day';
     }
 
-    final int p = _calcResult!.period;
-    final String unitLabel = p > 1 ? '${unit}s' : unit;
-
-    return '$p $unitLabel';
+    return '$p ${unitKey.tr()}';
   }
-
 
   String _reservationStatus = 'Reserve'; // none/pending/accepted/rejected
   void _showFinallySheet(BuildContext pageContext) {
@@ -117,10 +117,10 @@ class _ShowScreenState extends State<ShowScreen> {
           type: WalletRequestType.add,
           availableAmount: availableAmount,
           message:
-              "You don't have enough balance to complete this reservation.\n\n"
-              "Required: ${requiredAmount.toStringAsFixed(0)}\n"
-              "Available: ${availableAmount.toStringAsFixed(0)}\n"
-              "Please add at least ${need.toStringAsFixed(0)} to your wallet.",
+          "${"wallet_not_enough".tr()}\n\n"
+              "${"required".tr()}: ${requiredAmount.toStringAsFixed(0)}\n"
+              "${"available".tr()}: ${availableAmount.toStringAsFixed(0)}\n"
+              "${"please_add_at_least".tr()} ${need.toStringAsFixed(0)} ${"to_your_wallet".tr()}",
         ),
       ),
     );
@@ -153,7 +153,7 @@ class _ShowScreenState extends State<ShowScreen> {
 
     if (token == null || token!.isEmpty) {
       ScaffoldMessenger.of(pageContext).showSnackBar(
-        const SnackBar(content: Text('Token not found, please login again')),
+        SnackBar(content: Text('token_not_found'.tr())),
       );
       Navigator.of(
         pageContext,
@@ -181,8 +181,8 @@ class _ShowScreenState extends State<ShowScreen> {
       context: context,
       firstDate: now,
       lastDate: DateTime(now.year + 1, 12, 31),
-      locale: const Locale('en'),
-      helpText: 'chose rend date',
+      locale: context.locale,
+      helpText: 'choose_rent_date'.tr(),
       builder: (context, child) {
         final theme = Theme.of(context);
         return Theme(
@@ -214,7 +214,7 @@ class _ShowScreenState extends State<ShowScreen> {
         if (_isDayBlocked(day)) return false;
 
         return true;
-      }
+      },
     );
 
     if (result != null) {
@@ -240,7 +240,6 @@ class _ShowScreenState extends State<ShowScreen> {
         }
       }
 
-      final pageContext = context;
       showDialog(
         context: context,
         builder: (dialogContext) {
@@ -266,9 +265,9 @@ class _ShowScreenState extends State<ShowScreen> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                const Text(
-                  'Reservation summary',
-                  style: TextStyle(
+                Text(
+                  'reservation_summary'.tr(),
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
@@ -297,9 +296,9 @@ class _ShowScreenState extends State<ShowScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Booking from '
+                          '${"booking_from".tr()} '
                               '${result.start.day}/${result.start.month}/${result.start.year} '
-                              'to ${result.end.day}/${result.end.month}/${result.end.year}',
+                              '${"to".tr()} ${result.end.day}/${result.end.month}/${result.end.year}',
                           style: const TextStyle(
                             fontSize: 14,
                             height: 1.4,
@@ -314,9 +313,9 @@ class _ShowScreenState extends State<ShowScreen> {
                 const Divider(height: 1),
 
                 const SizedBox(height: 10),
-                const Text(
-                  'Details',
-                  style: TextStyle(
+                Text(
+                  'details'.tr(),
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
@@ -326,13 +325,12 @@ class _ShowScreenState extends State<ShowScreen> {
                 if (_loadingCalc)
                   const Center(child: CircularProgressIndicator())
                 else if (_calcResult != null) ...[
-                  _infoRow('Rent type', _calcResult!.rentType),
+                  _infoRow('rent_type'.tr(), _calcResult!.rentType),
                   const SizedBox(height: 6),
-                  _infoRow('Period', _buildPeriodLabel()),
+                  _infoRow('period'.tr(), _buildPeriodLabel()),
                   const SizedBox(height: 6),
-                  _infoRow('Total', '${_calcResult!.total} \$'),
+                  _infoRow('total'.tr(), '${_calcResult!.total} \$'),
                 ],
-
               ],
             ),
             actionsPadding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
@@ -344,7 +342,7 @@ class _ShowScreenState extends State<ShowScreen> {
                   _openDatePicker();
                 },
                 child: Text(
-                  'Edit',
+                  'edit'.tr(),
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
                   ),
@@ -364,13 +362,13 @@ class _ShowScreenState extends State<ShowScreen> {
                       if (!mounted) return;
                       setState(() => _loadingReserve = false);
                       ScaffoldMessenger.of(pageContext).showSnackBar(
-                        const SnackBar(
-                          content: Text('Token not found, please login again'),
+                        SnackBar(
+                          content: Text('token_not_found'.tr()),
                         ),
                       );
                       Navigator.of(pageContext).pushNamedAndRemoveUntil(
                         LoginScreen.id,
-                        (route) => false,
+                            (route) => false,
                       );
                       return;
                     }
@@ -420,32 +418,17 @@ class _ShowScreenState extends State<ShowScreen> {
                       await prefs.remove('token');
                       if (!mounted) return;
                       ScaffoldMessenger.of(pageContext).showSnackBar(
-                        const SnackBar(
-                          content: Text('Session expired, please login again'),
+                        SnackBar(
+                          content: Text('session_expired'.tr()),
                         ),
                       );
                       Navigator.of(pageContext).pushNamedAndRemoveUntil(
                         LoginScreen.id,
-                        (route) => false,
+                            (route) => false,
                       );
                       return;
                     }
 
-                    // 409 date conflict
-                    /*if (code == 409) {
-                      _selectedRange = null;
-                      await showAppDialog(
-                        pageContext,
-                        title: 'information',
-                        message:
-                        'the apartment is already reserved in this date range',
-                        buttonText: 'OK',
-                      );
-                      _openDatePicker();
-                      return;
-                    }*/
-
-                    // حالة الـ wallet
                     if (body != null &&
                         body.containsKey('required') &&
                         body.containsKey('available')) {
@@ -468,7 +451,8 @@ class _ShowScreenState extends State<ShowScreen> {
                     ).showSnackBar(SnackBar(content: Text(msg)));
                   }
                 },
-                child: Text('OK',
+                child: Text(
+                  'ok'.tr(),
                   style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
               ),
@@ -479,41 +463,24 @@ class _ShowScreenState extends State<ShowScreen> {
     }
   }
 
-  // void _openBookingSheet(BuildContext pageContext) {
-  //   if (_selectedRange == null) return;
-  //   final range = _selectedRange!;
-  //   showModalBottomSheet(
-  //     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-  //     context: context,
-  //     isScrollControlled: true,
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-  //     ),
-  //     builder: (_) => BankAccountBottomSheet(
-  //       token: "8|AGei4tZYe7LlDuWzJWwzzTiYRYn1Zp7RPbEx2BgKd30a0133",
-  //       apartmentId: model_apartment.id,
-  //       range: range,
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     String label;
     if (_loadingReserve)
-      label = 'Loading...';
+      label = 'loading'.tr();
     else if (_reservationStatus == 'pending')
-      label = 'Pending';
+      label = 'pending'.tr();
     else if (_reservationStatus == 'accepted')
-      label = 'Accepted';
+      label = 'accepted'.tr();
     else if (_reservationStatus == 'rejected')
-      label = 'Reserve again';
+      label = 'reserve_again'.tr();
     else
-      label = 'Reserve';
+      label = 'reserve'.tr();
 
     final bool disabled = _loadingReserve || _reservationStatus == 'pending';
     model_apartment =
-        ModalRoute.of(context)!.settings.arguments as Model_Apartment;
+    ModalRoute.of(context)!.settings.arguments as Model_Apartment;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
@@ -533,7 +500,7 @@ class _ShowScreenState extends State<ShowScreen> {
                     itemCount: model_apartment.images.length,
                     itemBuilder: (context, index) {
                       final path = model_apartment.images[index].image.trim();
-                      final url = 'http://10.0.2.2:8000/storage/$path';
+                      final url = 'http://${Host.host}:8000/storage/$path';
                       return Image.network(url, fit: BoxFit.cover);
                     },
                   ),
@@ -545,8 +512,8 @@ class _ShowScreenState extends State<ShowScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(model_apartment.images.length, (
-                      index,
-                    ) {
+                        index,
+                        ) {
                       return Padding(
                         padding: const EdgeInsets.all(2),
                         child: Container(
@@ -579,7 +546,7 @@ class _ShowScreenState extends State<ShowScreen> {
               ],
             ),
             Transform.translate(
-              offset: Offset(0, -20),
+              offset: const Offset(0, -20),
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -587,7 +554,7 @@ class _ShowScreenState extends State<ShowScreen> {
                     color: Theme.of(context).textTheme.bodyLarge!.color!,
                   ),
                   color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topRight: Radius.circular(20),
                     topLeft: Radius.circular(20),
                   ),
@@ -600,7 +567,7 @@ class _ShowScreenState extends State<ShowScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -626,7 +593,11 @@ class _ShowScreenState extends State<ShowScreen> {
                           ),
                           Row(
                             children: [
-                              Icon(Icons.star, color: Colors.orange, size: 30),
+                              const Icon(
+                                Icons.star,
+                                color: Colors.orange,
+                                size: 30,
+                              ),
                               Text(
                                 '${model_apartment.home_rate.toInt()}',
                                 style: TextStyle(
@@ -640,7 +611,7 @@ class _ShowScreenState extends State<ShowScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -657,7 +628,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                   ).textTheme.bodyLarge!.color!,
                                   blurRadius: 1,
                                   spreadRadius: 1,
-                                  offset: Offset(1, 1),
+                                  offset: const Offset(1, 1),
                                 ),
                               ],
                             ),
@@ -666,14 +637,14 @@ class _ShowScreenState extends State<ShowScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Icon(
                                     Icons.square_foot,
                                     color: Theme.of(context).primaryColor,
                                   ),
                                   Text(
-                                    '${model_apartment.home_space} sq ft',
+                                    '${model_apartment.home_space} ${"sq_ft".tr()}',
                                     style: TextStyle(
                                       color: Theme.of(
                                         context,
@@ -697,7 +668,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                   ).textTheme.bodyLarge!.color!,
                                   blurRadius: 1,
                                   spreadRadius: 1,
-                                  offset: Offset(1, 1),
+                                  offset: const Offset(1, 1),
                                 ),
                               ],
                             ),
@@ -706,15 +677,14 @@ class _ShowScreenState extends State<ShowScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Icon(
                                     Icons.car_crash,
                                     color: Theme.of(context).primaryColor,
                                   ),
-
                                   Text(
-                                    '${model_apartment.parking_number} parking',
+                                    '${model_apartment.parking_number} ${"parking".tr()}',
                                     style: TextStyle(
                                       color: Theme.of(
                                         context,
@@ -738,7 +708,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                   ).textTheme.bodyLarge!.color!,
                                   blurRadius: 1,
                                   spreadRadius: 1,
-                                  offset: Offset(1, 1),
+                                  offset: const Offset(1, 1),
                                 ),
                               ],
                             ),
@@ -747,14 +717,14 @@ class _ShowScreenState extends State<ShowScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                                MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Icon(
                                     Icons.bathtub,
                                     color: Theme.of(context).primaryColor,
                                   ),
                                   Text(
-                                    '${model_apartment.number_of_baths} bath',
+                                    '${model_apartment.number_of_baths} ${"bath".tr()}',
                                     style: TextStyle(
                                       color: Theme.of(
                                         context,
@@ -767,18 +737,18 @@ class _ShowScreenState extends State<ShowScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.only(left: 10),
                         child: Text(
-                          'Description',
+                          'description'.tr(),
                           style: TextStyle(
                             color: Theme.of(context).textTheme.bodyLarge!.color,
                             fontSize: 20,
                           ),
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
@@ -790,7 +760,7 @@ class _ShowScreenState extends State<ShowScreen> {
                               ).textTheme.bodyLarge!.color!,
                               blurRadius: 1,
                               spreadRadius: 1,
-                              offset: Offset(1, 1),
+                              offset: const Offset(1, 1),
                             ),
                           ],
                         ),
@@ -798,7 +768,7 @@ class _ShowScreenState extends State<ShowScreen> {
                           padding: const EdgeInsets.only(left: 15),
                           child: Column(
                             children: [
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -807,7 +777,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                     color: Theme.of(context).primaryColor,
                                   ),
                                   Text(
-                                    '   Rooms Number       :      ${model_apartment.rooms_number} ',
+                                    '   ${"rooms_number".tr()} : ${model_apartment.rooms_number}',
                                     style: TextStyle(
                                       color: Theme.of(
                                         context,
@@ -817,7 +787,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -826,7 +796,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                     color: Theme.of(context).primaryColor,
                                   ),
                                   Text(
-                                    '   bedRoom Number   :     ${model_apartment.number_of_bedrooms} ',
+                                    '   ${"bedrooms_number".tr()} : ${model_apartment.number_of_bedrooms}',
                                     style: TextStyle(
                                       color: Theme.of(
                                         context,
@@ -836,7 +806,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -845,7 +815,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                     color: Theme.of(context).primaryColor,
                                   ),
                                   Text(
-                                    '   Floor Number           :      ${model_apartment.floor_number}',
+                                    '   ${"floor_number".tr()} : ${model_apartment.floor_number}',
                                     style: TextStyle(
                                       color: Theme.of(
                                         context,
@@ -855,7 +825,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -864,7 +834,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                     color: Theme.of(context).primaryColor,
                                   ),
                                   Text(
-                                    '   Balcony Number      :     ${model_apartment.balcony_number} ',
+                                    '   ${"balcony_number".tr()} : ${model_apartment.balcony_number}',
                                     style: TextStyle(
                                       color: Theme.of(
                                         context,
@@ -874,8 +844,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                   ),
                                 ],
                               ),
-
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -884,7 +853,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                     color: Theme.of(context).primaryColor,
                                   ),
                                   Text(
-                                    '   Furnished                  :   ',
+                                    '   ${"furnished".tr()} : ',
                                     style: TextStyle(
                                       color: Theme.of(
                                         context,
@@ -902,23 +871,23 @@ class _ShowScreenState extends State<ShowScreen> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                             ],
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.only(left: 10),
                         child: Text(
-                          'Agent',
+                          'agent'.tr(),
                           style: TextStyle(
                             color: Theme.of(context).textTheme.bodyLarge!.color,
                             fontSize: 20,
                           ),
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
@@ -930,7 +899,7 @@ class _ShowScreenState extends State<ShowScreen> {
                               ).textTheme.bodyLarge!.color!,
                               blurRadius: 1,
                               spreadRadius: 1,
-                              offset: Offset(1, 1),
+                              offset: const Offset(1, 1),
                             ),
                           ],
                         ),
@@ -956,7 +925,8 @@ class _ShowScreenState extends State<ShowScreen> {
                                     ),
                                   ),
                                   Text(
-                                    model_apartment.owner!.username,
+                                    model_apartment.owner?.username ??
+                                        'user_name'.tr(),
                                     style: TextStyle(
                                       color: Theme.of(
                                         context,
@@ -977,7 +947,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                           color: Colors.grey.shade100,
                                           blurRadius: 2,
                                           spreadRadius: 1,
-                                          offset: Offset(1, 1),
+                                          offset: const Offset(1, 1),
                                         ),
                                       ],
                                     ),
@@ -989,14 +959,12 @@ class _ShowScreenState extends State<ShowScreen> {
                                             builder: (context) {
                                               return chatSecondScreen(
                                                 phone: model_apartment
-                                                    .owner!
-                                                    .phone,
+                                                    .owner!.phone,
                                                 title: model_apartment
-                                                    .owner!
-                                                    .username,
+                                                    .owner!.username,
                                                 myId: myId!,
                                                 otherUserId:
-                                                    model_apartment.owner!.id,
+                                                model_apartment.owner!.id,
                                                 token: token!,
                                               );
                                             },
@@ -1018,7 +986,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                           color: Colors.green.shade100,
                                           blurRadius: 2,
                                           spreadRadius: 1,
-                                          offset: Offset(1, 1),
+                                          offset: const Offset(1, 1),
                                         ),
                                       ],
                                     ),
@@ -1047,7 +1015,7 @@ class _ShowScreenState extends State<ShowScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -1063,7 +1031,7 @@ class _ShowScreenState extends State<ShowScreen> {
                                 ),
                               ),
                               Text(
-                                '${model_apartment.rent_type} Rent',
+                                '${model_apartment.rent_type} ${"rent".tr()}',
                                 style: TextStyle(
                                   color: Theme.of(
                                     context,
@@ -1075,12 +1043,13 @@ class _ShowScreenState extends State<ShowScreen> {
                           ),
                           InkWell(
                             onTap: disabled ? null : _openDatePicker,
-
                             child: Container(
                               height: 50,
                               width: 200,
                               decoration: BoxDecoration(
-                                color: disabled ? Colors.grey : Theme.of(context).primaryColor,
+                                color: disabled
+                                    ? Colors.grey
+                                    : Theme.of(context).primaryColor,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Center(
@@ -1096,7 +1065,7 @@ class _ShowScreenState extends State<ShowScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                     ],
                   ),
                 ),
@@ -1135,7 +1104,4 @@ Widget _infoRow(String label, String value) {
       ),
     ],
   );
-
 }
-
-

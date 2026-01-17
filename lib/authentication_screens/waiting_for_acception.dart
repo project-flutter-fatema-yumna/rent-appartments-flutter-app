@@ -72,16 +72,11 @@ class _WaitingForAcceptionState extends State<WaitingForAcception> {
     }
     try {
       String token = await createToken(phone);
-      print('////////////////////////');
-      print(token);
       await prefs.setString('token', token);
       userToken = token;
       prefs.setBool('isLoggedIn', true);
       prefs.setBool('isRegistered', false);
       _loggingIn = false;
-      print('////////////////////////////////////');
-      print('role');
-      print(prefs.getString('role'));
       if (prefs.getString('role') == 'tenant') {
         Navigator.pushReplacementNamed(context, MainlayoutScreen.id);
       } else {

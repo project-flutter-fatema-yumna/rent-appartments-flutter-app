@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flats_app/Services/edit_reservation_service.dart';
 import 'package:flats_app/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
@@ -31,11 +32,9 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
     super.initState();
 
     originalStartDate = widget.oldStartDate.toIso8601String().split('T').first;
-
     originalEndDate = widget.oldEndDate.toIso8601String().split('T').first;
 
     startDateController = TextEditingController(text: originalStartDate);
-
     endDateController = TextEditingController(text: originalEndDate);
   }
 
@@ -47,28 +46,8 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
       initialDate: widget.oldStartDate.isAfter(DateTime.now())
           ? widget.oldStartDate
           : DateTime.now(),
-      builder: (context, child) {
-        final theme = Theme.of(context);
-        return Theme(
-          data: theme.copyWith(
-            useMaterial3: true,
-            datePickerTheme: DatePickerThemeData(
-              backgroundColor: theme.cardColor,
-              surfaceTintColor: Colors.transparent,
-              headerBackgroundColor: theme.primaryColor,
-              headerForegroundColor: theme.cardColor,
-            ),
-            colorScheme: theme.colorScheme.copyWith(
-              surface: theme.cardColor,
-              onSurface: theme.textTheme.bodyLarge!.color!,
-              primary: theme.primaryColor,
-              onPrimary: theme.cardColor,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
+
     if (picked != null) {
       setState(() {
         startDateController.text = picked.toIso8601String().split('T').first;
@@ -84,36 +63,16 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
 
   Future<void> pickEndDate() async {
     if (startDateController.text.isEmpty) {
-      mySnackBar(context, 'Choose start date first', color: Colors.amber);
+      mySnackBar(context, 'choose_start_first'.tr(), color: Colors.amber);
       return;
     }
     final start = DateTime.parse(startDateController.text);
+
     final picked = await showDatePicker(
       context: context,
       firstDate: start.add(const Duration(days: 1)),
       lastDate: DateTime(2100),
       initialDate: start.add(const Duration(days: 1)),
-      builder: (context, child) {
-        final theme = Theme.of(context);
-        return Theme(
-          data: theme.copyWith(
-            useMaterial3: true,
-            datePickerTheme: DatePickerThemeData(
-              backgroundColor: theme.cardColor,
-              surfaceTintColor: Colors.transparent,
-              headerBackgroundColor: theme.primaryColor,
-              headerForegroundColor: theme.cardColor,
-            ),
-            colorScheme: theme.colorScheme.copyWith(
-              surface: theme.cardColor,
-              onSurface: theme.textTheme.bodyLarge!.color!,
-              primary: theme.primaryColor,
-              onPrimary: theme.cardColor,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
 
     if (picked != null) {
@@ -129,10 +88,12 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
       Navigator.pop(context);
       return;
     }
-    if (startDateController.text.isEmpty || endDateController.text.isEmpty) {
-      mySnackBar(context, 'Enter start and end dates', color: Colors.amber);
+    if (startDateController.text.isEmpty ||
+        endDateController.text.isEmpty) {
+      mySnackBar(context, 'enter_dates'.tr(), color: Colors.amber);
       return;
     }
+
     setState(() => isLoading = true);
 
     final errorMessage = await editReservation(
@@ -140,13 +101,13 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
       startDate: startDateController.text,
       endDate: endDateController.text,
     );
+
     if (errorMessage != null) {
-      print('error msg::::::$errorMessage');
       mySnackBar(context, errorMessage, color: Colors.red);
     } else {
       mySnackBar(
         context,
-        'Request has been sent successfully',
+        'request_sent_success'.tr(),
         color: Colors.green,
       );
       Navigator.pop(context);
@@ -160,24 +121,22 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: AlertDialog(
         backgroundColor: Theme.of(context).cardColor,
-        title: const Text('Edit reservation'),
+        title: Text('edit_reservation'.tr()),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             buildBlueTextField(
               context: context,
               controller: startDateController,
-              label: 'Start date',
+              label: 'start_date'.tr(),
               readOnly: true,
               onTap: pickStartDate,
             ),
-
             const SizedBox(height: 10),
-
             buildBlueTextField(
               context: context,
               controller: endDateController,
-              label: 'End date',
+              label: 'end_date'.tr(),
               readOnly: true,
               onTap: pickEndDate,
             ),
@@ -187,7 +146,7 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
           TextButton(
             onPressed: isLoading ? null : () => Navigator.pop(context),
             child: Text(
-              'Back',
+              'back'.tr(),
               style: TextStyle(
                 color: Theme.of(context).textTheme.bodyLarge!.color!,
               ),
@@ -200,13 +159,16 @@ class _EditReservationDialogState extends State<EditReservationDialog> {
             onPressed: isLoading ? null : submitEdit,
             child: isLoading
                 ? SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  )
-                : Text('Apply edits', style: TextStyle(color: Colors.white)),
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                color: Theme.of(context).cardColor,
+              ),
+            )
+                : Text(
+              'apply_edits'.tr(),
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -225,20 +187,15 @@ Widget buildBlueTextField({
     controller: controller,
     readOnly: readOnly,
     onTap: onTap,
-    cursorColor: Theme.of(context).primaryColor,
     decoration: InputDecoration(
       suffixIcon: readOnly
-          ? Icon(
-              Icons.calendar_month,
-              color: Theme.of(context).textTheme.bodyLarge!.color!,
-            )
+          ? Icon(Icons.calendar_month,
+          color: Theme.of(context).textTheme.bodyLarge!.color!)
           : null,
       labelText: label,
       floatingLabelStyle: TextStyle(color: Theme.of(context).primaryColor),
-      labelStyle: TextStyle(
-        color: Theme.of(context).textTheme.bodyLarge!.color!,
-        fontSize: 15,
-      ),
+      labelStyle:
+      TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color!),
       enabledBorder: UnderlineInputBorder(
         borderSide: BorderSide(
           color: Theme.of(context).textTheme.bodyLarge!.color!,

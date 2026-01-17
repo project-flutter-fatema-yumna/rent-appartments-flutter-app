@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../Screens/showScreen.dart';
+import '../helper/Host.dart';
 
 class Second_card_home extends StatefulWidget {
   Model_Apartment? model_apartment;
@@ -32,7 +33,7 @@ class _Second_card_homeState extends State<Second_card_home> {
       return Center(child: Icon(Icons.image_not_supported));
 
     final path = widget.model_apartment!.images[0].image.trim();
-    final url = 'http://10.0.2.2:8000/storage/$path';
+    final url = 'http://${Host.host}:8000/storage/$path';
 
     return InkWell(
       onTap: () {

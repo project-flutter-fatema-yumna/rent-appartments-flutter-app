@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flats_app/Services/get_favoutite_apartments.dart';
 import 'package:flutter/material.dart';
 import 'package:flats_app/models/model_apartment.dart';
@@ -5,18 +6,18 @@ import 'package:flats_app/widgets/secondCardHome.dart';
 
 class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({super.key});
-  static String id='FavoriteScreen';
+  static String id = 'FavoriteScreen';
 
   @override
   State<FavoriteScreen> createState() => _FavoriteScreenState();
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
-bool _isLoading = true;
+  bool _isLoading = true;
   List<Model_Apartment> apartments = [];
   String? _errorMsg;
 
-@override
+  @override
   void initState() {
     _loadApartments();
     super.initState();
@@ -30,7 +31,7 @@ bool _isLoading = true;
       });
     } catch (e) {
       setState(() {
-        _errorMsg = 'Something went wrong';
+        _errorMsg = 'something_wrong'.tr();
         print('$e');
       });
     } finally {
@@ -43,41 +44,50 @@ bool _isLoading = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:  Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('My Favourites', style: TextStyle(color: Colors.white,
-          )),
+        title: Text(
+          'my_favorites'.tr(),
+          style: const TextStyle(color: Colors.white),
+        ),
         elevation: 5,
         centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
-        iconTheme: IconThemeData(color: Colors.white
-        ),
-        shape: RoundedRectangleBorder(
+        iconTheme: const IconThemeData(color: Colors.white),
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
         ),
       ),
       body: _buildBody(),
     );
   }
- 
- Widget _buildBody() {
+
+  Widget _buildBody() {
     if (_isLoading) {
-      return Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor,
-        ));
+      return Center(
+        child: CircularProgressIndicator(
+          color: Theme.of(context).primaryColor,
+        ),
+      );
     }
+
     if (_errorMsg != null) {
       return Center(child: Text(_errorMsg!));
     }
+
     if (apartments.isEmpty) {
       return Center(
         child: Text(
-          'No apartments',
-          style: TextStyle(fontSize: 16,color: Theme.of(context).textTheme.bodyLarge!.color!,
+          'no_apartments'.tr(),
+          style: TextStyle(
+            fontSize: 16,
+            color: Theme.of(context).textTheme.bodyLarge!.color!,
           ),
         ),
       );
     }
+
     return ListView.builder(
       padding: const EdgeInsets.all(12),
       itemCount: apartments.length,
@@ -93,4 +103,4 @@ bool _isLoading = true;
       },
     );
   }
- }
+}

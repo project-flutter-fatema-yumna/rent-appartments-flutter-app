@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flats_app/Screens/edit_reservation_dialog.dart';
 import 'package:flats_app/Services/cancel_reservation.dart';
 import 'package:flats_app/Services/get_my_reservations.dart';
@@ -26,12 +27,12 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
           automaticallyImplyLeading: false,
           centerTitle: true,
           title: Text(
-            'My Reservations',
-            style: TextStyle(color: Colors.white),
+            'my_reservations'.tr(),
+            style: const TextStyle(color: Colors.white),
           ),
           backgroundColor: Theme.of(context).primaryColor,
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(50),
+            preferredSize: const Size.fromHeight(50),
             child: Container(
               color: Theme.of(context).cardColor,
               child: TabBar(
@@ -44,7 +45,7 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
                 tabs: [
                   Tab(
                     child: Text(
-                      'Pending',
+                      'pending'.tr(),
                       style: TextStyle(
                         fontSize: 12,
                         color: Theme.of(context).primaryColor,
@@ -53,7 +54,7 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
                   ),
                   Tab(
                     child: Text(
-                      'Accepted',
+                      'accepted'.tr(),
                       style: TextStyle(
                         fontSize: 11.65,
                         color: Theme.of(context).primaryColor,
@@ -62,7 +63,7 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
                   ),
                   Tab(
                     child: Text(
-                      'Rejected',
+                      'rejected'.tr(),
                       style: TextStyle(
                         fontSize: 11.9,
                         color: Theme.of(context).primaryColor,
@@ -71,7 +72,7 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
                   ),
                   Tab(
                     child: Text(
-                      'Previous',
+                      'previous'.tr(),
                       style: TextStyle(
                         fontSize: 12,
                         color: Theme.of(context).primaryColor,
@@ -80,7 +81,7 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
                   ),
                   Tab(
                     child: Text(
-                      'Canceled',
+                      'canceled'.tr(),
                       style: TextStyle(
                         fontSize: 11.9,
                         color: Theme.of(context).primaryColor,
@@ -92,7 +93,7 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
             ),
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: [
             ReservationsTab(status: 'pending'),
             ReservationsTab(status: 'accepted'),
@@ -130,7 +131,7 @@ class _ReservationsTabState extends State<ReservationsTab> {
       final token = await getToken();
       if (token == null) {
         setState(() {
-          _errorMsg = 'No token found';
+          _errorMsg = 'no_token'.tr();
           _isLoading = false;
         });
         return;
@@ -147,7 +148,7 @@ class _ReservationsTabState extends State<ReservationsTab> {
       });
     } catch (e) {
       setState(() {
-        _errorMsg = 'Something went wrong';
+        _errorMsg = 'something_wrong'.tr();
       });
       print(e.toString());
     } finally {
@@ -172,9 +173,9 @@ class _ReservationsTabState extends State<ReservationsTab> {
       setState(() {
         order.status = 'canceled';
       });
-      mySnackBar(context, 'Reservation canceled');
+      mySnackBar(context, 'reservation_canceled'.tr());
     } catch (e) {
-      mySnackBar(context, 'Failed to cancel reservation');
+      mySnackBar(context, 'failed_cancel_reservation'.tr());
       print(e);
     }
   }
@@ -183,7 +184,8 @@ class _ReservationsTabState extends State<ReservationsTab> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Center(
-        child: CircularProgressIndicator(color: Theme.of(context).primaryColor),
+        child:
+        CircularProgressIndicator(color: Theme.of(context).primaryColor),
       );
     }
 
@@ -194,7 +196,7 @@ class _ReservationsTabState extends State<ReservationsTab> {
     if (reservations.isEmpty) {
       return Center(
         child: Text(
-          'No reservations',
+          'no_reservations'.tr(),
           style: TextStyle(
             color: Theme.of(context).textTheme.bodyLarge!.color!,
           ),
@@ -212,10 +214,11 @@ class _ReservationsTabState extends State<ReservationsTab> {
               itemBuilder: (context, index) {
                 final r = reservations[index];
                 final apartment = r.apartment;
-      
+
                 return Card(
                   color: Theme.of(context).cardColor,
-                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  margin:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   elevation: 3,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -229,40 +232,49 @@ class _ReservationsTabState extends State<ReservationsTab> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          apartment?.city ?? 'Unknown location',
+                          apartment?.city ?? 'unknown_location'.tr(),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).textTheme.bodyLarge!.color!,
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodyLarge!
+                                .color!,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${apartment?.number_of_bedrooms ?? 0} bedrooms • ${apartment?.home_space ?? 0} m²',
+                          '${apartment?.number_of_bedrooms ?? 0} ${'bedrooms'.tr()} • ${apartment?.home_space ?? 0} m²',
                           style: TextStyle(
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                            color:
+                            Theme.of(context).textTheme.bodyLarge!.color,
                           ),
                         ),
                         Divider(
                           height: 20,
-                          color: Theme.of(context).textTheme.bodyLarge!.color!,
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .color!,
                         ),
                         Row(
                           children: [
                             Icon(
                               Icons.date_range,
                               size: 18,
-                              color: Theme.of(
-                                context,
-                              ).textTheme.bodyLarge!.color!,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .color!,
                             ),
                             const SizedBox(width: 6),
                             Text(
                               '${_formatDate(r.startDate)} → ${_formatDate(r.endDate)}',
                               style: TextStyle(
-                                color: Theme.of(
-                                  context,
-                                ).textTheme.bodyLarge!.color!,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .color!,
                               ),
                             ),
                           ],
@@ -283,29 +295,30 @@ class _ReservationsTabState extends State<ReservationsTab> {
                         ),
                         if (r.status == 'pending' || r.status == 'accepted') ...[
                           Divider(
-                            color: Theme.of(context).textTheme.bodyLarge!.color!,
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodyLarge!
+                                .color!,
                           ),
                           Row(
                             children: [
                               TextButton.icon(
                                 onPressed: () {
-                                  setState(() {
-                                    showDialog(
-                                      context: context,
-                                      builder: (_) => EditReservationDialog(
-                                        reservationId: r.id,
-                                        oldStartDate: r.startDate,
-                                        oldEndDate: r.endDate,
-                                      ),
-                                    );
-                                  });
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) => EditReservationDialog(
+                                      reservationId: r.id,
+                                      oldStartDate: r.startDate,
+                                      oldEndDate: r.endDate,
+                                    ),
+                                  );
                                 },
                                 icon: Icon(
                                   Icons.edit,
                                   color: Theme.of(context).primaryColor,
                                 ),
                                 label: Text(
-                                  'Edit',
+                                  'edit'.tr(),
                                   style: TextStyle(
                                     color: Theme.of(context).primaryColor,
                                   ),
@@ -313,15 +326,12 @@ class _ReservationsTabState extends State<ReservationsTab> {
                               ),
                               const SizedBox(width: 8),
                               TextButton.icon(
-                                onPressed: () {
-                                  setState(() {
-                                    _cancelReservation(r);
-                                  });
-                                },
-                                icon: const Icon(Icons.close, color: Colors.red),
-                                label: const Text(
-                                  'Cancel',
-                                  style: TextStyle(color: Colors.red),
+                                onPressed: () => _cancelReservation(r),
+                                icon: const Icon(Icons.close,
+                                    color: Colors.red),
+                                label: Text(
+                                  'cancel'.tr(),
+                                  style: const TextStyle(color: Colors.red),
                                 ),
                               ),
                             ],
@@ -329,15 +339,19 @@ class _ReservationsTabState extends State<ReservationsTab> {
                         ],
                         if (r.status == 'finished') ...[
                           Divider(
-                            color: Theme.of(context).textTheme.bodyLarge!.color!,
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodyLarge!
+                                .color!,
                           ),
                           if (!r.isRated)
                             Align(
                               alignment: Alignment.center,
                               child: TextButton.icon(
-                                icon: const Icon(Icons.star, color: Colors.amber),
+                                icon: const Icon(Icons.star,
+                                    color: Colors.amber),
                                 label: Text(
-                                  'Rate apartment',
+                                  'rate_apartment'.tr(),
                                   style: TextStyle(
                                     color: Theme.of(context).primaryColor,
                                   ),
@@ -350,9 +364,10 @@ class _ReservationsTabState extends State<ReservationsTab> {
                           else
                             Row(
                               children: [
-                                const Text(
-                                  'You rated this apartment: ',
-                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                Text(
+                                  'you_rated'.tr(),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w500),
                                 ),
                                 ...List.generate(5, (index) {
                                   return Icon(
@@ -373,7 +388,7 @@ class _ReservationsTabState extends State<ReservationsTab> {
               },
             ),
           ),
-          SizedBox(height: 70),
+          const SizedBox(height: 70),
         ],
       ),
     );
@@ -397,6 +412,7 @@ class _ReservationsTabState extends State<ReservationsTab> {
         break;
       case 'finished':
         color = Colors.green.shade900;
+        break;
       default:
         color = Colors.grey;
     }
@@ -428,9 +444,9 @@ class _ReservationsTabState extends State<ReservationsTab> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      'Rate this apartment',
-                      style: TextStyle(
+                    Text(
+                      'rate_this_apartment'.tr(),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -458,13 +474,9 @@ class _ReservationsTabState extends State<ReservationsTab> {
                     const SizedBox(height: 10),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).cardColor,
+                        backgroundColor: Theme.of(context).cardColor,
                       ),
                       onPressed: () async {
-                        print(r.apartmentId);
-
                         if (selectedRate != 0) {
                           await rateApartment(
                             apartmentId: r.apartmentId,
@@ -480,17 +492,19 @@ class _ReservationsTabState extends State<ReservationsTab> {
 
                           mySnackBar(
                             context,
-                            'Thanks for rating ⭐',
-                            color: Theme.of(
-                              context,
-                            ).textTheme.bodyLarge!.color!,
+                            'thanks_for_rating'.tr(),
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodyLarge!
+                                .color!,
                             showIcon: false,
                           );
                         }
                       },
                       child: Text(
-                        'Submit',
-                        style: TextStyle(color: Theme.of(context).primaryColor,
+                        'submit'.tr(),
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
                     ),

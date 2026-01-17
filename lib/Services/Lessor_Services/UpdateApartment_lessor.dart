@@ -1,4 +1,5 @@
 import '../../API/api.dart';
+import '../../helper/Host.dart';
 
 class UpdateApartmentService {
   Future<dynamic> updateApartment({
@@ -7,7 +8,7 @@ class UpdateApartmentService {
     required Map<String, dynamic> data,
   }) async {
     return await api().put(
-      url: 'http://10.0.2.2:8000/api/apartment/updateInfo/$apartmentId',
+      url: 'http://${Host.host}:8000/api/apartment/updateInfo/$apartmentId',
       body: data,
       token: token,
     );

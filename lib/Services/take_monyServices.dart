@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../helper/Host.dart';
+
 class WalletRequestService {
   Future<Map<String, dynamic>> sendRequest({
     required String token,
     required double amount,
     String type = 'add',
   }) async {
-    final url = Uri.parse('http://10.0.2.2:8000/api/wallet/request')
+    final url = Uri.parse('http://${Host.host}:8000/api/wallet/request')
         .replace(queryParameters: {
       'amount': amount.toStringAsFixed(0),
       'type': type,

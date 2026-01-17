@@ -12,6 +12,9 @@ import 'package:flats_app/models/model_apartment.dart';
 import '../Services/Lessor_Services/Delete_Apartment_Lessor/deleteImage.dart';
 import '../Services/Lessor_Services/UpdateApartment_lessor.dart';
 import '../Services/getAllCityes_services.dart';
+import 'package:easy_localization/easy_localization.dart';
+
+import '../helper/Host.dart';
 
 class EditeapartmentLessor extends StatefulWidget {
   static String id = "EditeapartmentLessor";
@@ -78,8 +81,8 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
     rent.dispose();
     super.dispose();
   }
-  //camera
 
+  //camera
   Future<XFile?> pickFromCamera() async {
     return await _picker.pickImage(
       source: ImageSource.camera,
@@ -110,33 +113,33 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                   Icons.camera_alt,
                   color: Theme.of(context).primaryColor,
                 ),
-                title: const Text('Camera'),
+                title: Text('camera'.tr()),
                 onTap: uploadingImage
                     ? null
                     : () async {
-                        Navigator.pop(context);
+                  Navigator.pop(context);
 
-                        final img = await pickFromCamera();
-                        if (img == null) return;
-                        await uploadPickedImages([img]);
-                      },
+                  final img = await pickFromCamera();
+                  if (img == null) return;
+                  await uploadPickedImages([img]);
+                },
               ),
               ListTile(
                 leading: Icon(
                   Icons.photo_library,
                   color: Theme.of(context).primaryColor,
                 ),
-                title: const Text('Gallery'),
+                title: Text('gallery'.tr()),
                 onTap: uploadingImage
                     ? null
                     : () async {
-                        Navigator.pop(context);
+                  Navigator.pop(context);
 
-                        final picked = await pickFromGallery();
-                        if (picked.isEmpty) return;
+                  final picked = await pickFromGallery();
+                  if (picked.isEmpty) return;
 
-                        await uploadPickedImages(picked);
-                      },
+                  await uploadPickedImages(picked);
+                },
               ),
             ],
           ),
@@ -145,7 +148,6 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
     );
   }
 
-  /////
   Future<void> deleteCurrentOldImage() async {
     if (model_apartment.images.isEmpty) return;
 
@@ -161,7 +163,9 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
       } catch (e) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Failed to delete image')));
+        ).showSnackBar(
+          SnackBar(content: Text('failed_to_delete_image'.tr())),
+        );
       }
     } else {
       final newIndex = numberImage - model_apartment.images.length;
@@ -196,14 +200,16 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
       if (!mounted) return;
       mySnackBar(
         context,
-        'Images added',
+        'images_added'.tr(),
         color: Theme.of(context).primaryColor,
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
+      ).showSnackBar(
+        SnackBar(content: Text('upload_failed'.tr())),
+      );
     } finally {
       if (mounted) setState(() => uploadingImage = false);
     }
@@ -236,7 +242,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Please check the fields'),
+          content: Text('please_check_fields'.tr()),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -247,13 +253,11 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
     }
 
     if (governorate == null || city == null) {
-      mySnackBar(context, 'Select governorate and city');
-
+      mySnackBar(context, 'select_governorate_and_city'.tr());
       return;
     }
     if (rentType == null || isFurnished == null) {
-      mySnackBar(context, 'Select rent type and furnished');
-
+      mySnackBar(context, 'select_rent_type_and_furnished'.tr());
       return;
     }
 
@@ -261,7 +265,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
     final rentNum = double.tryParse(rent.text.trim());
 
     if (homeSpaceNum == null || rentNum == null) {
-      mySnackBar(context, 'Home space / Rent must be numbers');
+      mySnackBar(context, 'home_space_rent_must_be_numbers'.tr());
       return;
     }
 
@@ -296,7 +300,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
       setState(() => saving = false);
 
       showModalBottomSheet(
-        backgroundColor:  Theme.of(context).cardColor,
+        backgroundColor: Theme.of(context).cardColor,
         context: context,
         showDragHandle: true,
         shape: const RoundedRectangleBorder(
@@ -312,7 +316,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
               const SizedBox(height: 10),
               Text(
                 updated.message.isEmpty
-                    ? 'Saved successfully'
+                    ? 'saved_successfully'.tr()
                     : updated.message,
                 style: const TextStyle(
                   fontSize: 16,
@@ -321,7 +325,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Updated rent: ${updated.apartment.rent} | city: ${updated.apartment.city}',
+                '${'updated_rent_prefix'.tr()} ${updated.apartment.rent} | ${'updated_city_prefix'.tr()} ${updated.apartment.city}',
                 style: const TextStyle(fontSize: 13),
               ),
               const SizedBox(height: 12),
@@ -334,14 +338,16 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
       setState(() => saving = false);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Update failed: $e')));
+      ).showSnackBar(
+        SnackBar(content: Text('error_generic'.tr(args: [e.toString()]))),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     model_apartment =
-        ModalRoute.of(context)!.settings.arguments as Model_Apartment;
+    ModalRoute.of(context)!.settings.arguments as Model_Apartment;
     initFromModelOnce();
 
     final oldCount = model_apartment.images.length;
@@ -349,22 +355,23 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
     final totalCount = oldCount + newCount;
 
     if (totalCount == 0) numberImage = 0;
-    if (numberImage >= totalCount && totalCount > 0)
+    if (numberImage >= totalCount && totalCount > 0) {
       numberImage = totalCount - 1;
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          'Edit Apartment',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          'edit_apartment_title'.tr(),
+          style: const TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       bottomNavigationBar: Container(
-        color:  Theme.of(context).scaffoldBackgroundColor,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(14, 10, 14, 32),
           child: SizedBox(
@@ -379,18 +386,18 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
               ),
               child: saving
                   ? const SizedBox(
-                      height: 22,
-                      width: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text(
-                      'Save changes',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
+                height: 22,
+                width: 22,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+                  : Text(
+                'save_changes_button'.tr(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
             ),
           ),
         ),
@@ -438,7 +445,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                           itemBuilder: (_, i) {
                             if (i < oldCount) {
                               final path = model_apartment.images[i].image;
-                              final url = 'http://10.0.2.2:8000/storage/$path';
+                              final url = 'http://${Host.host}:8000/storage/$path';
                               return Image.network(
                                 url,
                                 fit: BoxFit.cover,
@@ -473,7 +480,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                           ),
                           child: Text(
                             totalCount == 0
-                                ? 'No photos'
+                                ? 'no_photos_label'.tr()
                                 : '${numberImage + 1}/$totalCount',
                             style: const TextStyle(
                               color: Colors.white,
@@ -493,7 +500,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             customBorder: const CircleBorder(),
                             onTap: uploadingImage ? null : showPickSourceSheet,
                             child: Padding(
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                               child: Icon(
                                 Icons.add_a_photo_outlined,
                                 color: Theme.of(context).primaryColor,
@@ -590,10 +597,10 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                           Icons.location_on_outlined,
                           color: Theme.of(context).primaryColor,
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
-                          'Location',
-                          style: TextStyle(
+                          'location_section_title'.tr(),
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
                           ),
@@ -609,15 +616,14 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                         ),
                       ),
                       isExpanded: true,
-                      value:
-                          (governorate != null &&
-                              governorates.contains(governorate))
+                      value: (governorate != null &&
+                          governorates.contains(governorate))
                           ? governorate
                           : null,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Theme.of(context).cardColor,
-                        labelText: 'Governorate',
+                        labelText: 'governorate_label'.tr(),
                         prefixIcon: const Icon(Icons.account_balance),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -643,7 +649,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                       items: governorates
                           .map(
                             (g) => DropdownMenuItem(value: g, child: Text(g)),
-                          )
+                      )
                           .toList(),
                       onChanged: (value) async {
                         setState(() {
@@ -663,7 +669,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                         });
                       },
                       validator: (v) =>
-                          v == null ? 'Governorate is required' : null,
+                      v == null ? 'governorate_required'.tr() : null,
                     ),
                     const SizedBox(height: 12),
 
@@ -674,7 +680,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Theme.of(context).cardColor,
-                        labelText: 'City (current)',
+                        labelText: 'city_current_label'.tr(),
                         prefixIcon: const Icon(Icons.location_city),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -699,7 +705,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Theme.of(context).cardColor,
-                        labelText: 'Select City',
+                        labelText: 'select_city_label'.tr(),
                         prefixIcon: const Icon(Icons.location_on),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -725,12 +731,13 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                       items: cities
                           .map(
                             (c) => DropdownMenuItem(value: c, child: Text(c)),
-                          )
+                      )
                           .toList(),
                       onChanged: cities.isEmpty
                           ? null
                           : (v) => setState(() => city = v),
-                      validator: (v) => v == null ? 'City is required' : null,
+                      validator: (v) =>
+                      v == null ? 'city_required'.tr() : null,
                     ),
                   ],
                 ),
@@ -759,10 +766,10 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                           Icons.info_outline,
                           color: Theme.of(context).primaryColor,
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
-                          'Main details',
-                          style: TextStyle(
+                          'main_details_section_title'.tr(),
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
                           ),
@@ -777,7 +784,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Theme.of(context).cardColor,
-                        labelText: 'Home space (m²)',
+                        labelText: 'home_space_label'.tr(),
                         prefixIcon: const Icon(Icons.square_foot),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -797,10 +804,13 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                         ),
                       ),
                       validator: (v) {
-                        if (v == null || v.trim().isEmpty)
-                          return 'Home space is required';
+                        if (v == null || v.trim().isEmpty) {
+                          return 'home_space_required'.tr();
+                        }
                         final n = double.tryParse(v);
-                        if (n == null || n <= 0) return 'Enter a valid number';
+                        if (n == null || n <= 0) {
+                          return 'enter_valid_number'.tr();
+                        }
                         return null;
                       },
                     ),
@@ -812,9 +822,8 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                           child: DropdownButtonFormField2<int>(
                             dropdownStyleData: DropdownStyleData(
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).scaffoldBackgroundColor,
+                                color: Theme.of(context)
+                                    .scaffoldBackgroundColor,
                               ),
                             ),
                             isExpanded: true,
@@ -822,7 +831,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Theme.of(context).cardColor,
-                              labelText: 'Floor',
+                              labelText: 'floor'.tr(),
                               prefixIcon: const Icon(Icons.apartment),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12,
@@ -841,10 +850,10 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             items: numbers
                                 .map(
                                   (n) => DropdownMenuItem(
-                                    value: n,
-                                    child: Text('$n'),
-                                  ),
-                                )
+                                value: n,
+                                child: Text('$n'),
+                              ),
+                            )
                                 .toList(),
                             onChanged: (v) => setState(() => numberFloor = v),
                           ),
@@ -854,24 +863,21 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                           child: DropdownButtonFormField2<int>(
                             dropdownStyleData: DropdownStyleData(
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).scaffoldBackgroundColor,
+                                color: Theme.of(context)
+                                    .scaffoldBackgroundColor,
                               ),
                             ),
                             isExpanded: true,
-
                             value: numberBaths,
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Theme.of(context).cardColor,
-                              labelText: 'Baths',
+                              labelText: 'baths'.tr(),
                               prefixIcon: const Icon(Icons.bathtub_outlined),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 14,
                               ),
-
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -885,10 +891,10 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             items: numbers
                                 .map(
                                   (n) => DropdownMenuItem(
-                                    value: n,
-                                    child: Text('$n'),
-                                  ),
-                                )
+                                value: n,
+                                child: Text('$n'),
+                              ),
+                            )
                                 .toList(),
                             onChanged: (v) => setState(() => numberBaths = v),
                           ),
@@ -903,9 +909,8 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                           child: DropdownButtonFormField2<int>(
                             dropdownStyleData: DropdownStyleData(
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).scaffoldBackgroundColor,
+                                color: Theme.of(context)
+                                    .scaffoldBackgroundColor,
                               ),
                             ),
                             isExpanded: true,
@@ -913,15 +918,13 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Theme.of(context).cardColor,
-                              labelText: 'Rooms',
-                              prefixIcon: const Icon(
-                                Icons.meeting_room_outlined,
-                              ),
+                              labelText: 'rooms_label'.tr(),
+                              prefixIcon:
+                              const Icon(Icons.meeting_room_outlined),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 14,
                               ),
-
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -935,13 +938,14 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             items: numbers
                                 .map(
                                   (n) => DropdownMenuItem(
-                                    value: n,
-                                    child: Text('$n'),
-                                  ),
-                                )
+                                value: n,
+                                child: Text('$n'),
+                              ),
+                            )
                                 .toList(),
                             onChanged: (v) => setState(() => numberRoom = v),
-                            validator: (v) => v == null ? 'Select rooms' : null,
+                            validator: (v) =>
+                            v == null ? 'select_rooms'.tr() : null,
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -949,9 +953,8 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                           child: DropdownButtonFormField2<int>(
                             dropdownStyleData: DropdownStyleData(
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).scaffoldBackgroundColor,
+                                color: Theme.of(context)
+                                    .scaffoldBackgroundColor,
                               ),
                             ),
                             isExpanded: true,
@@ -959,7 +962,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Theme.of(context).cardColor,
-                              labelText: 'BedRooms',
+                              labelText: 'bedrooms_label'.tr(),
                               prefixIcon: const Icon(Icons.bed_outlined),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12,
@@ -978,14 +981,15 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             items: numbers
                                 .map(
                                   (n) => DropdownMenuItem(
-                                    value: n,
-                                    child: Text('$n'),
-                                  ),
-                                )
+                                value: n,
+                                child: Text('$n'),
+                              ),
+                            )
                                 .toList(),
-                            onChanged: (v) => setState(() => numberBedRoom = v),
+                            onChanged: (v) =>
+                                setState(() => numberBedRoom = v),
                             validator: (v) =>
-                                v == null ? 'Select BedRooms' : null,
+                            v == null ? 'select_bedrooms'.tr() : null,
                           ),
                         ),
                       ],
@@ -997,9 +1001,8 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                           child: DropdownButtonFormField2<int>(
                             dropdownStyleData: DropdownStyleData(
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).scaffoldBackgroundColor,
+                                color: Theme.of(context)
+                                    .scaffoldBackgroundColor,
                               ),
                             ),
                             isExpanded: true,
@@ -1007,7 +1010,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Theme.of(context).cardColor,
-                              labelText: 'Parking',
+                              labelText: 'parking_label'.tr(),
                               prefixIcon: const Icon(Icons.car_crash),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12,
@@ -1026,14 +1029,15 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             items: numbers
                                 .map(
                                   (n) => DropdownMenuItem(
-                                    value: n,
-                                    child: Text('$n'),
-                                  ),
-                                )
+                                value: n,
+                                child: Text('$n'),
+                              ),
+                            )
                                 .toList(),
-                            onChanged: (v) => setState(() => numberParking = v),
+                            onChanged: (v) =>
+                                setState(() => numberParking = v),
                             validator: (v) =>
-                                v == null ? 'Select Parking' : null,
+                            v == null ? 'select_parking'.tr() : null,
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -1041,9 +1045,8 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                           child: DropdownButtonFormField2<int>(
                             dropdownStyleData: DropdownStyleData(
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).scaffoldBackgroundColor,
+                                color: Theme.of(context)
+                                    .scaffoldBackgroundColor,
                               ),
                             ),
                             isExpanded: true,
@@ -1051,7 +1054,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Theme.of(context).cardColor,
-                              labelText: 'Balcony',
+                              labelText: 'balcony_label'.tr(),
                               prefixIcon: const Icon(Icons.balcony_outlined),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12,
@@ -1070,14 +1073,15 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             items: numbers
                                 .map(
                                   (n) => DropdownMenuItem(
-                                    value: n,
-                                    child: Text('$n'),
-                                  ),
-                                )
+                                value: n,
+                                child: Text('$n'),
+                              ),
+                            )
                                 .toList(),
-                            onChanged: (v) => setState(() => numberBalcony = v),
+                            onChanged: (v) =>
+                                setState(() => numberBalcony = v),
                             validator: (v) =>
-                                v == null ? 'Select Balcony' : null,
+                            v == null ? 'select_balcony'.tr() : null,
                           ),
                         ),
                       ],
@@ -1090,7 +1094,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color:  Theme.of(context).cardColor,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -1105,12 +1109,14 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.payments_outlined, color:  Theme.of(context).primaryColor,
+                        Icon(
+                          Icons.payments_outlined,
+                          color: Theme.of(context).primaryColor,
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
-                          'Rent',
-                          style: TextStyle(
+                          'rent_section_title'.tr(),
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
                           ),
@@ -1124,7 +1130,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Theme.of(context).cardColor,
-                        labelText: 'Rent',
+                        labelText: 'rent_label'.tr(),
                         prefixIcon: Icon(
                           Icons.attach_money,
                           color: Colors.green.shade600,
@@ -1134,22 +1140,25 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color:  Theme.of(context).primaryColor,
-                          ),
+                          borderSide:
+                          BorderSide(color: Theme.of(context).primaryColor),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(
-                            color:  Theme.of(context).primaryColor,
+                            color: Theme.of(context).primaryColor,
                             width: 1.4,
                           ),
                         ),
                       ),
                       validator: (v) {
-                        if (v == null || v.trim().isEmpty)
-                          return 'Rent is required';
+                        if (v == null || v.trim().isEmpty) {
+                          return 'rent_required'.tr();
+                        }
                         final n = double.tryParse(v);
-                        if (n == null || n <= 0) return 'Enter a valid rent';
+                        if (n == null || n <= 0) {
+                          return 'enter_valid_rent'.tr();
+                        }
                         return null;
                       },
                     ),
@@ -1161,9 +1170,8 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                           child: DropdownButtonFormField2<String>(
                             dropdownStyleData: DropdownStyleData(
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).scaffoldBackgroundColor,
+                                color: Theme.of(context)
+                                    .scaffoldBackgroundColor,
                               ),
                             ),
                             isExpanded: true,
@@ -1171,10 +1179,9 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Theme.of(context).cardColor,
-                              labelText: 'Rent type',
-                              prefixIcon: const Icon(
-                                Icons.calendar_month_outlined,
-                              ),
+                              labelText: 'rent_type_label'.tr(),
+                              prefixIcon:
+                              const Icon(Icons.calendar_month_outlined),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 14,
@@ -1192,14 +1199,14 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             items: typs
                                 .map(
                                   (t) => DropdownMenuItem(
-                                    value: t,
-                                    child: Text(t),
-                                  ),
-                                )
+                                value: t,
+                                child: Text(t),
+                              ),
+                            )
                                 .toList(),
                             onChanged: (v) => setState(() => rentType = v),
                             validator: (v) =>
-                                v == null ? 'Rent type is required' : null,
+                            v == null ? 'rent_type_required'.tr() : null,
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -1207,9 +1214,8 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                           child: DropdownButtonFormField2<bool>(
                             dropdownStyleData: DropdownStyleData(
                               decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).scaffoldBackgroundColor,
+                                color: Theme.of(context)
+                                    .scaffoldBackgroundColor,
                               ),
                             ),
                             isExpanded: true,
@@ -1217,8 +1223,9 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Theme.of(context).cardColor,
-                              labelText: 'Furnished',
-                              prefixIcon: const Icon(Icons.chair_outlined),
+                              labelText: 'furnished_label'.tr(),
+                              prefixIcon:
+                              const Icon(Icons.chair_outlined),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 14,
@@ -1229,16 +1236,23 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide(
-                                  color:  Theme.of(context).primaryColor,
+                                  color: Theme.of(context).primaryColor,
                                 ),
                               ),
                             ),
-                            items: const [
-                              DropdownMenuItem(value: true, child: Text('Yes')),
-                              DropdownMenuItem(value: false, child: Text('No')),
+                            items: [
+                              DropdownMenuItem(
+                                value: true,
+                                child: Text('yes'.tr()),
+                              ),
+                              DropdownMenuItem(
+                                value: false,
+                                child: Text('no'.tr()),
+                              ),
                             ],
                             onChanged: (v) => setState(() => isFurnished = v),
-                            validator: (v) => v == null ? 'Required' : null,
+                            validator: (v) =>
+                            v == null ? 'required_field'.tr() : null,
                           ),
                         ),
                       ],
@@ -1252,7 +1266,7 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color:  Theme.of(context).cardColor,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
@@ -1269,12 +1283,12 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                         children: [
                           Icon(
                             Icons.photo_library_outlined,
-                            color:  Theme.of(context).primaryColor,
+                            color: Theme.of(context).primaryColor,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
-                            'New photos',
-                            style: TextStyle(
+                            'new_photos_section_title'.tr(),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
                             ),
@@ -1287,11 +1301,11 @@ class _EditeapartmentLessorState extends State<EditeapartmentLessor> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: newPhotos.length,
                         gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              mainAxisSpacing: 8,
-                              crossAxisSpacing: 8,
-                            ),
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                        ),
                         itemBuilder: (_, i) {
                           return Stack(
                             children: [

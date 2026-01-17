@@ -35,36 +35,80 @@ class TextFieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return TextField(
       controller: controller,
-      cursorColor: Theme.of(context).primaryColor,
+      cursorColor: theme.primaryColor,
       textInputAction: textInputAction,
       keyboardType: keyboardType,
       obscureText: obscureText,
       readOnly: readOnly,
       onTap: onTap,
+      maxLength: maxLength,
+      inputFormatters: inputFormatters,
+      style: TextStyle(
+        color: theme.textTheme.bodyLarge!.color,
+        fontSize: 16,
+      ),
       decoration: InputDecoration(
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Theme.of(context).primaryColor),
-        ),
-        fillColor: Theme.of(context).cardColor,
         filled: true,
+        fillColor: theme.cardColor,
+
         hintText: hint,
-        icon: Icon(icon, color: Theme.of(context).textTheme.bodyLarge!.color),
+        hintStyle: TextStyle(
+          color: theme.textTheme.bodyLarge!.color!.withOpacity(0.6),
+        ),
+
+        // الأيقونة من "داخل" الـ TextField
+        prefixIcon: icon == null
+            ? null
+            : Icon(
+          icon,
+          color: theme.primaryColor,
+        ),
+
         suffixIcon: isPassword
             ? IconButton(
-                icon: Icon(
-                  obscureText ? Icons.visibility_off : Icons.visibility,
-                ),
-                onPressed: onToggleVisibility,
-              )
+          icon: Icon(
+            obscureText ? Icons.visibility_off : Icons.visibility,
+          ),
+          color: theme.textTheme.bodyLarge!.color,
+          onPressed: onToggleVisibility,
+        )
             : suffixIcon,
-        suffixIconColor: Theme.of(context).textTheme.bodyLarge!.color,
-        hintStyle: TextStyle(
-          color: Theme.of(context).textTheme.bodyLarge!.color,
+
+        counterText: '',
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: theme.primaryColor.withOpacity(0.15),
+          ),
         ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: theme.primaryColor.withOpacity(0.8),
+            width: 1.5,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(
+            color: Colors.red,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(
+            color: Colors.red,
+          ),
+        ),
+
+        contentPadding:
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
-      inputFormatters: inputFormatters,
     );
   }
 }

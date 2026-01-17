@@ -1,10 +1,11 @@
 import '../../API/api.dart';
+import '../../helper/Host.dart';
 import '../../models/model_apartment.dart';
 
 class get_all_apartment_for_lessor {
   Future<List<Model_Apartment>> getApatment_Lessor({required String token}) async {
     final response = await api().get(
-      url: 'http://10.0.2.2:8000/api/apartment/ownedApartments',
+      url: 'http://${Host.host}:8000/api/apartment/ownedApartments',
       token: token,
     );
     //  print("the response is : $response");

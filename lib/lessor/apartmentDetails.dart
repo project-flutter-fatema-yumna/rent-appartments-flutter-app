@@ -49,66 +49,6 @@ class _ApartmentDetailsSheetState extends State<ApartmentDetailsSheet> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-            /*  Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(18),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 300,
-                      child: PageView.builder(
-                        onPageChanged: (index) {
-                          setState(() => numberImage = index);
-                        },
-                        itemCount: widget.apartment.images.length,
-                        itemBuilder: (context, index) {
-                          final path = widget.apartment.images[index].image.trim();
-                          final url = 'http://10.0.2.2:8000/storage/$path';
-
-                          return Image.network(
-                            url,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, progress) {
-                              if (progress == null) return child;
-                              return const Center(child: CircularProgressIndicator());
-                            },
-                            errorBuilder: (context, error, stack) {
-                              print("IMG ERROR: $error\nURL: $url");
-                              return const Center(child: Icon(Icons.broken_image, size: 40));
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 30,
-                    left: 0,
-                    right: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(widget.apartment.images.length, (
-                          index,
-                          ) {
-                        return Padding(
-                          padding: const EdgeInsets.all(2),
-                          child: Container(
-                            width: numberImage == index ? 12 : 8,
-                            height: numberImage == index ? 12 : 8,
-                            decoration: BoxDecoration(
-                              color: numberImage == index
-                                  ? Colors.blue
-                                  : Colors.white,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-                ],
-              ),*/
-
               SizedBox(height: 10,),
               Container(
                 width: 50,

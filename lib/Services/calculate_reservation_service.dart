@@ -1,9 +1,10 @@
 import '../API/api.dart';
+import '../helper/Host.dart';
 import '../models/reservation_calculation.dart';
 
 class CalculateReservationService {
   final api _api = api();
-  static const String _baseUrl = 'http://10.0.2.2:8000/api';
+  static  String _baseUrl = 'http://${Host.host}:8000/api';
 
   String _formatDate(DateTime d) {
     final m = d.month.toString().padLeft(2, '0');

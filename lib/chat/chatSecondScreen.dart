@@ -1,20 +1,13 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../Services/chats_services/get_chat_sevice.dart';
 import '../../Services/chats_services/post_chat_service.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'dart:async';
+
 
 class chatSecondScreen extends StatefulWidget {
-  final String reverbHost = '10.0.2.2';
-  final  int reverbPort = 8080;
-  final String reverbAppKey = 'fwpve9f5bloektacezr1';
-  final String laravelAppHost = '10.0.2.2:8000';
-
-
   static String id = 'chatSecondScreen';
 
   final String phone;
@@ -37,12 +30,10 @@ class chatSecondScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<chatSecondScreen> {
-  WebSocketChannel? _ws;
-  String? _socketId;
-
   final _controller = TextEditingController();
   final _scroll = ScrollController();
   bool _loading = false;
+  Timer? _timer;
 
 
   final List<Map<String, dynamic>> _messages = [];
@@ -53,8 +44,15 @@ class _ChatScreenState extends State<chatSecondScreen> {
   void initState() {
     super.initState();
     _loadMessages();
-    _connectToReverb();
+
+    _timer = Timer.periodic(
+      const Duration(seconds: 5),
+          (timer) {
+        _loadMessages();
+      },
+    );
   }
+
   void _scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 50), () {
       if (_scroll.hasClients) {
@@ -66,11 +64,9 @@ class _ChatScreenState extends State<chatSecondScreen> {
       }
     });
   }
-  Future<void> _loadMessages() async {
-    // final prefs = await SharedPreferences.getInstance();
-    //token = prefs.getString('token');
-    //myId = prefs.getInt('user_id');
 
+  Future<void> _loadMessages() async {
+    if(_loading) return;
     setState(() => _loading = true);
     try {
       final response = await _getService.getMessage(
@@ -87,24 +83,17 @@ class _ChatScreenState extends State<chatSecondScreen> {
 
           final bool isMe = srcId == widget.myId;
 
-          _messages.add({
-            "me": isMe,
-            "text": text,
-          });
+          _messages.add({"me": isMe, "text": text});
         }
       }
       setState(() {});
       _scrollToBottom();
-
     } catch (e) {
       print('Error loading messages: $e');
     } finally {
       setState(() => _loading = false);
     }
   }
-
-
-
 
   Future<void> _send() async {
     final text = _controller.text.trim();
@@ -122,134 +111,17 @@ class _ChatScreenState extends State<chatSecondScreen> {
         desId: widget.otherUserId,
         content: text,
       );
-      print('sendMessage response: $response');
+      await _loadMessages();
     } catch (e) {
       print('Error sending message: $e');
     }
   }
 
-  Future<void> _connectToReverb() async {
-    final wsUrl =
-        'ws://${widget.reverbHost}:${widget.reverbPort}/app/${widget.reverbAppKey}';
-
-    try {
-      print('Connecting to Reverb WS: $wsUrl');
-
-      _ws = WebSocketChannel.connect(Uri.parse(wsUrl));
-      _ws!.stream.listen(
-            (rawMessage) async {
-          print('WS message: $rawMessage');
-
-          final data = jsonDecode(rawMessage as String);
-          final String? event = data['event'];
-          if (event == 'pusher:connection_established') {
-            final connData = jsonDecode(data['data']);
-            _socketId = connData['socket_id'] as String;
-            print('socket_id = $_socketId');
-
-            await _subscribeToPrivateChat();
-          }
-
-          else if (event == 'message.sent') {
-            final payload = jsonDecode(data['data']);
-            final msg = (payload['message'] ?? payload) as Map<String, dynamic>;
-
-            final int srcId = msg['src_id'] as int;
-            final int destId = msg['dest_id'] as int;
-            final String text = msg['content']?.toString() ?? '';
-
-            final bool belongsToThisChat =
-                (srcId == widget.myId && destId == widget.otherUserId) ||
-                    (srcId == widget.otherUserId && destId == widget.myId);
-
-            if (!belongsToThisChat) return;
-            if (srcId == widget.myId) {
-              return;
-            }
-
-            setState(() {
-              _messages.add({
-                "me": false,
-                "text": text,
-              });
-            });
-            _scrollToBottom();
-          }
-
-        },
-        onDone: () {
-          print('WS connection closed');
-        },
-        onError: (error) {
-          print('WS error: $error');
-        },
-      );
-    } catch (e) {
-      print('Error connecting to Reverb: $e');
-    }
-  }
-  Future<void> _subscribeToPrivateChat() async {
-    if (_ws == null || _socketId == null) return;
-
-    final channelName = 'private-chat.${widget.myId}';
-
-    final authToken = await _broadcastAuthentication(channelName);
-    if (authToken == null) {
-      print('Auth token is null, cannot subscribe');
-      return;
-    }
-
-    final subscriptionMessage = {
-      'event': 'pusher:subscribe',
-      'data': {
-        'auth': authToken,
-        'channel': channelName,
-      }
-    };
-
-    _ws!.sink.add(jsonEncode(subscriptionMessage));
-    print('Subscription message sent to $channelName');
-  }
-  Future<String?> _broadcastAuthentication(String channelName) async {
-    final url = Uri.parse('http://${widget.laravelAppHost}/broadcasting/auth');
-    print('Auth request to: $url');
-
-    try {
-      final response = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer ${widget.token}',
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json',
-        },
-        body: {
-          'socket_id': _socketId!,
-          'channel_name': channelName,
-        },
-      );
-
-      print('Auth status: ${response.statusCode}');
-      print('Auth body: ${response.body}');
-
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        return body['auth'] as String?;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print('Auth error: $e');
-      return null;
-    }
-  }
-
   @override
   void dispose() {
+    _timer?.cancel();
     _controller.dispose();
     _scroll.dispose();
-    try {
-      _ws?.sink.close();
-    } catch (_) {}
     super.dispose();
   }
 
@@ -262,7 +134,11 @@ class _ChatScreenState extends State<chatSecondScreen> {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         leading: IconButton(
-            onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.arrow_back_ios)),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back_ios),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12),
@@ -283,10 +159,7 @@ class _ChatScreenState extends State<chatSecondScreen> {
               ),
               child: IconButton(
                 onPressed: () async {
-                  final Uri phoneUri = Uri(
-                    scheme: 'tel',
-                    path: widget.phone,
-                  );
+                  final Uri phoneUri = Uri(scheme: 'tel', path: widget.phone);
 
                   if (await canLaunchUrl(phoneUri)) {
                     await launchUrl(phoneUri);
@@ -294,10 +167,7 @@ class _ChatScreenState extends State<chatSecondScreen> {
                     print('Could not launch phone call');
                   }
                 },
-                icon: Icon(
-                  Icons.phone,
-                  color: Colors.green,
-                ),
+                icon: Icon(Icons.phone, color: Colors.green),
               ),
             ),
           ),
@@ -305,7 +175,8 @@ class _ChatScreenState extends State<chatSecondScreen> {
       ),
       body: Column(
         children: [
-          if (_loading)  Center(child: SpinKitThreeBounce(color: Colors.blue,size: 20,),),
+          if (_loading)
+            Center(child: SpinKitThreeBounce(color: Colors.blue, size: 20)),
           Expanded(
             child: ListView.builder(
               controller: _scroll,
@@ -316,8 +187,9 @@ class _ChatScreenState extends State<chatSecondScreen> {
                 final isMe = msg["me"] as bool;
 
                 return Align(
-                  alignment:
-                  isMe ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: isMe
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     padding: const EdgeInsets.symmetric(
@@ -378,7 +250,7 @@ class _ChatScreenState extends State<chatSecondScreen> {
                       minLines: 1,
                       maxLines: 4,
                       decoration: InputDecoration(
-                        hintText: "write message",
+                        hintText: 'write_message'.tr(),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14,
                           vertical: 12,
@@ -388,14 +260,11 @@ class _ChatScreenState extends State<chatSecondScreen> {
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(999),
-                          borderSide:
-                          BorderSide(color: Colors.grey.shade300),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(999),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                          ),
+                          borderSide: const BorderSide(color: Colors.blue),
                         ),
                       ),
                     ),

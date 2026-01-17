@@ -1,37 +1,29 @@
-import 'package:flats_app/global_data.dart';
 import 'package:flats_app/models/model_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/notification_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class notificationsLessor extends StatefulWidget {
   static String id = 'notificationsLessor';
 
   @override
-  State<notificationsLessor> createState() => _notificationsLessorState();
+  State<notificationsLessor> createState() => _notificationScreenState();
 }
 
-class _notificationsLessorState extends State<notificationsLessor> {
-  final String token= userToken;
+class _notificationScreenState extends State<notificationsLessor> {
+  String? token;
+
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      context.read<notification_provider>().getNumberMesseageUnRead(
-        token: token,
-      );
-    });
-  }
 
- /* @override
-  void initState() {
-    super.initState();
     Future.microtask(() async {
       final prefs = await SharedPreferences.getInstance();
       final t = prefs.getString('token');
-
       if (!mounted) return;
 
       setState(() {
@@ -39,13 +31,12 @@ class _notificationsLessorState extends State<notificationsLessor> {
       });
 
       if (token != null) {
-        context.read<notification_provider>()
+        context
+            .read<notification_provider>()
             .getNumberMesseageUnRead(token: token!);
       }
-      print(token);
     });
-  }*/
-
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,54 +45,64 @@ class _notificationsLessorState extends State<notificationsLessor> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
-        title: Text('Notifications', style: TextStyle(color: Colors.white)),
+        title: Text('notifications'.tr(), style: const TextStyle(color: Colors.white)),
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
         ),
       ),
       body: provi.isLoading
-          ? Center(child: SpinKitThreeBounce(color: Theme.of(context).primaryColor, size: 20))
+          ? Center(
+        child: SpinKitThreeBounce(color: Theme.of(context).primaryColor, size: 20),
+      )
           : RefreshIndicator(
-              onRefresh: () => provi.getNumberMesseageUnRead(token: token!),
-              child: ListView(
-                padding: const EdgeInsets.all(12),
-                children: [
-                  if (provi.unReadList.isNotEmpty) ...[
-                    _sectionTitle("Unread"),
-                    const SizedBox(height: 8),
-                    ...provi.unReadList.map((n)=>InkWell(
-                      onTap: (){
-                        provi.markNotificationAsRead(token: token!, notificationId:n.id);
-                      },
-                      child: notificationCardByType(n,context),
-                    )),
-
-                    const SizedBox(height: 14),
-                  ],
-                  if (provi.readList.isNotEmpty) ...[
-                    _sectionTitle("Read"),
-                    const SizedBox(height: 8),
-                    ...provi.readList.map(
-                      (n) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: notificationCardByType(n, context),
-                      ),
-                    ),
-                  ],
-                  if(provi.unReadList.isEmpty && provi.readList.isEmpty)
-                    const Padding(padding: EdgeInsets.only(top: 80),
-                    child: Center(child: Text("No notifications yet"),),
-                    ),
-                    
-                ],
+        onRefresh: () async {
+          if (token == null) return;
+          await provi.getNumberMesseageUnRead(token: token!);
+        },
+        child: ListView(
+          padding: const EdgeInsets.all(12),
+          children: [
+            if (provi.unReadList.isNotEmpty) ...[
+              _sectionTitle("unread".tr()),
+              const SizedBox(height: 8),
+              ...provi.unReadList.map(
+                    (n) => InkWell(
+                  onTap: () {
+                    if (token == null) return;
+                    provi.markNotificationAsRead(
+                      token: token!,
+                      notificationId: n.id,
+                    );
+                    //   print("token = $token , id = ${n.id}");
+                  },
+                  child: notificationCardByType(n),
+                ),
               ),
-            ),
+              const SizedBox(height: 14),
+            ],
+            if (provi.readList.isNotEmpty) ...[
+              _sectionTitle("read".tr()),
+              const SizedBox(height: 8),
+              ...provi.readList.map(
+                    (n) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: notificationCardByType(n),
+                ),
+              ),
+            ],
+            if (provi.unReadList.isEmpty && provi.readList.isEmpty)
+              Padding(
+                padding: EdgeInsets.only(top: 80),
+                child: Center(child: Text("no_notifications".tr())),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
+
 
 Widget _infoRow({required IconData icon, required String text}) {
   return Row(
@@ -142,52 +143,132 @@ Widget _amountChip({
     ),
   );
 }
-String _formatDate(DateTime date) {
-  final now = DateTime.now();
-  final diff = now.difference(date).inDays;
-  if (diff == 0) return 'Today';
-  if (diff == 1) return 'Yesterday';
-  return '${date.day} ${_monthName(date.month)}';
+
+String _formatAmount(double? value) {
+  if (value == null) return "0.00";
+  return value.toStringAsFixed(2);
 }
 
-String _monthName(int month) {
-  const names = [
-    '',
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec'
-  ];
-  return names[month];
+String formatNotificationTime(DateTime dt) {
+  return "${dt.year}-${dt.month}-${dt.day}";
 }
-String formatNotificationTime(DateTime createdAt) {
-  final now = DateTime.now();
-  final diff = now.difference(createdAt);
 
-  if (diff.inMinutes < 1) return 'Just now';
-  if (diff.inMinutes < 60) return '${diff.inMinutes}m';
-  if (diff.inHours < 24) return '${diff.inHours}h';
-  if (diff.inDays == 1) return 'Yesterday';
-  if (diff.inDays < 7) return '${diff.inDays}d';
+class _SimpleMessageCard extends StatelessWidget {
+  final NotificationItemModel notificationItemModel;
+  final Color accent;
+  final IconData icon;
+  final String title;
 
-  return _formatDate(createdAt);
+  const _SimpleMessageCard({
+    super.key,
+    required this.notificationItemModel,
+    required this.accent,
+    required this.icon,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 18,
+            spreadRadius: 1,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 5,
+            height: 80,
+            decoration: BoxDecoration(
+              color: accent,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: accent.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(icon, color: accent),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      formatNotificationTime(notificationItemModel.createdAt),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  notificationItemModel.data.message.isEmpty
+                      ? "Notification"
+                      : notificationItemModel.data.message,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 
 class TenantCancelledBookingCard extends StatelessWidget {
   final NotificationItemModel notificationItemModel;
-  const TenantCancelledBookingCard({super.key,required this.notificationItemModel});
+  const TenantCancelledBookingCard({super.key, required this.notificationItemModel});
 
   @override
   Widget build(BuildContext context) {
+    final reservation = notificationItemModel.data.reservation;
+
+    if (reservation == null) {
+      return _SimpleMessageCard(
+        notificationItemModel: notificationItemModel,
+        accent: Colors.orange,
+        icon: Icons.event_busy,
+        title: "Booking cancelled",
+      );
+    }
+
+    //final tenantName = reservation.user?.username ?? "Tenant";
+
     return Container(
       padding: const EdgeInsets.all(14),
       height: 220,
@@ -206,7 +287,6 @@ class TenantCancelledBookingCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left accent
           Container(
             width: 5,
             height: 120,
@@ -220,7 +300,7 @@ class TenantCancelledBookingCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header: icon + title + time
+                // Header
                 Row(
                   children: [
                     Container(
@@ -243,40 +323,41 @@ class TenantCancelledBookingCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "15m",
+                      formatNotificationTime(notificationItemModel.createdAt),
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade600,
+                        color: Theme.of(context).textTheme.bodyMedium!.color,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  notificationItemModel.data.message,
+                  'Your reservation has been canceled',
+                  // notificationItemModel.data.message,
                   style: TextStyle(
                     fontSize: 15,
-                    color: Colors.grey.shade800,
+                    color: Theme.of(context).textTheme.bodyMedium!.color,
                     height: 1.35,
                   ),
                 ),
-                const SizedBox(height: 10),
-                // Details
-                _infoRow(icon: Icons.person_outline, text: "Tenant: ${notificationItemModel.data.reservation!.user!.username}"),
                 const SizedBox(height: 6),
                 _infoRow(
                   icon: Icons.home_work_outlined,
-                  text: "Reservation :"
-                      " ${notificationItemModel.data.reservation!.startDate.year} - ${notificationItemModel.data.reservation!.startDate.month} - ${notificationItemModel.data.reservation!.startDate.day} "
-                      "To"
-                      " ${notificationItemModel.data.reservation!.endDate.year} - ${notificationItemModel.data.reservation!.endDate.month} - ${notificationItemModel.data.reservation!.endDate.day}",
+                  text:
+                  "Reservation : ${reservation.startDate.year} - ${reservation.startDate.month} - ${reservation.startDate.day} "
+                      "To ${reservation.endDate.year} - ${reservation.endDate.month} - ${reservation.endDate.day}",
                 ),
                 const SizedBox(height: 6),
-                _infoRow(icon: Icons.location_on, text: 'Location : ${notificationItemModel.data.reservation!.apartment.governorate}-${notificationItemModel.data.reservation!.apartment.city}'),
+                _infoRow(
+                  icon: Icons.location_on,
+                  text:
+                  'Location : ${reservation.apartment.governorate}-${reservation.apartment.city}',
+                ),
                 const SizedBox(height: 6),
                 _amountChip(
                   label: "Refund to tenant",
-                  amount: notificationItemModel.data.refundedMoney.toString(),
+                  amount: _formatAmount(notificationItemModel.data.refundedMoney),
                   color: Colors.orange,
                 ),
               ],
@@ -290,14 +371,14 @@ class TenantCancelledBookingCard extends StatelessWidget {
 
 class WalletAddedCard extends StatelessWidget {
   final NotificationItemModel notificationItemModel;
-  const WalletAddedCard({super.key,required this.notificationItemModel});
+  const WalletAddedCard({super.key, required this.notificationItemModel});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(14),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -311,7 +392,6 @@ class WalletAddedCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left accent
           Container(
             width: 5,
             height: 110,
@@ -321,12 +401,10 @@ class WalletAddedCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
                 Row(
                   children: [
                     Container(
@@ -349,7 +427,7 @@ class WalletAddedCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "${formatNotificationTime(notificationItemModel.createdAt)}",
+                      formatNotificationTime(notificationItemModel.createdAt),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey.shade600,
@@ -357,9 +435,7 @@ class WalletAddedCard extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 10),
-
                 Text(
                   notificationItemModel.data.message,
                   style: TextStyle(
@@ -368,12 +444,10 @@ class WalletAddedCard extends StatelessWidget {
                     height: 1.35,
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
                 _amountChip(
                   label: "Added",
-                  amount: notificationItemModel.data.moneyAddedToWallet.toString(),
+                  amount: _formatAmount(notificationItemModel.data.moneyAddedToWallet),
                   color: Colors.green,
                 ),
               ],
@@ -387,14 +461,14 @@ class WalletAddedCard extends StatelessWidget {
 
 class WalletWithdrawnCard extends StatelessWidget {
   final NotificationItemModel notificationItemModel;
-  const WalletWithdrawnCard({super.key,required this.notificationItemModel});
+  const WalletWithdrawnCard({super.key, required this.notificationItemModel});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
@@ -408,7 +482,6 @@ class WalletWithdrawnCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left accent
           Container(
             width: 5,
             height: 110,
@@ -418,12 +491,10 @@ class WalletWithdrawnCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
                 Row(
                   children: [
                     Container(
@@ -433,10 +504,7 @@ class WalletWithdrawnCard extends StatelessWidget {
                         color: Colors.blue.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: const Icon(
-                        Icons.payments_outlined,
-                        color: Colors.blue,
-                      ),
+                      child: const Icon(Icons.payments_outlined, color: Colors.blue),
                     ),
                     const SizedBox(width: 10),
                     const Expanded(
@@ -449,7 +517,7 @@ class WalletWithdrawnCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "${formatNotificationTime(notificationItemModel.createdAt)}",
+                      formatNotificationTime(notificationItemModel.createdAt),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey.shade600,
@@ -457,9 +525,7 @@ class WalletWithdrawnCard extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 10),
-
                 Text(
                   notificationItemModel.data.message,
                   style: TextStyle(
@@ -468,12 +534,10 @@ class WalletWithdrawnCard extends StatelessWidget {
                     height: 1.35,
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
                 _amountChip(
                   label: "Withdrawn",
-                  amount: notificationItemModel.data.moneyWithdrawn.toString(),
+                  amount: _formatAmount(notificationItemModel.data.moneyWithdrawn),
                   color: Colors.blue,
                 ),
               ],
@@ -487,11 +551,23 @@ class WalletWithdrawnCard extends StatelessWidget {
 
 class BookingAcceptedCard extends StatelessWidget {
   final NotificationItemModel notificationItemModel;
-  const BookingAcceptedCard({super.key,required this.notificationItemModel});
+  const BookingAcceptedCard({super.key, required this.notificationItemModel});
 
   @override
   Widget build(BuildContext context) {
     const accent = Colors.green;
+    final reservation = notificationItemModel.data.reservation;
+
+    if (reservation == null) {
+      return _SimpleMessageCard(
+        notificationItemModel: notificationItemModel,
+        accent: accent,
+        icon: Icons.check_circle,
+        title: "Booking accepted",
+      );
+    }
+
+    final ownerName = reservation.apartment.owner?.username ?? "Owner";
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -510,7 +586,6 @@ class BookingAcceptedCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left accent
           Container(
             width: 5,
             height: 130,
@@ -520,12 +595,10 @@ class BookingAcceptedCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
                 Row(
                   children: [
                     Container(
@@ -548,7 +621,7 @@ class BookingAcceptedCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "${formatNotificationTime(notificationItemModel.createdAt)}",
+                      formatNotificationTime(notificationItemModel.createdAt),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey.shade600,
@@ -556,9 +629,7 @@ class BookingAcceptedCard extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 10),
-
                 Text(
                   notificationItemModel.data.message,
                   style: TextStyle(
@@ -567,26 +638,24 @@ class BookingAcceptedCard extends StatelessWidget {
                     height: 1.35,
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
                 _infoRow(
                   icon: Icons.verified_user_outlined,
-                  text: "Owner:${notificationItemModel.data.reservation!.apartment.owner!.username}",
+                  text: "Owner: $ownerName",
                 ),
                 const SizedBox(height: 6),
                 _infoRow(
                   icon: Icons.home_work_outlined,
-                  text: "Reservation :"
-                      " ${notificationItemModel.data.reservation!.startDate.year} - ${notificationItemModel.data.reservation!.startDate.month} - ${notificationItemModel.data.reservation!.startDate.day} "
-                      "To"
-                      " ${notificationItemModel.data.reservation!.endDate.year} - ${notificationItemModel.data.reservation!.endDate.month} - ${notificationItemModel.data.reservation!.endDate.day}",
+                  text:
+                  "Reservation : ${reservation.startDate.year} - ${reservation.startDate.month} - ${reservation.startDate.day} "
+                      "To ${reservation.endDate.year} - ${reservation.endDate.month} - ${reservation.endDate.day}",
                 ),
                 const SizedBox(height: 6),
-
                 _amountChip(
                   label: "Charged",
-                  amount: "${notificationItemModel.data.reservation!.fullAmount}",
+                  amount: _formatAmount(
+                    double.tryParse(reservation.fullAmount.toString()),
+                  ),
                   color: accent,
                 ),
               ],
@@ -600,11 +669,21 @@ class BookingAcceptedCard extends StatelessWidget {
 
 class BookingRejectedCard extends StatelessWidget {
   final NotificationItemModel notificationItemModel;
-  const BookingRejectedCard({super.key,required this.notificationItemModel});
+  const BookingRejectedCard({super.key, required this.notificationItemModel});
 
   @override
   Widget build(BuildContext context) {
     const accent = Colors.red;
+    final reservation = notificationItemModel.data.reservation;
+
+    if (reservation == null) {
+      return _SimpleMessageCard(
+        notificationItemModel: notificationItemModel,
+        accent: accent,
+        icon: Icons.cancel,
+        title: "Booking rejected",
+      );
+    }
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -623,7 +702,6 @@ class BookingRejectedCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left accent
           Container(
             width: 5,
             height: 120,
@@ -633,12 +711,10 @@ class BookingRejectedCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
                 Row(
                   children: [
                     Container(
@@ -661,7 +737,7 @@ class BookingRejectedCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "${formatNotificationTime(notificationItemModel.createdAt)}",
+                      formatNotificationTime(notificationItemModel.createdAt),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey.shade600,
@@ -669,25 +745,21 @@ class BookingRejectedCard extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 10),
-
                 Text(
                   notificationItemModel.data.message,
                   style: TextStyle(
                     fontSize: 15,
-                    color: Colors.grey.shade800,
+                    color: Colors.grey,
                     height: 1.35,
                   ),
                 ),
-
-                const SizedBox(height: 6),
+                const SizedBox(height: 10),
                 _infoRow(
                   icon: Icons.home_work_outlined,
-                  text: "Reservation :"
-                      " ${notificationItemModel.data.reservation!.startDate.year} - ${notificationItemModel.data.reservation!.startDate.month} - ${notificationItemModel.data.reservation!.startDate.day} "
-                      "To"
-                      " ${notificationItemModel.data.reservation!.endDate.year} - ${notificationItemModel.data.reservation!.endDate.month} - ${notificationItemModel.data.reservation!.endDate.day}",
+                  text:
+                  "Reservation : ${reservation.startDate.year} - ${reservation.startDate.month} - ${reservation.startDate.day} "
+                      "To ${reservation.endDate.year} - ${reservation.endDate.month} - ${reservation.endDate.day}",
                 ),
               ],
             ),
@@ -700,11 +772,21 @@ class BookingRejectedCard extends StatelessWidget {
 
 class BookingCancelledRefundCard extends StatelessWidget {
   final NotificationItemModel notificationItemModel;
-  const BookingCancelledRefundCard({super.key,required this.notificationItemModel});
+  const BookingCancelledRefundCard({super.key, required this.notificationItemModel});
 
   @override
   Widget build(BuildContext context) {
     const accent = Colors.orange;
+    final reservation = notificationItemModel.data.reservation;
+
+    if (reservation == null) {
+      return _SimpleMessageCard(
+        notificationItemModel: notificationItemModel,
+        accent: accent,
+        icon: Icons.currency_exchange,
+        title: "Booking cancelled",
+      );
+    }
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -723,7 +805,6 @@ class BookingCancelledRefundCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left accent
           Container(
             width: 5,
             height: 130,
@@ -733,12 +814,10 @@ class BookingCancelledRefundCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
                 Row(
                   children: [
                     Container(
@@ -761,7 +840,7 @@ class BookingCancelledRefundCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "${formatNotificationTime(notificationItemModel.createdAt)}",
+                      formatNotificationTime(notificationItemModel.createdAt),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey.shade600,
@@ -769,9 +848,7 @@ class BookingCancelledRefundCard extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 10),
-
                 Text(
                   notificationItemModel.data.message,
                   style: TextStyle(
@@ -780,26 +857,23 @@ class BookingCancelledRefundCard extends StatelessWidget {
                     height: 1.35,
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
                 _infoRow(
                   icon: Icons.home_work_outlined,
-                  text: "Reservation :"
-                      " ${notificationItemModel.data.reservation!.startDate.year} - ${notificationItemModel.data.reservation!.startDate.month} - ${notificationItemModel.data.reservation!.startDate.day} "
-                      "To"
-                      " ${notificationItemModel.data.reservation!.endDate.year} - ${notificationItemModel.data.reservation!.endDate.month} - ${notificationItemModel.data.reservation!.endDate.day}",
+                  text:
+                  "Reservation : ${reservation.startDate.year} - ${reservation.startDate.month} - ${reservation.startDate.day} "
+                      "To ${reservation.endDate.year} - ${reservation.endDate.month} - ${reservation.endDate.day}",
                 ),
                 const SizedBox(height: 6),
                 _infoRow(
                   icon: Icons.location_on_outlined,
-                  text: "Location: ${notificationItemModel.data.reservation!.apartment.governorate}-${notificationItemModel.data.reservation!.apartment.city}",
+                  text:
+                  "Location: ${reservation.apartment.governorate}-${reservation.apartment.city}",
                 ),
                 const SizedBox(height: 6),
-
                 _amountChip(
                   label: "Refunded",
-                  amount: notificationItemModel.data.refundedMoney.toString(),
+                  amount: _formatAmount(notificationItemModel.data.refundedMoney),
                   color: accent,
                 ),
               ],
@@ -818,109 +892,27 @@ Widget _sectionTitle(String text) {
   );
 }
 
-Widget _notifTile(
-  BuildContext context, {
-  required String id,
-  required String message,
-  required String type,
-  required bool isUnread,
-}) {
-  final p = context.read<notification_provider>();
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 10),
-    child: InkWell(
-      onTap: () {
-        if (isUnread) {
-          p.MoveUnreadTORead(id);
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 16,
-              offset: const Offset(0, 8),
-            ),
-          ],
-          border: Border.all(
-            color: isUnread
-                ? Colors.blue.withOpacity(0.25)
-                : Colors.transparent,
-            width: 1,
-          ),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (isUnread)
-              Container(
-                margin: const EdgeInsets.only(top: 6, right: 10),
-                width: 8,
-                height: 8,
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
-                  shape: BoxShape.circle,
-                ),
-              )
-            else
-              const SizedBox(width: 18),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    message.isEmpty ? "Notification" : message,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: isUnread ? FontWeight.w800 : FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    type.split('\\').last,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-Widget notificationCardByType(NotificationItemModel noti, BuildContext context){
-  final cardType=noti.type.split('\\').last;
-  //print("TYPE = ${noti.type}");
-  //print("cardType = ${noti.type.split('\\').last}");
-  switch (cardType){
+Widget notificationCardByType(NotificationItemModel noti) {
+  final cardType = noti.type.split('\\').last;
+  switch (cardType) {
     case 'ReservationAcceptedNotification':
-      return  BookingAcceptedCard(notificationItemModel:noti,);
+      return BookingAcceptedCard(notificationItemModel: noti);
     case 'ReservationRejectedNotification':
-      return  BookingRejectedCard(notificationItemModel: noti,);
+      return BookingRejectedCard(notificationItemModel: noti);
     case 'ReservationCancelledNotification':
-      return  BookingCancelledRefundCard(notificationItemModel: noti,);
+      return BookingCancelledRefundCard(notificationItemModel: noti);
     case 'TenantCancelReservationNotification':
-      return  TenantCancelledBookingCard(notificationItemModel: noti,);
+      return TenantCancelledBookingCard(notificationItemModel: noti);
     case 'MoneyAddedToWaletNotification':
-      return  WalletAddedCard(notificationItemModel: noti,);
+      return WalletAddedCard(notificationItemModel: noti);
     case 'MoneywithdrawnFromWaletNotification':
-      return  WalletWithdrawnCard(notificationItemModel: noti,);
+      return WalletWithdrawnCard(notificationItemModel: noti);
     default:
-      return Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Text(noti.data.message),
+      return _SimpleMessageCard(
+        notificationItemModel: noti,
+        accent: Colors.blue,
+        icon: Icons.notifications,
+        title: "Notification",
       );
   }
 }

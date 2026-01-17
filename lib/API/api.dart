@@ -42,9 +42,9 @@ class api{
       body: jsonEncode(body),
     );
 
-    print("URL: $url");
-      print("STATUS: ${response.statusCode}");
-    print("BODY: ${response.body}");
+    //print("URL: $url");
+     // print("STATUS: ${response.statusCode}");
+    //print("BODY: ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
@@ -65,7 +65,7 @@ class api{
     if (token != null) {
       request.headers['Authorization'] = 'Bearer $token';
     }
-    print("TOKEN => $token");
+    //print("TOKEN => $token");
 
 
     request.headers['Accept'] = 'application/json';
@@ -75,9 +75,9 @@ class api{
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
 
-    print("URL: $url");
-    print("STATUS: ${response.statusCode}");
-    print("BODY: ${response.body}");
+    //print("URL: $url");
+    //print("STATUS: ${response.statusCode}");
+    //print("BODY: ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
@@ -112,8 +112,6 @@ class api{
 
   }
 
-
-
 //for store apartment
   Future<dynamic> postApartment({
     required String url,
@@ -122,7 +120,6 @@ class api{
     String? token,
   }) async {
     final request = http.MultipartRequest('POST', Uri.parse(url));
-    // headers
     request.headers.addAll({
       'Accept': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
@@ -139,9 +136,6 @@ class api{
     final response = await request.send();
     final responseBody = await response.stream.bytesToString();
 
-    //print('STATUS: ${response.statusCode}');
-    //print('BODY: $responseBody');
-
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return jsonDecode(responseBody);
     } else {
@@ -156,10 +150,6 @@ class api{
       if (token != null) 'Authorization': 'Bearer $token',
     };
     final response =await http.patch(Uri.parse(url),headers: headers);
-    print("URL: $url");
-    print("STATUS: ${response.statusCode}");
-    print("BODY: ${response.body}");
-
     if(response.statusCode==200 || response.statusCode==201){
      return  response.body.isEmpty?{}: jsonDecode(response.body);
     }else{
@@ -176,8 +166,6 @@ class api{
     };
     final response =await http.delete(Uri.parse(url),headers: headers);
 
-    print("DELETE status: ${response.statusCode}");
-    print("DELETE body: ${response.body}");
     if(response.statusCode==200 || response.statusCode==201){
       if(response.body.isEmpty)
         return null;
@@ -207,10 +195,6 @@ class api{
       headers: headers,
       body: jsonEncode(body),
     );
-
-    print("PUT url: $url");
-    print("PUT status: ${response.statusCode}");
-    print("PUT body: ${response.body}");
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return jsonDecode(response.body);

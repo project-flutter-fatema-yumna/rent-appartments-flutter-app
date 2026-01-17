@@ -14,6 +14,7 @@ import 'package:flats_app/lessor/homePage.dart';
 import 'package:flats_app/providers/favorite_provider.dart';
 import 'package:flats_app/providers/notification_provider.dart';
 import 'package:flats_app/providers/user_provider.dart';
+import 'package:flats_app/select_language_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,33 +29,44 @@ import 'package:provider/provider.dart';
 import 'lessor/EditeApartment_lessor.dart';
 import 'lessor/OrdersScreen.dart';
 import 'lessor/about_screen.dart';
-import 'lessor/chat/chatSecondScreen.dart';
-import 'lessor/chat/homeChatScreen.dart';
 import 'lessor/help_support_screen.dart';
 import 'lessor/notificationsLessorScreen.dart';
 import 'lessor/tenantScreen.dart';
 import 'lessor/walletLessorScreens/homCardLessor.dart';
 import 'noti_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   await NotificationService.instance.initNotification();
+
   SharedPreferences prefs = await SharedPreferences.getInstance();
   userToken = prefs.getString('token') ?? "";
   bool isDarkMode = prefs.getBool('isDarkMode') ?? false;
+
   runApp(
-    OverlaySupport.global(
-      child: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => UserProvider()),
-          ChangeNotifierProvider(create: (_) => FavoriteProvider()),
-          ChangeNotifierProvider(create: (_) => notification_provider()),
-        ],
-        child: MyApp(isDarkMode: isDarkMode),
+    EasyLocalization(
+      supportedLocales: const [
+        Locale('en'),
+        Locale('ar'),
+      ],
+      path: 'assets/langs',
+      fallbackLocale: const Locale('en'),
+      child: OverlaySupport.global(
+        child: MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => UserProvider()),
+            ChangeNotifierProvider(create: (_) => FavoriteProvider()),
+            ChangeNotifierProvider(create: (_) => notification_provider()),
+          ],
+          child: MyApp(isDarkMode: isDarkMode),
+        ),
       ),
     ),
   );
 }
+
 
 class MyApp extends StatefulWidget {
   final bool isDarkMode;
@@ -99,6 +111,11 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
+      locale: context.locale,
+      supportedLocales: context.supportedLocales,
+      localizationsDelegates: context.localizationDelegates,
+
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: AppColors.primaryLight,
@@ -124,6 +141,8 @@ class _MyAppState extends State<MyApp> {
       themeMode: _themeMode,
 
       routes: {
+        SelectLanguageScreen.id: (context) => const SelectLanguageScreen(),
+
         ShowScreen.id: (context) => ShowScreen(),
         Homescreen.id: (context) => Homescreen(),
         See_all_screen.id: (context) => See_all_screen(),
@@ -152,7 +171,8 @@ class _MyAppState extends State<MyApp> {
         HelpSupportScreen.id:(context)=>HelpSupportScreen(),
         AboutScreen.id:(context)=>AboutScreen(),
       },
-      home: FutureBuilder<Widget>(
+      home:
+       FutureBuilder<Widget>(
         future: decisionScreen(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

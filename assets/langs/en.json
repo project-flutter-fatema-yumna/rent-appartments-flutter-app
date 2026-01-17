@@ -1,0 +1,439 @@
+{
+  "app_name": "Flats App",
+  "home_title": "Apartments",
+  "login": "Login",
+  "logout": "Logout",
+  "register": "Sign up",
+  "email": "Email",
+  "password": "Password",
+  "confirm_password": "Confirm password",
+  "remember_me": "Remember me",
+  "forgot_password": "Forgot password?",
+  "my_profile": "My Profile",
+  "language": "Language",
+  "arabic": "Arabic",
+  "english": "English",
+
+  "apartments": "Apartments",
+  "favorites": "Favorites",
+  "wallet": "Wallet",
+  "my_reservations": "My Reservations",
+  "my_apartments": "Show",
+  "add_apartment": "Add",
+  "orders": "Orders",
+  "tenants": "Tenants",
+  "notifications": "Notifications",
+
+  "rent_now": "Reserve now",
+  "price": "Price",
+  "city": "City",
+  "governorate": "Governorate",
+  "floor": "Floor",
+  "rooms": "Rooms",
+  "bedrooms": "Bedrooms",
+  "bathrooms": "Bathrooms",
+  "furnished": "Furnished",
+  "unfurnished": "Unfurnished",
+  "monthly": "Monthly",
+  "daily": "Daily",
+  "yearly": "Yearly",
+
+  "no_data": "No data available",
+  "loading": "Loading...",
+  "try_again": "Try again",
+  "success": "Success",
+  "error": "Error",
+
+  "about_app": "About the app",
+  "help_support": "Help & Support",
+
+  "login_subtitle": "Welcome back ! Please enter your details",
+  "phone_number": "Phone number",
+  "password_hint": "Password (min 8 chars)",
+  "dont_have_account": "Don't have an account ? ",
+  "sign_up": " Sign up ",
+
+  "create_account": "Create account",
+  "register_subtitle": "Unlock your personalized experience!",
+  "phone_number": "Phone number",
+  "password_hint": "Password (min 8 chars)",
+  "confirm_password": "Confirm password",
+  "verify": "Verify",
+  "already_have_account": "Already have an account?",
+  "tenant": "Tenant",
+  "lessor": "Lessor",
+
+  "error_fill_all_fields": "Please fill all fields",
+  "error_phone_length": "Phone number must be exactly 10 digits",
+  "error_phone_start_09": "Phone number must start with 09",
+  "error_password_min_8": "Password must be at least 8 characters",
+  "error_password_not_match": "Password and confirmation do not match",
+
+  "camera": "Camera",
+  "gallery": "Gallery",
+  "select_image_source": "Select Image Source",
+
+
+
+  "profile": "Profile",
+  "profile_login_subtitle": "Let\\'s complete your profile!",
+  "enter_first_name": "Enter your first name",
+  "enter_second_name": "Enter your second name",
+  "select_your_date_of_birth": "Select your date of birth",
+
+
+  "guest": "Guest",
+  "filter_apartments": "Filter apartments",
+  "recommended_property": "Recommended property",
+  "no_apartment": "No apartments",
+  "no_rated_apartments": "There are no apartments rated 5.0",
+  "see_all": "See all",
+
+  "yes": "Yes",
+  "no": "No",
+  "any": "Any",
+
+  "floor_number": "Floor number",
+  "balconies": "Balconies",
+  "parking_spots": "Parking spots",
+  "area_m2": "Area (m²)",
+  "max_rent": "Maximum rent",
+  "rate": "Rate",
+
+  "reset": "Reset",
+  "apply_filters": "Apply filters",
+
+  "home": "Home",
+  "favorites": "Favorites",
+  "my_reservations": "My reservations",
+  "chat": "Chat",
+  "profile": "Profile",
+  "new_notification": "New notification",
+
+  "notifications": "Notifications",
+  "unread": "Unread",
+  "read": "Read",
+  "no_notifications": "No notifications yet",
+
+  "notification_generic": "Notification",
+
+  "booking_cancelled": "Booking cancelled",
+  "booking_accepted": "Booking accepted",
+  "booking_rejected": "Booking rejected",
+
+  "money_added": "Money added",
+  "money_withdrawn": "Money withdrawn",
+
+  "added_label": "Added",
+  "withdrawn_label": "Withdrawn",
+  "charged": "Charged",
+  "refunded": "Refunded",
+  "refund_to_tenant": "Refund to tenant",
+
+  "tenant_cancel_message": "Your reservation has been canceled",
+
+  "owner_label": "Owner:",
+  "reservation_label": "Reservation",
+  "location_label": "Location:",
+
+
+  "my_card": "My Wallet",
+  "current_balance": "Current Balance",
+  "wallet_lower": "wallet",
+
+  "withdraw": "Withdraw",
+  "add_funds": "Add Funds",
+  "recent_requests": "Recent Requests",
+  "all": "All",
+  "approved": "Approved",
+  "pending": "Pending",
+  "rejected": "Rejected",
+  "no_requests_for_filter": "No requests for this filter",
+
+  "today": "Today",
+  "yesterday": "Yesterday",
+
+  "withdraw_request": "Withdraw request",
+  "add_funds_request": "Add funds request",
+  "add_money_request": "Add money request",
+  "withdraw_request_sent": "Withdraw request sent",
+  "add_request_sent": "Add request sent",
+
+  "withdraw_subtitle": "Enter the amount you want to withdraw from your wallet.",
+  "add_subtitle": "Enter the amount you want to add to your wallet.",
+
+  "available_balance": "Available balance:",
+  "amount": "Amount",
+  "max_hint": "Max:",
+  "enter_amount": "Enter amount",
+  "enter_valid_amount": "Enter a valid amount",
+  "cant_withdraw_more_than": "You can’t withdraw more than",
+  "sending": "Sending...",
+  "send_request_to_admin": "Send request to admin",
+
+  "my_favorites": "My favourites",
+  "something_wrong": "Something went wrong",
+  "no_apartments": "No apartments in favourites",
+
+  "my_reservations": "My reservations",
+  "pending": "Pending",
+  "accepted": "Accepted",
+  "rejected": "Rejected",
+  "previous": "Previous",
+  "canceled": "Canceled",
+
+  "no_token": "No token found",
+  "no_reservations": "No reservations",
+  "unknown_location": "Unknown location",
+
+  "reservation_canceled": "Reservation canceled",
+  "failed_cancel_reservation": "Failed to cancel reservation",
+
+  "edit": "Edit",
+  "cancel": "Cancel",
+
+  "rate_apartment": "Rate apartment",
+  "you_rated": "You rated this apartment:",
+  "rate_this_apartment": "Rate this apartment",
+  "thanks_for_rating": "Thanks for rating ⭐",
+  "submit": "Submit",
+
+  "edit_reservation": "Edit reservation",
+  "start_date": "Start date",
+  "end_date": "End date",
+  "choose_start_first": "Choose start date first",
+  "enter_dates": "Enter start and end dates",
+  "request_sent_success": "Request has been sent successfully",
+  "back": "Back",
+  "apply_edits": "Apply edits",
+
+  "profile": "Profile",
+  "account_info": "Account info",
+  "first_name": "First name",
+  "last_name": "Last name",
+  "date_of_birth": "Date of birth",
+  "identity_photo": "Identity photo",
+  "settings": "Settings",
+  "dark_mode": "Dark mode",
+
+  "wallet_not_enough": "You don't have enough balance to complete this reservation.",
+  "required": "Required",
+  "available": "Available",
+  "please_add_at_least": "Please add at least",
+  "to_your_wallet": "to your wallet.",
+  "reservation_summary": "Reservation summary",
+  "booking_from": "Booking from",
+  "to": "to",
+  "details": "Details",
+  "rent_type": "Rent type",
+  "period": "Period",
+  "total": "Total",
+  "edit": "Edit",
+  "ok": "OK",
+  "token_not_found": "Token not found, please login again",
+  "session_expired": "Session expired, please login again",
+
+  "loading": "Loading...",
+  "pending": "Pending",
+  "accepted": "Accepted",
+  "reserve_again": "Reserve again",
+  "reserve": "Reserve",
+
+  "sq_ft": "sq ft",
+  "parking": "parking",
+  "bath": "bath",
+  "description": "Description",
+  "rooms_number": "Rooms number",
+  "bedrooms_number": "Bedrooms number",
+  "floor_number": "Floor number",
+  "balcony_number": "Balcony number",
+  "furnished": "Furnished",
+  "agent": "Agent",
+  "user_name": "User name",
+  "rent": "Rent",
+
+  "choose_rent_date": "Choose rent date",
+
+  "day": "day",
+  "days": "days",
+  "month": "month",
+  "months": "months",
+  "year": "year",
+  "years": "years",
+
+  "flats_title": "Flats",
+  "no_apartments": "No apartments",
+
+  "write_message": "Write a message...",
+  "no_chats_yet": "No chats yet",
+  "last_message_placeholder": "Last message ...",
+
+
+  "add_apartment_title": "Add your apartment",
+  "add_apartment_subtitle": "Fill the details below to publish your listing",
+
+  "governorate_name": "Governorate",
+  "city_name": "City",
+  "home_space": "Home space",
+  "home_space_required": "Home space is required",
+  "home_space_invalid": "Enter a valid space",
+
+  "floor": "Floor",
+  "baths": "Baths",
+  "rooms": "Rooms",
+  "bedrooms": "Bedrooms",
+  "parking": "Parking",
+  "balcony": "Balcony",
+
+  "select_rooms": "Select rooms",
+  "select_bedrooms": "Select bedrooms",
+  "select_parking": "Select parking",
+  "select_balcony": "Select balcony",
+
+  "rent": "Rent",
+  "rent_required": "Rent is required",
+  "rent_invalid": "Enter a valid rent",
+
+  "rent_type": "Rent type",
+  "select_rent_type": "Select rent type",
+  "rent_type_daily": "daily",
+  "rent_type_monthly": "monthly",
+  "rent_type_yearly": "yearly",
+
+  "furnished": "Furnished",
+  "select_furnished": "Select if furnished",
+  "yes": "Yes",
+  "no": "No",
+
+  "apartment_photos": "Apartment photos",
+  "add_photos_min": "Add photos (min 3)",
+  "add_more_photos": "Add more photos",
+  "please_add_min_photos": "Please add at least 3 photos",
+
+  "publish": "Publish",
+  "confirm_post_title": "Are you sure about posting the apartment listing?",
+  "edit": "Edit",
+  "yes_btn": "Yes",
+
+  "congratulations": "Congratulations!",
+  "apartment_published": "Your apartment is published",
+  "done": "Done",
+
+  "pick_camera": "Camera",
+  "pick_gallery": "Gallery",
+
+  "error_generic": "Error: {0}",
+
+  "your_apartments_title": "Your Apartments",
+  "your_apartments_subtitle": "Manage your listings and see details",
+  "no_apartments_yet": "No apartments yet",
+  "delete_apartment_title": "Delete apartment",
+  "delete_apartment_message": "Are you sure you want to delete it?",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "apartment_deleted": "Apartment deleted successfully",
+  "delete_failed": "Failed to delete apartment",
+
+  "booking_requests_title": "Booking Requests",
+  "booking_requests_subtitle": "Review requests and accept or reject",
+
+  "filter_all": "All",
+  "filter_pending": "Pending",
+  "filter_accepted": "Accepted",
+  "filter_rejected": "Rejected",
+
+  "no_orders_yet": "No orders yet",
+  "no_orders_in_filter": "No orders in this filter",
+
+  "order_accepted": "Reservation accepted",
+  "order_rejected": "Reservation rejected",
+
+  "reject": "Reject",
+  "accept": "Accept",
+
+  "accepted_with_icon": "Accepted ✔",
+  "rejected_with_icon": "Rejected ✖",
+
+  "from_to": "From - To",
+  "total": "Total",
+
+  "accepted": "Accepted",
+  "rejected": "Rejected",
+  "pending": "Pending",
+
+  "edit_apartment_title": "Edit apartment",
+  "save_changes_button": "Save changes",
+
+  "please_check_fields": "Please check the fields",
+  "select_governorate_and_city": "Select governorate and city",
+  "select_rent_type_and_furnished": "Select rent type and furnished",
+  "home_space_rent_must_be_numbers": "Home space and rent must be numbers",
+
+  "saved_successfully": "Saved successfully",
+  "updated_rent_prefix": "Updated rent:",
+  "updated_city_prefix": "City:",
+
+  "failed_to_delete_image": "Failed to delete image",
+  "images_added": "Images added",
+  "upload_failed": "Upload failed",
+
+  "location_section_title": "Location",
+  "governorate_label": "Governorate",
+  "governorate_required": "Governorate is required",
+  "city_current_label": "City (current)",
+  "select_city_label": "Select city",
+  "city_required": "City is required",
+
+  "main_details_section_title": "Main details",
+  "home_space_label": "Home space (m²)",
+  "home_space_required": "Home space is required",
+  "enter_valid_number": "Enter a valid number",
+
+  "rooms_label": "Rooms",
+  "select_rooms": "Select rooms",
+  "bedrooms_label": "Bedrooms",
+  "select_bedrooms": "Select bedrooms",
+  "parking_label": "Parking",
+  "select_parking": "Select parking",
+  "balcony_label": "Balcony",
+  "select_balcony": "Select balcony",
+
+  "rent_section_title": "Rent",
+  "rent_label": "Rent",
+  "rent_required": "Rent is required",
+  "enter_valid_rent": "Enter a valid rent",
+
+  "rent_type_label": "Rent type",
+  "rent_type_required": "Rent type is required",
+  "furnished_label": "Furnished",
+  "yes": "Yes",
+  "no": "No",
+  "required_field": "This field is required",
+
+  "new_photos_section_title": "New photos",
+  "no_photos_label": "No photos",
+
+  "my_tenants": "My tenants",
+  "contact_chat": "Contact & Chat",
+  "manage_tenants_subtitle": "Manage your tenants and communicate easily",
+  "search_tenant_hint": "Search tenant name or phone...",
+  "retry": "Retry",
+  "no_tenants_yet": "No tenants yet",
+  "call": "Call",
+  "chat": "Chat",
+
+  "congratulations": "Congratulations!",
+  "investment_journey": "Your investment journey continues!",
+  "order_waiting": "Your order is waiting",
+  "track_status": "To track the status of your order, go to",
+  "your_reservations": "Your reservations",
+
+
+
+
+
+  "language": "Language",
+  "Easy booking, comfortable living": "Easy booking, comfortable living",
+  "Choose the language you prefer for the app.": "Choose the language you prefer for the app.",
+  "You can change the language later from Settings.": "You can change the language later from Settings."
+}

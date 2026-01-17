@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../helper/Host.dart';
+
 Future<String> getUserStatus(String phone) async {
   try {
     var response = await http.post(
-      Uri.parse('http://10.0.2.2:8000/api/user/status'),
+      Uri.parse('http://${Host.host}:8000/api/user/status'),
       headers: {"Content-Type": 'application/json'},
       body: jsonEncode({'phone': phone}),
     );

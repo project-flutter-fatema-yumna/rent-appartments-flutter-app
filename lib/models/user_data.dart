@@ -1,5 +1,7 @@
 import 'package:image_picker/image_picker.dart';
 
+import '../helper/Host.dart';
+
 class UserData {
   String phone;
   String password;
@@ -46,11 +48,11 @@ class UserData {
     );
 
     user.personalPhotoUrl = json['personalPhoto'] != null
-        ? 'http://10.0.2.2:8000/storage/${json['personalPhoto']}'
+        ? 'http://${Host.host}:8000/storage/${json['personalPhoto']}'
         : null;
 
     user.identityPhotoUrl = json['idenitityPhoto'] != null
-        ? 'http://10.0.2.2:8000/storage/${json['idenitityPhoto']}'
+        ? 'http://${Host.host}:8000/storage/${json['idenitityPhoto']}'
         : null;
     return user;
   }

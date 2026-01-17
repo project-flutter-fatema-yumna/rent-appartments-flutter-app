@@ -2,7 +2,7 @@ import 'package:flats_app/global_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 import '../../Services/getAllWalletRequests.dart';
 import '../../models/model_walletRequest.dart';
 import 'WalletRequestSheetTenant.dart';
@@ -38,8 +38,8 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date).inDays;
-    if (diff == 0) return 'Today';
-    if (diff == 1) return 'Yesterday';
+    if (diff == 0) return 'today'.tr();
+    if (diff == 1) return 'yesterday'.tr();
     return '${date.day} ${_monthName(date.month)}';
   }
 
@@ -67,8 +67,8 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text(
-          "My Card",
+        title:  Text(
+            "my_card".tr(),
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Theme.of(context).primaryColor,
@@ -130,7 +130,7 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Current Balance",
+                        "current_balance".tr(),
                       style: TextStyle(
                         fontSize: 13,
                         color: Theme.of(context).textTheme.bodyMedium!.color,
@@ -167,8 +167,8 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
                       height: 48,
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.south_east, size: 19),
-                        label: const Text(
-                          "Withdraw",
+                        label:  Text(
+                          "withdraw".tr(),
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                         style: ElevatedButton.styleFrom(
@@ -195,8 +195,7 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
                               child: TenantWalletRequestSheet(
                                 type: WalletRequestType.withdraw,
                                 availableAmount: available,
-                                message:
-                                "Enter the amount you want to withdraw.",
+                                message: "withdraw_subtitle".tr(),
                               ),
                             ),
                           ).then((_) {
@@ -219,7 +218,7 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
                           color: Theme.of(context).primaryColor,
                         ),
                         label: Text(
-                          "Add Funds",
+                          "add_funds".tr(),
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: Theme.of(context).primaryColor,
@@ -249,7 +248,7 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
                               child: TenantWalletRequestSheet(
                                 type: WalletRequestType.add,
                                 availableAmount: available,
-                                message: "Enter the amount you want to add.",
+                                message: "add_subtitle".tr(),
                               ),
                             ),
                           ).then((_) {
@@ -269,8 +268,8 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Recent Requests",
+                   Text(
+                    "recent_requests".tr(),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -280,22 +279,22 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
                     dropdownColor: Theme.of(context).cardColor,
                     value: selectedStatus,
                     borderRadius: BorderRadius.circular(12),
-                    items: const [
+                    items:  [
                       DropdownMenuItem(
                         value: 'all',
-                        child: Text('All'),
+                        child: Text('all'.tr()),
                       ),
                       DropdownMenuItem(
                         value: 'approved',
-                        child: Text('Approved'),
+                        child: Text('approved'.tr()),
                       ),
                       DropdownMenuItem(
                         value: 'pending',
-                        child: Text('Pending'),
+                        child: Text('pending'.tr()),
                       ),
                       DropdownMenuItem(
                         value: 'rejected',
-                        child: Text('Rejected'),
+                        child: Text('rejected'.tr()),
                       ),
                     ],
                     onChanged: (value) {
@@ -310,11 +309,11 @@ class _TenantWalletScreenState extends State<TenantWalletScreen> {
               const SizedBox(height: 8),
 
               if (filteredRequests.isEmpty)
-                const Padding(
+                 Padding(
                   padding: EdgeInsets.only(top: 20),
                   child: Center(
                     child: Text(
-                      'No requests for this filter',
+                      'no_requests_for_filter'.tr(),
                       style: TextStyle(color: Colors.grey),
                     ),
                   ),
@@ -365,8 +364,10 @@ class _RequestTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isWithdraw = type == "withdraw";
     final IconData icon = isWithdraw ? Icons.south_east : Icons.north_east;
-    final String title =
-    isWithdraw ? "Withdraw request" : "Add funds request";
+    final String title = isWithdraw
+        ? "withdraw_request".tr()
+        : "add_funds_request".tr();
+
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),

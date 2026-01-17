@@ -1,9 +1,12 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flats_app/MainLayout.dart';
 import 'package:flats_app/authentication_screens/login_screen.dart';
 import 'package:flats_app/authentication_screens/onboarding_screens.dart';
 import 'package:flats_app/lessor/homePage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../select_language_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   static String id = 'SplashScreen';
@@ -42,6 +45,13 @@ class _SplashScreenState extends State<SplashScreen>
 
     Future.delayed(const Duration(seconds: 2), () async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? savedLangCode = prefs.getString('lang_code');
+
+      if (savedLangCode == null) {
+        Navigator.pushReplacementNamed(context, SelectLanguageScreen.id);
+        return;
+      }
+
       bool? isOnboardingSeen = prefs.getBool('seen');
       bool? isLoggedIn = prefs.getBool('isLoggedIn');
       if (isOnboardingSeen == true) {
@@ -80,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen>
               children: [
                 Image.asset('assets/logo.png'),
                 Text(
-                  'Easy booking, comfortable living',
+                  'Easy booking, comfortable living'.tr(),
                   style: TextStyle(fontSize: 18, color: Theme.of(context).textTheme.bodyLarge!.color,
                   ),
                 ),

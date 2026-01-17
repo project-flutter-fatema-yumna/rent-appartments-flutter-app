@@ -8,6 +8,8 @@ import 'EditeApartment_lessor.dart';
 import 'apartmentDetails.dart';
 import 'catogary/CardApartment.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class List_Apatment extends StatefulWidget {
   static String id = 'List_Apatment';
@@ -38,18 +40,19 @@ class _List_ApatmentState extends State<List_Apatment> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
-                "Your Apartments",
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w900),
+              Text(
+                'your_apartments_title'.tr(),
+                style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 6),
               Text(
-                "Manage your listings and see details",
+                'your_apartments_subtitle'.tr(),
                 style: TextStyle(
                   color: Theme.of(context).textTheme.bodyMedium!.color,
                   fontSize: 18,
                 ),
               ),
+
               const SizedBox(height: 14),
               Expanded(
                 child: FutureBuilder(
@@ -64,8 +67,11 @@ class _List_ApatmentState extends State<List_Apatment> {
                       return Center(child: Text("Error: ${snapshot.error}"));
                     }
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text("No apartments yet"));
+                      return Center(
+                        child: Text('no_apartments_yet'.tr()),
+                      );
                     }
+
                     if (flats.isEmpty) {
                       flats = snapshot.data!;
                     }
@@ -105,18 +111,20 @@ class _List_ApatmentState extends State<List_Apatment> {
                               context: context,
                               builder: (_) => AlertDialog(
                                 backgroundColor: Theme.of(context).cardColor,
-                                title: const Text("Delete apartment"),
-                                content: const Text(
-                                  "Are you sure you want to delete it?",
-                                ),
+                                title: Text('delete_apartment_title'.tr()),
+                                content:  Text(
+                                  'delete_apartment_message'.tr(),),
                                 actions: [
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.pop(context, false),
-                                    child: Text("Cancel",
-                                      style: TextStyle(color: Theme.of(context).primaryColor,
+                                    child: Text(
+                                      'cancel'.tr(),
+                                      style: TextStyle(
+                                        color: Theme.of(context).primaryColor,
                                       ),
                                     ),
+
                                   ),
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -126,9 +134,11 @@ class _List_ApatmentState extends State<List_Apatment> {
                                     ),
                                     onPressed: () =>
                                         Navigator.pop(context, true),
-                                    child: const Text("Delete",
-                                      style: TextStyle(color: Colors.white),
+                                    child: Text(
+                                      'delete'.tr(),
+                                      style: const TextStyle(color: Colors.white),
                                     ),
+
                                   ),
                                 ],
                               ),
@@ -148,13 +158,19 @@ class _List_ApatmentState extends State<List_Apatment> {
 
                               mySnackBar(
                                 context,
-                                'Deleted',
+                                'apartment_deleted'.tr(),
                                 color: Theme.of(context).primaryColor,
                               );
-                            } catch (e) {
-                              mySnackBar(context, 'Edited', color: Theme.of(context).primaryColor);
-                            }
-                          },
+
+                            }  catch (e) {
+                          mySnackBar(
+                            context,
+                            'delete_failed'.tr(),
+                            color: Theme.of(context).primaryColor,
+                          );
+                        }
+
+                      },
                         );
                       },
                     );

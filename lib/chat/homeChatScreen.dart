@@ -1,8 +1,7 @@
 import 'package:flats_app/global_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 import '../../Services/Lessor_Services/get_current_chats.dart';
 import '../../models/model_current_chat.dart';
 import 'chatSecondScreen.dart';
@@ -15,8 +14,8 @@ class Chat_Screen extends StatefulWidget {
 }
 
 class _Chat_ScreenState extends State<Chat_Screen> {
-  String token = userToken;
-  int myId = 3;
+  String? token = userToken;
+  int? myId = userId;
 
   bool loading = true;
   List<ModelCurrentChat> chats = [];
@@ -24,28 +23,22 @@ class _Chat_ScreenState extends State<Chat_Screen> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-
-    //fetchChats();
-  }
-
-  Future<void> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      //token = prefs.getString('token');
-      //myId = prefs.getInt('userId');
-    });
-
-    await fetchChats();
+    fetchChats();
   }
 
   Future<void> fetchChats() async {
+    if (token == null || myId == null) {
+      setState(() => loading = false);
+      return;
+    }
     try {
       final data = await GetCurrentChatsService().getCurrentChats(
         token: token!,
       );
-      print('TOKEN USED FOR Tenant WEBSOCKET BROADCAST = ${token}');
-      print('MY ID = ${myId}');
+      print(userToken);
+      print(userId);
+
+
       setState(() {
         chats = data;
         loading = false;
@@ -59,18 +52,19 @@ class _Chat_ScreenState extends State<Chat_Screen> {
   @override
   Widget build(BuildContext context) {
     if (loading) {
-      return const Scaffold(
-        body: Center(child: SpinKitThreeBounce(color: Colors.blue, size: 20)),
+      return Scaffold(
+        body: Center(child: SpinKitThreeBounce(color: Theme.of(context).primaryColor, size: 20)),
       );
     }
 
     return Scaffold(
+      appBar: AppBar(title:Text('My Chats',style: TextStyle(color: Colors.white),),backgroundColor: Colors.blue,),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: chats.isEmpty
-            ? const Center(child: Text("No chats yet"))
-            : ListView.separated(
+            ? Center(child: Text('no_chats_yet'.tr()))
+        : ListView.separated(
                 itemCount: chats.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
@@ -117,7 +111,7 @@ class ChatCardStatic extends StatelessWidget {
     final name = "${modelCurrentChat.firstName} ${modelCurrentChat.lastName}"
         .trim();
 
-    final lastMessage = "Last message ...";
+    final lastMessage = 'last_message_placeholder'.tr();
 
     final time = modelCurrentChat.lastMessageAt;
 

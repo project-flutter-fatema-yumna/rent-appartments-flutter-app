@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helper/Host.dart';
+
 Future<Map<String, dynamic>> rateApartment({
   required int apartmentId,
   required double stars,
@@ -13,7 +15,7 @@ Future<Map<String, dynamic>> rateApartment({
     throw Exception('No token found');
   }
 
-  final url = Uri.parse('http://10.0.2.2:8000/api/apartment/rate/$apartmentId');
+  final url = Uri.parse('http://${Host.host}:8000/api/apartment/rate/$apartmentId');
 
   final response = await http.post(
     url,

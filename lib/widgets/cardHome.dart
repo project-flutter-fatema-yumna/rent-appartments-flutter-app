@@ -5,6 +5,8 @@ import 'package:flats_app/providers/favorite_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../helper/Host.dart';
+
 class CardHome extends StatefulWidget {
   Model_Apartment? model_apartment;
 
@@ -15,13 +17,11 @@ class CardHome extends StatefulWidget {
 }
 
 class _CardHomeState extends State<CardHome> {
-  /* int? height , width;
-  _CardHomeState(this.height, this.width);*/
 
   @override
   Widget build(BuildContext context) {
     final path = widget.model_apartment!.images[0].image.trim();
-    final url = 'http://10.0.2.2:8000/storage/$path';
+    final url = 'http://${Host.host}:8000/storage/$path';
     return InkWell(
       onTap: () {
         Navigator.pushNamed(
@@ -56,7 +56,7 @@ class _CardHomeState extends State<CardHome> {
                       borderRadius: BorderRadius.circular(10),
                       child: Image.network(
                         url,
-                        width: 200,
+                        width: 300,
                         height: 200,
                         fit: BoxFit.cover,
                         loadingBuilder: (context, child, progress) {
@@ -133,7 +133,7 @@ class _CardHomeState extends State<CardHome> {
                               isFav
                                   ? Icons.favorite
                                   : Icons.favorite_border_outlined,
-                              color: isFav ? Colors.red : Theme.of(context).cardColor,
+                              color: isFav ? Colors.red : Colors.grey,
                             ),
                           );
                         },

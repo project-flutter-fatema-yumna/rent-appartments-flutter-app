@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helper/Host.dart';
+
 Future<void> logout(BuildContext context) async {
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('token');
@@ -16,7 +18,7 @@ Future<void> logout(BuildContext context) async {
   }
   try {
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8000/api/logout'),
+      Uri.parse('http://${Host.host}:8000/api/logout'),
       headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
     );
 

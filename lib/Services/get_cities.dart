@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helper/Host.dart';
+
 Future<List<String>> getCitiesAccourdingToGovernorate(
   String governorate,
 ) async {
@@ -13,7 +15,7 @@ Future<List<String>> getCitiesAccourdingToGovernorate(
 
     final response = await http.get(
       Uri.parse(
-        'http://10.0.2.2:8000/api/apartment/validCities/${Uri.encodeComponent(governorate)}',
+        'http://${Host.host}:8000/api/apartment/validCities/${Uri.encodeComponent(governorate)}',
       ),
       headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
     );

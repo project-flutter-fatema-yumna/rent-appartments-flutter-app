@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flats_app/models/user_data.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -52,24 +53,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _errorText = null;
     });
     if (password.isEmpty || phone.isEmpty || confirmPassword.isEmpty) {
-      setState(() => _errorText = 'Please fill all fields');
+      setState(() => _errorText = 'error_fill_all_fields'.tr());
       return;
     }
     final phoneDigits = phone.replaceAll(RegExp(r'[^0-9]'), '');
     if (phoneDigits.length < 10) {
-      setState(() => _errorText = 'Phone number must be exactly 10 digits');
+      setState(() => _errorText = 'error_phone_length'.tr());
       return;
     }
     if (!phoneDigits.startsWith('09')) {
-      setState(() => _errorText = 'Phone number must start with 09');
+      setState(() => _errorText = 'error_phone_start_09'.tr());
       return;
     }
     if (password.length < 8) {
-      setState(() => _errorText = 'Password must be at least 8 characters');
+      setState(() => _errorText = 'error_password_min_8'.tr());
       return;
     }
     if (password != confirmPassword) {
-      setState(() => _errorText = 'Password and confirmation do not match');
+      setState(() => _errorText = 'error_password_not_match'.tr());
       return;
     }
     user.phone = phone;
@@ -100,7 +101,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                'Create account',
+                'create_account'.tr(),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 34,
@@ -109,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Unlock your personalized experience!',
+                'register_subtitle'.tr(),
                 style: TextStyle(
                   fontSize: 16,
                   color: Theme.of(context).textTheme.bodyLarge!.color,
@@ -119,7 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 padding: const EdgeInsets.fromLTRB(25, 30, 50, 12),
                 child: TextFieldWidget(
                   controller: _phoneController,
-                  hint: 'Phone number',
+                  hint: 'phone_number'.tr(),
                   icon: Icons.phone,
                   keyboardType: TextInputType.phone,
                   inputFormatters: [
@@ -132,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 padding: const EdgeInsets.fromLTRB(25, 0, 50, 12),
                 child: TextFieldWidget(
                   controller: _passwordController,
-                  hint: 'Password (min 8 chars)',
+                  hint: 'password_hint'.tr(),
                   icon: Icons.lock_outline,
                   isPassword: true,
                   obscureText: _hidePassword,
@@ -142,7 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 padding: const EdgeInsets.fromLTRB(25, 0, 50, 12),
                 child: TextFieldWidget(
                   controller: _confirmPasswordController,
-                  hint: 'Confirm password',
+                  hint: 'confirm_password'.tr(),
                   icon: Icons.lock,
                   isPassword: true,
                   obscureText: _hidePassword,
@@ -198,7 +199,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       vertical: 12,
                     ),
                     child: Text(
-                      'Verify',
+                      'verify'.tr(),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 17,
@@ -210,13 +211,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 12),
               RichText(
                 text: TextSpan(
-                  text: "Already have an account? ",
+                  text: "already_have_account".tr(),
                   style: TextStyle(
                     color: Theme.of(context).textTheme.bodyLarge!.color,
                   ),
                   children: [
                     TextSpan(
-                      text: "Login",
+                      text: "login".tr(),
                       style: TextStyle(
                         color: Theme.of(context).primaryColor,
                         decoration: TextDecoration.underline,
@@ -271,7 +272,7 @@ class RegisterAs extends StatelessWidget {
                 ),
                 SizedBox(height: 6),
                 Text(
-                  role,
+                  role.tr(),
                   style: TextStyle(
                     fontSize: 16,
                     color: _currentState == role

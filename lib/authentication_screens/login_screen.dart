@@ -8,9 +8,12 @@ import 'package:flats_app/models/user_data.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../helper/Host.dart';
 import '../widgets/text_field_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class LoginScreen extends StatefulWidget {
   static String id = 'LoginScreen';
@@ -62,11 +65,11 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     if (!phoneDigits.startsWith('09')) {
-      setState(() => _errorText = 'Phone number must start with 09');
+      setState(() => _errorText = 'error_phone_start_09'.tr());
       return;
     }
     if (password.length < 8) {
-      setState(() => _errorText = 'Password must be at least 8 characters');
+      setState(() => _errorText = 'error_password_min_8'.tr());
       return;
     }
     login(_phoneController.text, _passwordController.text);
@@ -78,11 +81,11 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = true;
       });
       var response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/login'),
+        Uri.parse('http://${Host.host}:8000/api/login'),
         headers: {"Content-Type": 'application/json'},
         body: jsonEncode({'phone': phone, 'password': password}),
       );
-      print(response.statusCode);
+      //print(response.statusCode);
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         final jsonMap = decoded['user'];
@@ -96,6 +99,8 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString('userName', user.userName);
         await prefs.setString('dob', user.dateOfBirth ?? '');
         await prefs.setString('role', user.role);
+        await prefs.setInt('userId', user.id!);
+        userId = user.id;
 
         if (user.personalPhotoUrl != null) {
           await prefs.setString('personalPhotoUrl', user.personalPhotoUrl!);
@@ -104,18 +109,12 @@ class _LoginScreenState extends State<LoginScreen> {
         if (user.identityPhotoUrl != null) {
           await prefs.setString('identityPhotoUrl', user.identityPhotoUrl!);
         }
-        print("photos");
-        print(user.personalPhotoUrl);
-        print(user.identityPhotoUrl);
-        print('////////////////');
-
         prefs.setString('token', token);
         userToken = token;
+        userId = user.id;
+
 
         prefs.setBool('isLoggedIn', true);
-        print('////////////////////////////////////');
-        print('role');
-        print(prefs.getString('role'));
         if (prefs.getString('role') == 'tenant') {
           Navigator.pushReplacementNamed(context, MainlayoutScreen.id);
         } else {
@@ -155,19 +154,19 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 20),
               Text(
-                'Login',
+                'login'.tr(),
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 34),
               ),
               SizedBox(height: 20),
               Text(
-                'Welcome back! Please enter your details',
+                'login_subtitle'.tr(),
                 style: TextStyle(fontSize: 17),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(25, 50, 50, 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 18),
                 child: TextFieldWidget(
                   controller: _phoneController,
-                  hint: 'Phone number',
+                  hint: 'phone_number'.tr(),
                   icon: Icons.phone,
                   keyboardType: TextInputType.phone,
                   inputFormatters: [
@@ -177,10 +176,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(25, 0, 50, 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 18),
                 child: TextFieldWidget(
                   controller: _passwordController,
-                  hint: 'Password (min 8 chars)',
+                  hint: 'password_hint'.tr(),
                   icon: Icons.lock,
                   isPassword: true,
                   obscureText: _hidePassword,
@@ -217,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             vertical: 10,
                           ),
                           child: Text(
-                            'Login',
+                            'login'.tr(),
                             style: TextStyle(color: Colors.white, fontSize: 17),
                           ),
                         ),
@@ -229,13 +228,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   RichText(
                     text: TextSpan(
-                      text: "Don't have an account? ",
+                      text: "dont_have_account".tr(),
                       style: TextStyle(
                         color: Theme.of(context).textTheme.bodyLarge!.color,
                       ),
                       children: [
                         TextSpan(
-                          text: "Sign up",
+                          text: "sign_up".tr(),
                           style: TextStyle(
                             color: Theme.of(context).primaryColor,
                             decoration: TextDecoration.underline,

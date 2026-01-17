@@ -12,12 +12,13 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../Services/log_out.dart';
+import '../chat/homeChatScreen.dart';
 import 'AddApartmentScreen.dart';
 import 'ListApartmentScreen.dart';
 import 'OrdersScreen.dart';
 import 'about_screen.dart';
-import 'chat/homeChatScreen.dart';
 import 'help_support_screen.dart';
 import 'notificationsLessorScreen.dart';
 
@@ -46,7 +47,7 @@ class _HomepageState extends State<Homepage> {
         for (final n in newOnes) {
           showSimpleNotification(
             Text(
-              n.data.message.isEmpty ? "New notification" : n.data.message,
+              n.data.message.isEmpty ? 'new_notification'.tr() : n.data.message,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -60,9 +61,6 @@ class _HomepageState extends State<Homepage> {
           );
         }
       };
-
-      // final prefs = await SharedPreferences.getInstance();
-      //final token = prefs.getString('token');
 
       if (token != null) {
         await provi.getNumberMesseageUnRead(token: token);
@@ -96,7 +94,7 @@ class _HomepageState extends State<Homepage> {
                 onPressed: () {
                   Scaffold.of(context).openDrawer();
                 },
-                icon: Icon(Icons.more_vert, color: Colors.white),
+                icon: const Icon(Icons.more_vert, color: Colors.white),
               );
             },
           ),
@@ -166,10 +164,30 @@ class _HomepageState extends State<Homepage> {
               indicatorAnimation: TabIndicatorAnimation.linear,
               indicatorWeight: 3,
               tabs: [
-                Tab(child: Text('Add', style: TextStyle(fontSize: 18))),
-                Tab(child: Text('Show', style: TextStyle(fontSize: 18))),
-                Tab(child: Text('Orders', style: TextStyle(fontSize: 18))),
-                Tab(child: Text('Chats', style: TextStyle(fontSize: 18))),
+                Tab(
+                  child: Text(
+                    'add_apartment'.tr(),
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+                Tab(
+                  child: Text(
+                    'my_apartments'.tr(),
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+                Tab(
+                  child: Text(
+                    'orders'.tr(),
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+                Tab(
+                  child: Text(
+                    'chat'.tr(),
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
               ],
             ),
             Expanded(
@@ -177,8 +195,8 @@ class _HomepageState extends State<Homepage> {
                 children: [
                   addApartmentScreen(),
                   List_Apatment(),
-                  OrdersScreen(),
-                  Chat_Screen(),
+                   OrdersScreen(),
+                   Chat_Screen(),
                 ],
               ),
             ),
@@ -198,7 +216,6 @@ class DrawerProfile extends StatefulWidget {
 }
 
 class _DrawerProfileState extends State<DrawerProfile> {
-
   @override
   Widget build(BuildContext context) {
     final user = context.watch<UserProvider>().user;
@@ -217,7 +234,9 @@ class _DrawerProfileState extends State<DrawerProfile> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+              ),
               child: Row(
                 children: [
                   personalImage(user, 25),
@@ -227,7 +246,7 @@ class _DrawerProfileState extends State<DrawerProfile> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          user?.userName??'Guest',
+                          user.userName ?? 'guest'.tr(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -240,7 +259,7 @@ class _DrawerProfileState extends State<DrawerProfile> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          user?.phone ?? "0988892049",
+                          user.phone ?? "0988892049",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -262,7 +281,7 @@ class _DrawerProfileState extends State<DrawerProfile> {
             // Menu items
             _Tile(
               icon: Icons.person_outline,
-              title: "My Profile",
+              title: 'my_profile'.tr(),
               onTap: () {
                 Navigator.push(
                   context,
@@ -275,7 +294,7 @@ class _DrawerProfileState extends State<DrawerProfile> {
             ),
             _Tile(
               icon: Icons.home_work_outlined,
-              title: "My Apartments",
+              title: 'my_apartments'.tr(),
               onTap: () {
                 Navigator.pop(context);
                 final controller = DefaultTabController.of(context);
@@ -284,7 +303,7 @@ class _DrawerProfileState extends State<DrawerProfile> {
             ),
             _Tile(
               icon: Icons.receipt_long_outlined,
-              title: "Orders",
+              title: 'orders'.tr(),
               onTap: () {
                 Navigator.pop(context);
                 final controller = DefaultTabController.of(context);
@@ -293,7 +312,7 @@ class _DrawerProfileState extends State<DrawerProfile> {
             ),
             _Tile(
               icon: Icons.credit_card_outlined,
-              title: "My Wallet",
+              title: 'my_card'.tr(),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, LessorWalletScreen.id);
@@ -301,29 +320,98 @@ class _DrawerProfileState extends State<DrawerProfile> {
             ),
             _Tile(
               icon: Icons.person_outline,
-              title: "My Tenants",
+              title: 'tenants'.tr(),
               onTap: () {
                 Navigator.pushNamed(context, tenants_Screen.id);
               },
             ),
-
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Divider(height: 20),
             ),
 
+            ListTile(
+              leading: const Icon(Icons.language),
+              title: Text(
+                'language'.tr(),
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              trailing: DropdownButton<String>(
+                value: context.locale.languageCode,
+                underline: const SizedBox(),
+                dropdownColor: Theme.of(context).cardColor,
+                items: const [
+                  DropdownMenuItem(
+                    value: 'en',
+                    child: Text('English'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'ar',
+                    child: Text('العربية'),
+                  ),
+                ],
+                onChanged: (value) {
+                  if (value == null) return;
+                  final newLocale = Locale(value);
+                  context.setLocale(newLocale);
+                },
+              ),
+            ),
             _Tile(
               icon: Icons.help_outline,
-              title: "Help & Support",
+              title: 'help_support'.tr(),
               onTap: () => Navigator.pushNamed(context, HelpSupportScreen.id),
             ),
             _Tile(
               icon: Icons.info_outline,
-              title: "About",
+              title: 'about_app'.tr(),
               onTap: () => Navigator.pushNamed(context, AboutScreen.id),
             ),
 
             const Spacer(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.red.withOpacity(0.35),
+                    width: 1,
+                  ),
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 0,
+                  ),
+                  leading: const Icon(
+                    Icons.logout_rounded,
+                    color: Colors.red,
+                    size: 24,
+                  ),
+                  title: Text(
+                    'logout'.tr(),
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: Colors.red.withOpacity(0.7),
+                    size: 16,
+                  ),
+                  onTap: () async {
+                    await logout(context);
+                  },
+                ),
+              ),
+            ),
           ],
         ),
       ),

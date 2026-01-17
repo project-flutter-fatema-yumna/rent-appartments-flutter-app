@@ -4,6 +4,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/notification_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class notificationScreen extends StatefulWidget {
   static String id = 'notificationScreen';
@@ -43,7 +45,7 @@ class _notificationScreenState extends State<notificationScreen> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
-        title: const Text('Notifications', style: TextStyle(color: Colors.white)),
+        title: Text('notifications'.tr(), style: const TextStyle(color: Colors.white)),
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
@@ -62,7 +64,7 @@ class _notificationScreenState extends State<notificationScreen> {
           padding: const EdgeInsets.all(12),
           children: [
             if (provi.unReadList.isNotEmpty) ...[
-              _sectionTitle("Unread"),
+              _sectionTitle("unread".tr()),
               const SizedBox(height: 8),
               ...provi.unReadList.map(
                     (n) => InkWell(
@@ -72,7 +74,7 @@ class _notificationScreenState extends State<notificationScreen> {
                       token: token!,
                       notificationId: n.id,
                     );
-                    print("token = $token , id = ${n.id}");
+                 //   print("token = $token , id = ${n.id}");
                   },
                   child: notificationCardByType(n),
                 ),
@@ -80,7 +82,7 @@ class _notificationScreenState extends State<notificationScreen> {
               const SizedBox(height: 14),
             ],
             if (provi.readList.isNotEmpty) ...[
-              _sectionTitle("Read"),
+              _sectionTitle("read".tr()),
               const SizedBox(height: 8),
               ...provi.readList.map(
                     (n) => Padding(
@@ -90,9 +92,9 @@ class _notificationScreenState extends State<notificationScreen> {
               ),
             ],
             if (provi.unReadList.isEmpty && provi.readList.isEmpty)
-              const Padding(
+               Padding(
                 padding: EdgeInsets.only(top: 80),
-                child: Center(child: Text("No notifications yet")),
+                child: Center(child: Text("no_notifications".tr())),
               ),
           ],
         ),

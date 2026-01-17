@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:flats_app/models/model_order.dart';
 import 'package:http/http.dart' as http;
 
+import '../helper/Host.dart';
+
 Future<List<Modal_Order>> getMyReservations({
   String? status,
   required String token,
 }) async {
-  const String baseUrl = 'http://10.0.2.2:8000/api/tenant/reservations';
+   String baseUrl = 'http://${Host.host}:8000/api/tenant/reservations';
   Uri url = Uri.parse(baseUrl);
 
   if (status != null && status.isNotEmpty) {
@@ -17,8 +19,6 @@ Future<List<Modal_Order>> getMyReservations({
     url,
     headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
   );
-  print(response.statusCode);
-  print(response.body);
   if (response.statusCode == 200) {
     final decoded = jsonDecode(response.body);
     return Modal_Order.listFromJson(decoded['data']);

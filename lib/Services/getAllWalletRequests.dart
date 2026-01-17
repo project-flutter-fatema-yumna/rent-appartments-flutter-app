@@ -1,4 +1,5 @@
 import '../API/api.dart';
+import '../helper/Host.dart';
 import '../models/model_walletRequest.dart';
 
 class GetWalletService {
@@ -6,7 +7,7 @@ class GetWalletService {
     required String token,
   }) async {
     final response = await api().get(
-      url: 'http://10.0.2.2:8000/api/my-wallet-requests',
+      url: 'http://${Host.host}:8000/api/my-wallet-requests',
       token: token,
     );
 

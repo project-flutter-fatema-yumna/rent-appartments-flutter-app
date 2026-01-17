@@ -3,6 +3,8 @@ import 'package:flats_app/Screens/filtered_apartments_screen.dart';
 import 'package:flats_app/Screens/notifications_screen.dart';
 import 'package:flats_app/Screens/seeAllScreen.dart';
 import 'package:flats_app/Services/Get_Paginate_Apartment.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 import 'package:flats_app/Services/get_cities.dart';
 import 'package:flats_app/Services/get_favoutite_apartments.dart';
 import 'package:flats_app/Screens/walletTenantScreens/homCardTenant.dart';
@@ -16,8 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../app_colors.dart';
 import '../Services/ApartmentsPaginationService.dart';
+import '../helper/Host.dart';
 import '../providers/notification_provider.dart';
 import '../widgets/secondCardHome.dart';
 
@@ -89,7 +91,7 @@ class HomescreenState extends State<Homescreen> {
     }
   }
 
-  String fixUrl(String url) => url.replaceFirst('127.0.0.1', '10.0.2.2');
+  String fixUrl(String url) => url.replaceFirst('127.0.0.1', '${Host.host}');
 
   Future<void> loadMore() async {
     if (loadingMore) return;
@@ -148,10 +150,10 @@ class HomescreenState extends State<Homescreen> {
         size: 20,
       );
     }
-    print('////////////////////personal from home');
-    print(user.personalPhoto);
-    print('////////////////////identity from home');
-    print(user.identityPhoto);
+   // print('////////////////////personal from home');
+    //print(user.personalPhoto);
+    //print('////////////////////identity from home');
+    //print(user.identityPhoto);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -278,64 +280,68 @@ class HomescreenState extends State<Homescreen> {
               ),
 
               SizedBox(height: 30),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Stack(
-                  children: [
-                    TextField(
-                      onTap: () async {
-                        final filters = await openFilter(context);
-                        if (filters != null) {
-                          Navigator.pushNamed(
-                            context,
-                            FilteredApartmentsScreen.id,
-                            arguments: filters,
-                          );
-                        }
-                      },
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Theme.of(context).cardColor,
-                        hintText: 'Filter apartments',
-                        hintStyle: Theme.of(context).textTheme.bodyLarge,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(50),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).cardColor,
-                          ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Stack(
+                children: [
+                  TextField(
+                    onTap: () async {
+                      final filters = await openFilter(context);
+                      if (filters != null) {
+                        Navigator.pushNamed(
+                          context,
+                          FilteredApartmentsScreen.id,
+                          arguments: filters,
+                        );
+                      }
+                    },
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.only(
+                          left: 20, right: 60, top: 12, bottom: 18),
+                      filled: true,
+                      fillColor: Theme.of(context).cardColor,
+                      hintText: 'filter_apartments'.tr(),
+                      hintStyle: Theme.of(context).textTheme.bodyLarge,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).cardColor,
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(50),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).cardColor,
-                          ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).cardColor,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(50),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).cardColor,
-                          ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).cardColor,
                         ),
                       ),
                     ),
-                    Positioned(
-                      top: 4,
-                      right: 3,
-                      child: IconButton(
-                        onPressed: () => openFilter(context),
-                        style: IconButton.styleFrom(
-                          backgroundColor: Theme.of(context).primaryColor,
-                        ),
-                        padding: EdgeInsets.all(12),
-                        icon: Icon(Icons.tune),
-                        color: Colors.white,
+                  ),
+                  Positioned(
+                    top: 4,
+                    right: 3,
+                    child: IconButton(
+                      onPressed: () => openFilter(context),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        shape: CircleBorder(),
                       ),
+                      padding: EdgeInsets.all(12),
+                      icon: Icon(Icons.tune),
+                      color: Colors.white,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              SizedBox(height: 10),
+            ),
+
+            SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 5,
@@ -345,7 +351,7 @@ class HomescreenState extends State<Homescreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      'Recommended Property',
+                      'recommended_property'.tr(),
                       style: TextStyle(
                         color: Theme.of(context).textTheme.bodyLarge!.color,
                         fontSize: 20,
@@ -366,7 +372,8 @@ class HomescreenState extends State<Homescreen> {
                           ),
                         )
                       : flats.isEmpty
-                      ? const Center(child: Text('No apartment'))
+                      ? Center(child: Text('no_apartment'.tr()))
+
                       : Builder(
                           builder: (context) {
                             final rated = flats
@@ -383,7 +390,7 @@ class HomescreenState extends State<Homescreen> {
                                       size: 100,
                                     ),
                                     Text(
-                                      'There are no apartments rated 5.0',
+                                      'no_rated_apartments'.tr(),
                                       style: TextStyle(color: Theme.of(context).primaryColor,),
                                     ),
                                   ],
@@ -412,7 +419,7 @@ class HomescreenState extends State<Homescreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Flats',
+                      'apartments'.tr(),
                       style: TextStyle(
                         color: Theme.of(context).textTheme.bodyLarge!.color,
                         fontSize: 20,
@@ -423,7 +430,7 @@ class HomescreenState extends State<Homescreen> {
                         Navigator.pushNamed(context, See_all_screen.id);
                       },
                       child: Text(
-                        'See All',
+                        'see_all'.tr(),
                         style: TextStyle(
                           color: Theme.of(context).textTheme.bodyLarge!.color,
                           fontSize: 20,
@@ -438,7 +445,7 @@ class HomescreenState extends State<Homescreen> {
                       child: SpinKitThreeBounce(color: Colors.blue, size: 20),
                     )
                   : flats.isEmpty
-                  ? const Center(child: Text('No apartment'))
+                  ? Center(child: Text('no_apartment'.tr()))
                   : ListView.builder(
                       itemCount: flats.length + 1,
                       physics: const NeverScrollableScrollPhysics(),
@@ -527,7 +534,7 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Filter Apartments',
+              'filter_apartments'.tr(),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -543,7 +550,7 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
                     Padding(
                       padding: const EdgeInsets.only(top: 5.0),
                       child: _dropdown(
-                        label: 'Governorate',
+                        label: 'governorate'.tr(),
                         value: filters.governorate,
                         items: governorates,
                         onChanged: (v) async {
@@ -564,7 +571,7 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
                       ),
                     ),
                     _dropdown(
-                      label: 'City',
+                      label: 'city'.tr(),
                       value: filters.city,
                       items: cities,
                       onChanged: cities.isEmpty
@@ -572,18 +579,18 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
                           : (v) => setState(() => filters.city = v),
                     ),
                     const SizedBox(height: 12),
-                    _title('Furnished'),
+                    _title('furnished'.tr()),
                     Wrap(
                       spacing: 8,
                       children: [
-                        _chip('Yes', filters.furnished == true, () {
+                        _chip('yes'.tr(), filters.furnished == true, () {
                           setState(
                             () => filters.furnished == true
                                 ? filters.furnished = null
                                 : filters.furnished = true,
                           );
                         }),
-                        _chip('No', filters.furnished == false, () {
+                        _chip('no'.tr(), filters.furnished == false, () {
                           setState(
                             () => filters.furnished == false
                                 ? filters.furnished = null
@@ -594,55 +601,55 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
                     ),
                     const SizedBox(height: 16),
                     _slider(
-                      'Rooms',
+                      'rooms'.tr(),
                       (filters.rooms ?? -1).toDouble(),
                       10,
                       (v) => setState(() => filters.rooms = v.round()),
                     ),
                     _slider(
-                      'Bedrooms',
+                      'bedrooms'.tr(),
                       (filters.bedrooms ?? -1).toDouble(),
                       10,
                       (v) => setState(() => filters.bedrooms = v.round()),
                     ),
                     _slider(
-                      'Bathrooms',
+                      'bathrooms'.tr(),
                       (filters.baths ?? -1).toDouble(),
                       6,
                       (v) => setState(() => filters.baths = v.round()),
                     ),
                     _slider(
-                      'Floor Number',
+                      'floor_number'.tr(),
                       (filters.floor ?? -1).toDouble(),
                       20,
                       (v) => setState(() => filters.floor = v.round()),
                     ),
                     _slider(
-                      'Balconies',
+                      'balconies'.tr(),
                       (filters.balcony ?? -1).toDouble(),
                       6,
                       (v) => setState(() => filters.balcony = v.round()),
                     ),
                     _slider(
-                      'Parking Spots',
+                      'parking_spots'.tr(),
                       (filters.parking ?? -1).toDouble(),
                       5,
                       (v) => setState(() => filters.parking = v.round()),
                     ),
                     _slider(
-                      'Area (m²)',
+                      'area_m2'.tr(),
                       filters.space ?? -1,
                       300,
                       (v) => setState(() => filters.space = v),
                     ),
                     _slider(
-                      'Maximum Rent',
+                      'max_rent'.tr(),
                       filters.rent ?? -1,
                       5_000_000,
                       (v) => setState(() => filters.rent = v),
                     ),
                     _slider(
-                      'Rate',
+                      'rate'.tr(),
                       filters.rate ?? -1,
                       5,
                       (v) => setState(() => filters.rate = v),
@@ -667,7 +674,7 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
                       });
                     },
                     child: Text(
-                      'Reset',
+                      'reset'.tr(),
                       style: TextStyle(color: Theme.of(context).primaryColor),
                     ),
                   ),
@@ -686,7 +693,7 @@ class _ApartmentFilterSheetState extends State<ApartmentFilterSheet> {
                       }
                     },
                     child: Text(
-                      'Apply Filters',
+                      'apply_filters'.tr(),
                       style: TextStyle(color: Theme.of(context).cardColor),
                     ),
                   ),

@@ -1,11 +1,12 @@
 import 'package:flats_app/API/api.dart';
 
+import '../../helper/Host.dart';
 import '../../models/model_order.dart';
 
 class getAllOrders{
   Future<List<Modal_Order>> getAllReservation({required String token})async{
     final response = await api().get(
-        url: 'http://10.0.2.2:8000/api/lessor/reservations',
+        url: 'http://${Host.host}:8000/api/lessor/reservations',
         token: token
     );
    //print('the response is $response');

@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flats_app/API/api.dart';
 
+import '../../helper/Host.dart';
+
 class addImageServices{
   Future<dynamic> addImage({required String apartmentId,required File image,required String token})async{
-    final url='http://10.0.2.2:8000/api/apartment/addImage/$apartmentId';
+    final url='http://${Host.host}:8000/api/apartment/addImage/$apartmentId';
     final request=http.MultipartRequest('POST',Uri.parse(url));
 
     request.headers.addAll({
