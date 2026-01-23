@@ -58,7 +58,6 @@ class _Chat_ScreenState extends State<Chat_Screen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title:Text('My Chats',style: TextStyle(color: Colors.white),),backgroundColor: Colors.blue,),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(12),

@@ -432,5 +432,18 @@
 
   "Easy booking, comfortable living": "حجز سهل وسكن مريح",
   "Choose the language you prefer for the app.": "اختر اللغة التي تفضلها للتطبيق.",
-  "You can change the language later from Settings.": "يمكنك تغيير اللغة لاحقًا من داخل الإعدادات."
+  "You can change the language later from Settings.": "يمكنك تغيير اللغة لاحقًا من داخل الإعدادات.",
+
+  "edit_requests_title": "طلبات تعديل الحجز",
+  "edit_requests_subtitle": "راجع التعديلات المطلوبة من المستأجر ووافق أو ارفض.",
+  "no_edit_requests": "لا توجد طلبات تعديل حالياً",
+  "edit_request": "طلب تعديل",
+  "edit_accepted": "تم قبول طلب التعديل",
+  "edit_rejected": "تم رفض طلب التعديل",
+  "old": "القديم",
+  "new": "الجديد",
+  "dates": "التواريخ",
+  "edit_reservation_requests": "طلبات تعديل الحجز"
+
+
 }

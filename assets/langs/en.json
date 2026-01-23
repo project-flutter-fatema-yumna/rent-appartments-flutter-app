@@ -435,5 +435,17 @@
   "language": "Language",
   "Easy booking, comfortable living": "Easy booking, comfortable living",
   "Choose the language you prefer for the app.": "Choose the language you prefer for the app.",
-  "You can change the language later from Settings.": "You can change the language later from Settings."
+  "You can change the language later from Settings.": "You can change the language later from Settings.",
+
+  "edit_requests_title": "Edit Reservation Requests",
+  "edit_requests_subtitle": "Review changes requested by tenants and approve or reject.",
+  "no_edit_requests": "No edit requests yet",
+  "edit_request": "Edit Request",
+  "edit_accepted": "Edit request accepted",
+  "edit_rejected": "Edit request rejected",
+  "old": "Old",
+  "new": "New",
+  "dates": "Dates",
+  "edit_reservation_requests": "Edit Reservation Requests"
+
 }

@@ -19,6 +19,7 @@ import 'AddApartmentScreen.dart';
 import 'ListApartmentScreen.dart';
 import 'OrdersScreen.dart';
 import 'about_screen.dart';
+import 'edit_reservation_requests_screen.dart';
 import 'help_support_screen.dart';
 import 'notificationsLessorScreen.dart';
 
@@ -325,6 +326,14 @@ class _DrawerProfileState extends State<DrawerProfile> {
                 Navigator.pushNamed(context, tenants_Screen.id);
               },
             ),
+            _Tile(
+              icon: Icons.edit_calendar_outlined,
+              title: 'edit_reservation_requests'.tr(),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, EditReservationRequestScreen.id);
+              },
+            ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Divider(height: 20),
@@ -370,6 +379,9 @@ class _DrawerProfileState extends State<DrawerProfile> {
               title: 'about_app'.tr(),
               onTap: () => Navigator.pushNamed(context, AboutScreen.id),
             ),
+
+
+
 
             const Spacer(),
             Padding(

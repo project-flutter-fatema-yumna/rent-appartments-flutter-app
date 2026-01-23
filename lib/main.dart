@@ -29,6 +29,7 @@ import 'package:provider/provider.dart';
 import 'lessor/EditeApartment_lessor.dart';
 import 'lessor/OrdersScreen.dart';
 import 'lessor/about_screen.dart';
+import 'lessor/edit_reservation_requests_screen.dart';
 import 'lessor/help_support_screen.dart';
 import 'lessor/notificationsLessorScreen.dart';
 import 'lessor/tenantScreen.dart';
@@ -170,6 +171,8 @@ class _MyAppState extends State<MyApp> {
         tenants_Screen.id: (context) => tenants_Screen(),
         HelpSupportScreen.id:(context)=>HelpSupportScreen(),
         AboutScreen.id:(context)=>AboutScreen(),
+        EditReservationRequestScreen.id: (context) => const EditReservationRequestScreen(),
+
       },
       home:
        FutureBuilder<Widget>(
